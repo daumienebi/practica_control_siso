@@ -1,6 +1,7 @@
 #!/bin/bash
 
-echo "# practica_control_siso" >> README.md
+#echo "# practica_control_siso" >> README.md
+#Insert initial readme content in the echo command 
 git init
 git add README.md
 git commit -m "first commit"

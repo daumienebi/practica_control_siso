@@ -1,4 +1,0 @@
-SP-Español
-EN-Ingles
-FR-Frances
-XY-XYLang
