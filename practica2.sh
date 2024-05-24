@@ -1,5 +1,5 @@
 #!/bin/bash
-
+#✅❗⏳⌛📁
 #Variables de Idiomas por defecto
 COD_SP="SP"
 COD_EN="EN"
@@ -10,7 +10,7 @@ NUM_FRANCES=3;
 #declare -A codigo_idiomas #Array donde se almacenará los códigos de idiomas disponibles por defecto
 #LINE_NUMBER=$(grep -n "#Zona_Inicio_Idiomas" "$BASH_SOURCE" | cut -d: -f1)
 #LINEA_INICIO_IDIOMAS=$((LINE_NUMBER +1))
-LINEA_INICIO_IDIOMAS=599 #Ver final del fichero para entender esta variable
+LINEA_INICIO_IDIOMAS=678 #Ver final del fichero para entender esta variable
 
 #Otras variables
 filtro_ficheros="*.sh"
@@ -117,6 +117,7 @@ function cargarNuevasReferencias {
 					#Obtenemos "prueba.sh" por ejemplo,despues obtenemos todo que que haya antes del "." porque ese será el nombre, por ejemplo "prueba"
 					nombre_fichero=$(basename ${i%.*}) 
 					ruta_fichero_original=$i
+					#Luego se puede coger el directorio con dirname
 					directorio=${ruta_fichero_original%/*} #Extraemos la ruta donde se esta creando cada fichero,cogiendo todo antes de la última "/" porque eso es el directorio
 					#Ahora generamos los ficheros
 		
@@ -269,6 +270,49 @@ function leerFicheroYExtraerComentarios {
   	done < "$fichero_origin"
 } #Fin leerFicheroYExtraerComentarios()
 
+#Comprueba si es un comentario valido
+#Devuelve 1 si lo es y 0 si no
+#Tercera vez que necesito el mismo trozo de código entonces toca refactorizar
+#Tiene que recibir la linea en cuestion, y por cada uno que recibe, devuelve si es válida o no
+function esComentarioValido {
+
+	linea=$1
+	#linea_sin_espacios=$(echo "$linea" | tr -d ' ')
+	#num_hashtags=$(echo "$linea" | tr -cd '#' | wc -c)
+	#if [[ "$linea" == "$bin_bash1" || "$linea" == "$bin_bash2"  || "$linea_sin_espacios" == "#" || $num_hashtags -gt 1 ]]
+	#then
+	#	return 0
+	#else
+	#	return 1
+	#fi
+	
+  	#Filtro1
+    	#Saltamos la linea de bin bash en sus diferentes formas
+    	if [[ "$linea" == "$bin_bash1" || "$linea" == "$bin_bash2" ]] #[[ ]] Seems to be stronger than [ ]
+    	then
+    		return 0
+    	fi
+    	#Filtro2
+   	#Algunas lineas son #     [y espacios], entonces quitamos los espacios a las lineas y si lo que queda al final es solo una #,sabemos que no es un comentario
+    	linea_sin_espacios=$(echo "$linea" | tr -d ' ')
+	if [[ "$linea_sin_espacios" == "#" ]]; then
+    		return 0
+	fi
+	#Filtro3
+    	#Contamos el número de almohadillas que hay en la linea
+    	num_hashtags=$(echo "$linea" | tr -cd '#' | wc -c)
+    	#Si es > 1, sabemos que probablemente se trate de una cabecera
+    	if [[ $num_hashtags -gt 1 ]]; then
+    		return 0
+    	fi
+    	#Filtro4
+    	#Comprobamos si la linea contien un #
+    	if [[ "$linea" == *#* ]] #No incluir las "" aqui para el *#*,si no,nos buscará que la linea sea exactamente "*#*"
+    	then
+    		return 1
+    	fi
+}
+
 function regenerarReferencias {
 	#Preguntamos al usuario de que idioma quiere regenerar las referencias
 	mostrarIdiomasDisponibles
@@ -283,6 +327,7 @@ function regenerarReferencias {
  		#Buscamos los scripts otra vez y actualizamos las referencias por si se ha cambiado
  		echo "Existe el codigo"
  		
+ 		
  		for i in $(find */ -name "$filtro_ficheros" -type f);
  		do
  			echo $i
@@ -292,10 +337,6 @@ function regenerarReferencias {
  		echo "No existe el codigo"
  	fi	
 } #Fin regenerarReferencias()
-
-function buscarFicherosDeUnIdioma {
-	echo "Buscando ficheros"
-}
 
 #Lo mismo que el leerFicheroYExtraerComentarios, pero esta funcion solo recibe 3 parametros y solo será llamado cuando se agregue un idioma nuevo
 function leerFicheroYExtraerComentariosNuevoIdioma {
@@ -346,6 +387,7 @@ function leerFicheroYExtraerComentariosNuevoIdioma {
   	done < "$fichero_origin"
 } #Fin leerFicheroYExtraerComentarios()
 
+
 #Cambiar el idioma en el script original 
 function cambiarIdiomaEnElScript {
 	#Volvemos a buscar los ficheros para encontrar cada script y dentro del ese mismo directorio, tenemos los ficheros de traducción
@@ -364,16 +406,59 @@ function cambiarIdiomaEnElScript {
  	then
  		#Ahora que existe el código, copiamos el las referencias del fichero al script
  		echo "Existe el codigo"
- 		
- 		for i in $(find */ -name "$filtro_ficheros" -type f);
+ 		IFS=$'\n'
+ 		#Obtenemos cada sh de los subdirectorios
+ 		for script in $(find */ -name "$filtro_ficheros" -type f);
  		do
- 			echo $i
+ 			nombre_fichero=$(basename ${script%.*})
+			ruta_fichero_original=$script
+			directorio=$(dirname "$ruta_fichero_original")
+			fichero_idioma="$directorio/${cod_idioma}_${nombre_fichero}.txt"
+			#fichero_idioma=$cod_idioma"_"$nombre_fichero.txt
+			echo $fichero_idioma
+			echo $ruta_fichero_original
+			#Con la opcion -r, nos aseguramos de que se lee todo tal cual aparece en el fichero y no se interprete de otra forma, por ejemplo el (\n o \t)
+			#Leemos el fichero original y el fichero txt de traduccion pero primero miramos si existe el de traduccion
+		 	if [[ -e "$fichero_idioma" ]]; then
+		 	#Array para guardar las lineas
+		 	lineas_referencias=()
+		 	contenido_depues_de_guion=""
+				while IFS= read -r linea_original; do
+					esComentarioValido "$linea_original"
+					valido=$?
+					if [[ $valido -eq 1 ]]; then
+				    		#solo leemos si la linea es valida, para no perder lineas de traduccion
+				    		IFS= read -r linea_traduccion <&3
+				    		linea_nueva="$linea_traduccion"
+				    		echo "Linea original: $linea_original"
+				   		echo "Linea traducida: $linea_traduccion"
+				   		echo "Linea nueva: $linea_nueva"
+				   		contenido_depues_de_guion=${linea_traduccion##*-}
+				   		if [[ -n $contenido_depues_de_guion ]]
+				   		then
+				   			echo "Despues : $contenido_depues_de_guion"
+				   			#Probamos un filtrado aqui por aqui por si hay lineas sin comentarios
+				   			linea_nueva=#${contenido_depues_de_guion}
+				   		fi
+					else
+				    		linea_nueva="$linea_original"
+				    		echo "Linea original: $linea_original"
+				    		echo "Linea nueva: $linea_nueva"
+					fi	
+					# Añadimos la nueva línea al array
+                    			lineas_referencias+=("$linea_nueva")
+			    	done < "$ruta_fichero_original" 3< "$fichero_idioma"
+			    	# Escribimos el contenido actualizado de nuevo en el archivo original
+                		printf "%s\n" "${lineas_referencias[@]}" > "$ruta_fichero_original"
+			else
+			    echo -e "${ROJO}No se encontraron los ficheros de traducción correspondientes, puede que no estén generados${RESET}"
+			    volverAlMenuOSalir
+			fi
  		done
  	else
+ 		echo -e "${ROJO}No existe ese código de idioma${RESET}"
  		volverAlMenuOSalir
- 		echo "No existe el codigo"
  	fi
-
 }
 
 #Recibe un codigo de idioma como parametro y comprueba si existe
@@ -508,7 +593,7 @@ function mostrarIdiomasDisponibles {
 	while IFS= read -r linea;
 	do
 		linea_filtrada=${linea#*#} #Obtenemos todo lo que venga despues de la # 
-		echo $linea_filtrada
+		echo -e "\n✅ $linea_filtrada"
 		((contador_idiomas++))
 		#codigo_idiomas+=("$linea_filtrada") #Añadimos cada código encontrado al array
 	done < <(sed -n "$LINEA_INICIO_IDIOMAS,\$p" "${BASH_SOURCE}") #Sustitucion de procesos
@@ -535,12 +620,6 @@ function volverAlMenuOSalir {
                 		;;
         	esac
 	done
-}
-
-#Another work around : Get the new code and search for the existence of files that starts with the suffix XY_
-#Just incase the external file method is not valid
-function comprobarSiExisteCodigoDeIdioma {
-	echo "Comprobando"
 }
 
 #Buscar los ficheros de log de cada directorio y mostrarselo al usuario
