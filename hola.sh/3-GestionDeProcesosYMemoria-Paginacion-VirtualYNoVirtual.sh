@@ -1,56 +1,56 @@
 #!/bin/bash
 ####################################################################################
 #                       
-#EN-10-
-#EN-20-
+#   AUTORES: Los alumnos de la asignatura Sistemas Operativos del Grado en Ingeniería Informática (2014-2024) - Universidad de Burgos 
+#	TUTOR: José Manuel Saiz Diez
 #  
 ####################################################################################
-#EN-30-
-#EN-40-
-#EN-50-
-#EN-60-
+# Script realizado para la simulación de un SO que utilice diferentes modelos de gestión de procesos y memoria con un total de 480 opciones diferentes.
+# El algoritmo de gestión de procesos se basará en FCFS, SJF, SRPT, Prioridad Mayor y Menor (Apropiativo y No Apropiativo) y Round-Robin.
+# La gestión de memoria será paginada y podrá ser Continua y No continua, y Reubicable y no resubicable.
+# Y los algoritmos de paginación para la gestión de memoria junto con alguna de sus variantes: FIFO/Reloj/SegOp/Óptimo/MFU/LFU/NFU/MRU/LRU/NRU. 
 
 ####################################################################################
-#EN-70-
+# VARIABLES DE EJECUCIÓN
 ####################################################################################
-#EN-80-
-#EN-90-
-#EN-100-
-#EN-110-
-#EN-120-
-#EN-130-
-#EN-140-
-#EN-150-
-#EN-160-
-#EN-170-
-#EN-180-
-#EN-190-
-#EN-200-
-#EN-210-
-#EN-220-
-#EN-230-
-#EN-240-
-#EN-250-
-#EN-260-
-#EN-270-
-#EN-280-
-#EN-290-
-#EN-300-
-#EN-310-
-#EN-320-
-#EN-330-
+# seleccionMenuInicio - Opciones iniciales de ayuda y ejecución
+# seleccionMenuAyuda - Opciones de ayuda
+# seleccionMenuDOCPDF - Opciones de elección de ficheros PDF de ayuda de los algoritmos
+# seleccionMenuDOCVideo - Opciones de elección de ficheros de vídeo de ayuda de los algoritmos
+# seleccionMenuEnsayos - Opciones de elección de tipos diferentes de ensayos
+# seleccionNumEnsayos - Opciones de elección del número de Ensayos a realizar de forma continua
+# seleccionMenuAlgoritmoGestionProcesos - Opciones de elección de algoritmo de gestión de Procesos (FCFS/SJF/SRPT/Prioridades/Round-Robin)
+# seleccionTipoPrioridad - Opciones del tipo de Prioridad (Mayor/Menor)
+# seleccionMenuApropiatividad - Opciones del tipo de Apropiatividad (Apropiativo/No Apropiativo)
+# seleccionMenuReubicabilidad - Opciones del tipo de memoria (Reubicable/No Reubicable)
+# seleccionMenuContinuidad - Opciones del tipo de memoria (Continua/No Continua)
+# seleccionAlgoritmoPaginacion - Opciones para la selección del algoritmo de gestión fallos de paginación
+# seleccionAlgoritmoPaginacion_frecuencia_valor - Se define el valor máximo del contador de frecuencia, a partir de la cual, no será considerada.
+# seleccionAlgoritmoPaginacion_clases_frecuencia_valor - Se define el valor máximo de la frecuencia en un intervalo de tiempo, a partir de la cual, no será considerada.
+# seleccionAlgoritmoPaginacion_uso_rec_valor - Se define el valor máximo de la antigüedad en un intervalo de tiempo, a partir de la cual, no será considerada.
+# seleccionAlgoritmoPaginacion_clases_uso_rec_valor - Se define el valor máximo del contador de la antigüedad a partir de la cual no será considerada.
+# seleccionAlgoritmoPaginacion_clases_valor - Se define el número de unidades de tiempo de ejecución de un proceso, a partir del cual, serán consideradas la frecuencia/tiempo de uso de una página y su clase.
+# seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado - Se define el valor máximo de unidades de tiempo de antigüedad de ejecución de un proceso, a partir de la cual, una página será considerada como NO referenciada.
+# seleccionMenuEleccionEntradaDatos - Opciones para la elección de fuente en la introducción de datos (Datos manual/Fichero de datos de última ejecución/Fichero de datos por defecto/Otro fichero de datos...
+# .../Rangos manual/Fichero de rangos de última ejecución/Fichero de rangos por defecto/Otro fichero de rangos...
+# .../Rangos aleatorios manual/Fichero de rangos aleatorios de última ejecución/Fichero de rangos aleatorios por defecto/Otro fichero de rangos aleatorios)
+# .../Rangos aleatorios amplios manual/Fichero de rangos aleatorios amplios de última ejecución/Fichero de rangos aleatorios amplios por defecto/Otro fichero de rangos aleatorios amplios)
+# seleccionMenuModoTiempoEjecucionAlgormitmo - Opciones para la elección del tipo de ejecución (Por eventos/Automatico/Completo)
+# seleccionMenuPreguntaDondeGuardarDatosManuales - Opciones para la selección del fichero de datos de salida (datosDefault, Otros)
+# seleccionMenuPreguntaDondeGuardarRangosManuales - Opciones para la selección del fichero de rangos de salida (rangosDefault, Otros)
+# seleccionMenuPreguntaDondeGuardarRangosAleTManuales - Opciones para la selección del fichero de rangos amplios (ficheroRangosAleTotalDefault, Otros)
 ####################################################################################
-#EN-340-
+# VARIABLES DE REPRESENTACIÓN DEL MAPA DE MEMORIA
 ####################################################################################
-#EN-350-
-#EN-360-
-#EN-370-
-#EN-380-
-#EN-390-
-#EN-400-
-#EN-410-
-#EN-420-
-#EN-430-
+reloj=0 #Variable que guarda el tiempo de ejecución actual
+terminal=0 # Ancho del terminal en cada Enter de ejecución de volcados
+longCampoTablaEstrecho=3 # ancho de columnas estrechas en tabla resumen de procesos en los volcados 
+longCampoTablaAncho=4 # ancho de columnas anchas en tabla resumen de procesos en los volcados 
+longCampoTablaMasAncho=5 # ancho de columnas más anchas en tabla resumen de procesos en los volcados 
+longCampoDatosReloj=5 # ancho de los datos en el reloj 
+longCampoTablaMuyAncho=17 # ancho de columnas muy anchas en tabla resumen de procesos en los volcados 
+longCampoTablaRangosCortos=3 # ancho de columnas estrechas en tabla de rangos 
+longCampoTablaRangosLargos=9 # ancho de columnas anchas en tabla de rangos 
 varhuecos="                                                                                     "
 varguiones="------------------------------------------------------------------------------------"
 varasteriscos="*********************************************************************************"
@@ -59,16 +59,16 @@ esc=$(echo -en "\033")
 RESET=$esc"[0m"
 
 ####################################################################################
-#EN-440-
+# VARIABLES PARA DESTACAR TEXTO CON COLOR
 ####################################################################################
-#EN-450-
-#EN-460-
-#EN-470-
-#EN-480-
-#EN-490-
-#EN-500-
-#EN-510-
-#EN-520-
+NORMAL=$esc"[0;m"		#NORMAL=$esc"[1;m"
+ROJO=$esc"[0;31m"		#ROJO=$esc"[1;31m"
+VERDE=$esc"[0;32m"		#VERDE=$esc"[1;32m"
+AMARILLO=$esc"[0;33m"	#AMARILLO=$esc"[1;33m"
+AZUL=$esc"[0;34m"		#AZUL=$esc"[1;34m"
+MORADO=$esc"[0;35m"		#MORADO=$esc"[1;35m"
+CYAN=$esc"[0;36m"		#CYAN=$esc"[1;36m"
+#Variables de colores 
 amarillo="\033[1;33m";
 verde='\e[1;32m';
 morado='\e[1;35m';
@@ -78,7 +78,7 @@ gris='\e[1;30m';
 azul='\e[1;34m';
 blanco='\e[1bold;37m';
 NC='\e[0m'; #default	#reset
-#EN-530-
+#Vector de colores
 coloress=();
 #coloress[0]='\e[0;36m' #cian	 		#
 coloress[0]='\e[1;36m' 	#cian res		#
@@ -101,7 +101,7 @@ coloress[15]='\e[0;32m' #verde			#FGRN="\033[0;32m" # foreground green
 coloress[16]='\e[1;31m' #rojo res		#
 coloress[97]='\e[1;m' 	#default		#
 coloress[98]='\e[0;97m' #blanco			#
-#EN-540-
+coloress[99]='\e[8m' 	#INVISIBLE
 
 colores[0]='\e[1;36m' 	#cian res		#
 colores[1]='\e[1;32m' 	#verde res    	#
@@ -117,7 +117,7 @@ colorfondo[4]='\e[1;97;1;41m' 	#colorfondos[4]='\e[1;31;1;41m' 	#rojo_res		#
 colorfondo[5]='\e[1;97;44m' 	#colorfondos[5]='\e[0;34;44m' 		#azul			#BBLE="\033[0;44m" # background blue
 
 
-#EN-550-
+#Vector de colores con el fondo pintado. 
 colorfondo=(); 
 colorfondos[0]='\e[1;97;46m' 	#colorfondos[0]='\e[0;36;46m' 		#cian			#BCYN="\033[0;46m" # background cyan
 colorfondos[1]='\e[1;97;1;42m' 	#colorfondos[1]='\e[1;32;1;42m' 	#verde_res		#
@@ -132,177 +132,177 @@ colorfondos[9]='\e[1;97;1;44m' 	#colorfondos[9]='\e[1;34;1;44m' 	#azul_res		#
 colorfondos[10]='\e[1;97;45m' 	#colorfondos[10]='\e[0;35;45m' 		#morado			#BMAG="\033[0;45m" # background magenta
 colorfondos[15]='\e[1;97;42m' 	#colorfondos[15]='\e[0;32;42m' 		#verde			#BGRN="\033[0;42m" # background green
 colorfondos[98]='\e[97;47m' 	#colorfondos[98]='\e[97;47m' 		#blanco			#BWHT="\033[0;47m" # background white
-#EN-560-
-#EN-570-
-#EN-580-
-#EN-590-
-#EN-600-
-#EN-610-
-#EN-620-
+# ANSI color codes
+HC="\033[1m"    # hicolor
+UL="\033[4m"    # underline
+INV="\033[7m"   # inverse background and foreground
+FBLK="\033[0;30m" # foreground black
+FWHT="\033[0;37m" # foreground white
+BBLK="\033[0;40m" # background black
 
 #################################################################################
-#EN-630-
+#     Tablas de trabajo (CAMBIAR ARRAYS Y VARIABLES)
 #################################################################################
-#EN-640-
-#EN-650-
-#EN-660-
-#EN-670-
-#EN-680-
-#EN-690-
-#EN-700-
-#EN-710-
-#EN-720-
-#EN-730-
-#EN-740-
-#EN-750-
-#EN-760-
-#EN-770-
-#EN-780-
+# reloj - Instante de tiempo que se está tratando en el programa (reloj).
+# nprocesos - Número total de procesos.
+# encola() Contendrá qué procesos pueden entrar en memoria. Los valores son:
+#	0 : El proceso no ha entrado en la cola (no ha "llegado" - Estado "Fuera del sistema") 
+#	1 : El proceso está en la cola (Estado "En espera")
+# enmemoria() - Procesos que se encuentran en memoria. Los valores son:
+#	0 : El proceso no está en memoria
+#	1 : El proceso está en memoria esperando a ejecutarse (Estado "En memoria")
+# Estados de los procesos:
+#	${estad[$i]}=0 - ${estado[$i]}="Fuera del Sistema"
+#	${estad[$i]}=1 - ${estado[$i]}="En espera"
+#	${estad[$i]}=2 - ${estado[$i]}="En memoria" 
+#	${estad[$i]}=3 - ${estado[$i]}="En ejecución" 
+#	${estad[$i]}=4 - ${estado[$i]}="En pausa" 
+#	${estad[$i]}=5 - ${estado[$i]}="Finalizado"
 
-#EN-790-
-#EN-800-
-#EN-810-
-#EN-820-
-#EN-830-
-#EN-840-
-#EN-850-
-#EN-860-
-#EN-870-
-#EN-880-
-#EN-890-
-#EN-900-
-#EN-910-
-#EN-920-
-#EN-930-
-#EN-940-
-#EN-950-
-#EN-960-
-#EN-970-
-#EN-980-
-#EN-990-
-#EN-1000-
-#EN-1010-
-#EN-1020-
-#EN-1030-
-#EN-1040-
-#EN-1050-
-#EN-1060-
-#EN-1070-
-#EN-1080-
-#EN-1090-
-#EN-1100-
-#EN-1110-
-#EN-1120-
-#EN-1130-
-#EN-1140-
-#EN-1150-
-#EN-1160-
-#EN-1170-
-#EN-1180-
-#EN-1190-
-#EN-1200-
-#EN-1210-
-#EN-1220-
-#EN-1230-
-#EN-1240-
-#EN-1250-
-#EN-1260-
-#EN-1270-
-#EN-1280-
-#EN-1290-
-#EN-1300-
-#EN-1310-
-#EN-1320-
-#EN-1330-
-#EN-1340-
-#EN-1350-
-#EN-1360-
+# Declaración de los arrays:
+declare -a dibujasNC #Índices: (proceso). Contiene el número de unidades de ejecución y será usado para controlar que serán representadas en las bandas.
+declare -a nombre #Variacble intermedia usada para la creación automática de los nombres de los procesos.
+declare -a proceso #Índices: (proceso). Nombre de los procesos (P01,...).
+declare -a llegada #Índices: (proceso). Tiempo de llegada de los procesos
+declare -a ejecucion #Índices: (proceso). Tiempo de ejecución de los procesos
+declare -a memoria #Índices: (proceso). Unidades de memoria asociados a los procesos
+declare -a numeroproceso #Variable recogida de datos para ordenar el temporal por tiempo de llegada
+declare -a temp_exec #Índices: (proceso). Tiempo ya ejecutado de los procesos
+declare -a temp_wait #Índices: (proceso). Tiempo ya esperado por los procesos
+declare -a temp_ret #Índices: (proceso). Tiempo de retorno de los procesos
+declare -a temp_rej #Índices: (proceso). Tiempo restante de ejecución de los procesos
+declare -a pos_inicio #Índices: (proceso). Posición inicial de cada uno de los huecos de memoria asociados a cada proceso.
+declare -a pos_final  #Índices: (proceso). Posición final de cada uno de los huecos de memoria asociados a cada proceso.
+declare -a fueraDelSistema #Índices: (proceso). Estado inicial de los procesos cuando aún no han llegado al sistema.
+declare -a encola #Índices: (proceso). Estado de los procesos cuando han llegado al sistema, pero aún no han entrado a la memoria.    
+declare -a enmemoria #Índices: (proceso). Estado de los procesos cuando han entrado en memoria, pero aún no han empezado a ejecutarse.
+declare -a enpausa #Índices: (proceso). Estado de los procesos cuando un proceso ya ha empezado a ejecutarse, pero aunque no han terminado de ejecutarse, otro proceso ha comenzado a ejecutarse.
+declare -a enejecucion #Índices: (proceso). Estado de los procesos cuando un proceso ya ha empezado a ejecutarse
+declare -a bloqueados #Índices: (proceso). Estado de los procesos cuando un proceso está "En Espera" porque ha llegado al sistema pero no puede entrar a memoria.
+declare -a terminados #Índices: (proceso). Estado de los procesos cuando ya han terminado de ejecutarse
+declare -a terminadosAux #Índices: (proceso). Determina qué procesos han terminado cuyo resumen de fallos de página ha sido imprimido.
+declare -a estad #Índices: (proceso). Número asociado a cada estado de los procesos (de 1 a 5).
+declare -A estado #Índices: (proceso). Texto asociado a cada estado de los procesos (de "Fuera del Sistema" a "Finalizado").
+declare -a unidMemOcupadas #Índices: (ordinal del número de marco). Secuencia de los procesos que ocupan cada marco de la memoria completa
+declare -a unidMemOcupadasAux #Índices: (ordinal del número de marco)Matriz auxiliar de la memoria no continua (para reubicar)
+declare -a escrito #Índices: (proceso). Bandera para no escibir dos veces un proceso en memoria. Se marca los procesos que se encuentran en memoria y a los que se les ha encontrado espacio sufiente en la banda de memoria. 
+declare -a bloques #Almacena el número de bloques en los que se fragmenta un proceso
+declare -a inicialNC #Posición inicial de cada bloque en la memoria NO CONTINUA
+declare -a finalNC #Posición final de cada bloque en la memoria NO CONTINUA
+declare -a inicialNCaux #Posición inicial en la memoria NO CONTINUA para impresiones (cuadrado en tabla)
+declare -a finalNCaux #Posición final en la memoria NO CONTINUA para impresiones (cuadrado en tabla)
+declare -a inicialNCmodelo #Para borrar posiciones innecesarias tras la impresión
+declare -a finalNCmodelo #Para borrar posiciones innecesarias tras la impresión
+declare -a nomtiempo #Para saber si un proceso en la barra de tiempo está nombrado, si se ha introducido en las variables de las diferentes líneas.
+hayproanterior=0 #Bandera para saber si hay un proceso anterior que finalizar de dibujar
+proanterior="_" #Contiene el proceso que se esté tratando en la asignación de dígitos en la representación de la banda de tiempo
+declare -a coloresPartesMemoria #Guarda de uno en uno los colores para cada caracter de la barra de memoria (necesario impresión ventana)
+declare -a coloresPartesTiempo #Guarda de uno en uno los colores para cada caracter de la línea del tiempo (necesario impresión ventana)
+declare -a guardadoMemoria #Array que va a guardar el orden de la reubicacion
+declare -a tamanoGuardadoMemoria #Array que guarda en orden de reubicación la memoria que ocupan
+reubicabilidadNo0Si1=0 #Si vale 0 no es reubicable. Si vale 1 es reubicable.
+continuidadNo0Si1=0 #Si vale 0 es no continua. Si vale 1 es continua.
+declare -a procPorUnidadTiempoBT #En cada casilla (instante actual - reloj) se guarda el número de orden del proceso que se ejecuta en cada instante.
+anteriorProcesoEjecucion=-1 #Usada en gestionProcesosSRPT para determinar la anteriorproceso en ejecución que se compara con el actual tiempo restante de ejecución más corto y que va a ser definida como el actual proceso en ejecución.
+declare -A directions #Direcciones definidas de todos los Proceso (Índices:Proceso, Direcciones).
+declare -A paginasDefinidasTotal #Páginas definidas de todos los Proceso (Índices:Proceso, Páginas).
+declare -A numeroPaginasUsadasProceso #Número de Páginas ya usadas de cada Proceso (Índices:Proceso).
+declare -A paginasUsadasProceso #Secuencia de Páginas ya usadas de cada Proceso (Índices:Proceso).
+declare -A paginasUsadasTotal #Páginas ya usadas del Proceso en ejecución. Sale de forma secuencial de paginasDefinidasTotal. (Índices:Proceso)
+declare -A paginasPendientesUsarTotal #Páginas pendientes de ejecutar del Proceso en ejecución. Sale de forma secuencial de paginasDefinidasTotal. (Índices:Proceso) 
+declare -A paginaAUsar #Siguiente Página a ejecutar del Proceso en ejecución. Sale de forma secuencial de paginasDefinidasTotal con el delimitador de numeroPaginasUsadasProceso. (Índices:Proceso)
+declare -A paginasEnMemoriaProceso #Páginas residentes en memoria del Proceso en ejecución. Sale de forma calculada de paginasDefinidasTotal y su orden es el establecido tras los fallos de paginación. (Índices:Página)
+declare -A paginasEnMemoriaTotal #Páginas residentes en memoria de cada Proceso (Índices:Proceso,número ordinal de marco asociado). Sale de forma calculada de paginasDefinidasTotal y su orden es el establecido tras los fallos de paginación.
+declare -A numMarcosDibujadosPorProceso #Contiene el número de Marcos de Memoria con Páginas ya dibujadas de cada Proceso.
+declare -A contadorAlgPagFallosTotalesProcesos #Fallos de página totales de cada proceso (Índices:Proceso).
+declare -A ordinalMarcosProcesoDibujados #Comenzando siempre desde 0, es el ordinal del número de marcos en memoria asociados a cada proceso (Índices:Proceso)
+declare -A maxpagsNoVirtual #Define el número de páginas diferentes definidas por cada proceso, y se usa en No Virtual.
 
-#EN-1370-
-#EN-1380-
-#EN-1390-
-#EN-1400-
-#EN-1410-
-#EN-1420-
-#EN-1430-
-#EN-1440-
-#EN-1450-
-#EN-1460-
-#EN-1470-
-#EN-1480-
-#EN-1490-
-#EN-1500-
-#EN-1510-
-#EN-1520-
-#EN-1530-
-#EN-1540-
-#EN-1550-
-#EN-1560-
-#EN-1570-
-#EN-1580-
-#EN-1590-
-#EN-1600-
-#EN-1610-
-#EN-1620-
-#EN-1630-
-#EN-1640-
-#EN-1650-
+declare -A numeroMarcosUsados #Resumen - Índices: (proceso). Dato: Número de Marcos usados en cada Proceso.
+declare -A ResuTiempoProceso #Resumen - Índices: (tiempo). Dato: Proceso que se ejecuta en cada instante de tiempo real (reloj).
+declare -A ResuTiempoProcesoUnidadEjecucion #Resumen - Índices: (proceso, tiempo de ejecución). Dato: Tiempo de reloj en el que se ejecuta un Proceso.
+declare -A ResuPaginaAcumulado #Resumen - Índices: (proceso, marco, reloj). Dato: Página de un proceso que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso.
+declare -A ResuPaginaOrdinalAcumulado #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso.
+declare -A ResuFrecuenciaAcumulado #Resumen - Índices: (proceso, marco, reloj). Dato: Frecuencia de la Página de un proceso que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso.
+declare -A ResuUsoRecienteAcumulado #Resumen - Índices: (proceso, marco, reloj). Dato: Tiempo que hace que se usó la Página de un proceso que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso.
+declare -A ResuPunteroMarcoSiguienteFalloPagAcumulado #Resumen - Índices: (proceso, reloj). Dato: Marco (Puntero) sobre el que se produce el siguiente fallo para todos los Procesos en cada unidad de Tiempo.
+declare -A ResuPunteroMarcoUsado #Resumen - Índices: (proceso, tiempo). Dato: Marco usado (Puntero) para cada Proceso en cada unidad de Tiempo.
+declare -A filaAlgPagFrecUsoRecColor #Resumen - Índices: (marco, tiempo). Dato: Texto a iprimir en Color con el seguimiento del uso de los Marcos a lo largo del Tiempo (página-frecuencia).
+declare -A filaAlgPagFrecUsoRecBN #Resumen - Índices: (marco, tiempo). Dato: Texto a iprimir en Blanco-Negro con el seguimiento del uso de los Marcos a lo largo del Tiempo (página-frecuencia).
+declare -A relacionMarcosUsados #Resumen - Índices: (proceso, tiempo, número ordinal de marco). Dato: Relación de Marcos asignados al Proceso en ejecución en cada unidad de tiempo. El array relacionMarcosUsados[] no necesita acumulado porque ya contiene todos los datos necesarios y se mantienen hasta que se modifican en las reubicaciones, caso en el que también recoge el cambio.
+declare -A indiceResuPaginaAcumulado #Resumen - Índices: (proceso). Dato: Último instante (reloj) en que cada proceso usó una página para realizar los acumulados de páginas y frecuencias de todos los procesos/marcos.
+declare -A ResuFallosPaginaProceso #Resumen - Índices: (proceso, tiempo). Dato: Páginas que produjeron Fallos de Página del Proceso en ejecución.
+declare -A ResuFallosMarcoProceso #Resumen - Índices: (proceso, tiempo). Dato: Marcos donde se produjeron Fallos de Página del Proceso en ejecución.
+declare -A contadorAlgPagFallosProcesoAcumulado #Resumen - Índices: (proceso). Dato: Número de Fallos de Página de cada Proceso.
+declare -A contadorAlgPagExpulsionesForzadasProcesoAcumulado #Resumen - Índices: (proceso). Dato: Número de Expulsiones Forzadas de cada Proceso.
+declare -A min_AlgPagFrecRec_FrecRec #Resumen - Índices: (proceso). Dato: Número memor de las Frecuencias de Uso de las Páginas en Memoria de cada Proceso.
+declare -A max_AlgPagFrecRec_FrecRec #Resumen - Índices: (proceso). Dato: Número mayor de las Frecuencias de Uso de las Páginas en Memoria de cada Proceso.
+declare -A min_AlgPagFrecRec_Position #Resumen - Índices: (proceso). Dato: Número de las posiciones con la memor de las Frecuencias de Uso de las Páginas en Memoria de cada Proceso.
+declare -A max_AlgPagFrecRec_Position #Resumen - Índices: (proceso). Dato: Número de las posiciones con la mayor de las Frecuencias de Uso de las Páginas en Memoria de cada Proceso.
+declare -A min_AlgPagRec_rec #Resumen - Índices: (proceso). Dato: Número memor de las Antigüedades de Uso de las Páginas en Memoria de cada Proceso.
+declare -A max_AlgPagRec_rec #Resumen - Índices: (proceso). Dato: Número mayor de las Antigüedades de Uso de las Páginas en Memoria de cada Proceso.
+declare -A min_AlgPagRec_position #Resumen - Índices: (proceso). Dato: Número de las posiciones con la memor de las Antigüedades de Uso de las Páginas en Memoria de cada Proceso.
+declare -A max_AlgPagRec_position #Resumen - Índices: (proceso). Dato: Número de las posiciones con la mayor de las Antigüedades de Uso de las Páginas en Memoria de cada Proceso.
+declare -A directions_AlgPagFrecUsoRec_pagina_modificada #Resumen - Índices: (proceso, ordinal de página, reloj (0)). Dato: Se usará para determinar de forma aleatoria si una página es o no modificada al ser ejecutada en los algoritmos NFU y NRU.
+declare -A directions_AlgPagFrecUsoRec_marco_pagina_referenciada #Resumen - Índices: (proceso, marco). Dato: Se usará para determinar si una página ha sido o no referenciada en un tiempo anterior inferior a seleccionAlgoritmoPaginacion_frecuencia_valor unidades de tiempo en los algoritmos NFU y NRU. Se inicia a 0 por no haber sido aún referenciada (vista o modificada) y se cambia sólo cuando ya estuviera en memoria.
+declare -A ResuTiempoProcesoUnidadEjecucionReferenciada #Resumen - Índices: (proceso, tiempo de ejecución). Dato: Página referenciada (1) o no referenciada (0).
+declare -A ResuTiempoProcesoUnidadEjecucionModificada #Resumen - Índices: (proceso, ordinal del tiempo de ejecución). Dato: Página modificada (1) o no modificada (0).
 declare -A ResuTiempoUltimoCambioClase #NO SE USA AUNQUE SE LE ASIGNAN ALGUNOS DATOS#Resumen - Índices: (proceso). Dato: Ordinal del tiempo de ejecución en el que se hizo el último cambio de clase máxima.
-#EN-1660-
-#EN-1670-
-#EN-1680-
-#EN-1690-
-#EN-1700-
-#EN-1710-
-#EN-1720-
-#EN-1730-
-#EN-1740-
+declare -A ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor #Resumen - Índices: (proceso, marco). Dato: Histórico con el valor de la "frecuencia/tiempo desde su último uso" para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación
+declare -A ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor #Resumen - Índices: (proceso, marco). Dato: Histórico con el tiempo desde la asigación de las clases 2 o 3 para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación
+declare -A directions_AlgPagFrecUsoRec_marco_pagina_clase #Resumen - Índices: (proceso, marco, ordinal del tiempo de ejecución (página)). Dato: Se usará para determinar si una página ha sido o no referenciada y modificada en un tiempo anterior inferior a seleccionAlgoritmoPaginacion_frecuencia_valor unidades de tiempo en los algoritmos NFU y NRU. Se inicia a 0 por no haber sido aún referenciada (vista o modificada) y se cambia sólo cuando ya estuviera en memoria.
+declare -A primerTiempoEntradaPagina #Resumen - Índices: (proceso, marco). Dato: Histórico con el tiempo con inicialización a 0 cuando se inicializa $ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor por cambio de la clase, o por inicialización de la frecuencia por llegar a su máximo, para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación	
+declare -A restaFrecUsoRec #Resumen - Índices: (proceso, marco, reloj). Dato: Histórico con la resta de las frecuencias de ambos momentos para ver si supera el valor límite máximo.
+declare -A ResuClaseAcumulado #Resumen - Índices: (proceso, marco, tiempo). Dato: Clase de la Página de un proceso que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso.
+declare -A coeficienteSegOp #Resumen - Índices: (proceso, marco, ordinal del tiempo de ejecución (página)). Dato: Histórico con el coeficiente M de los algoritmos de Segunda Oportunidad con valor 0 cuando se inicializa o cuando se permite su mantenimiento, aunque le toque para el fallo de paginación, y 1 como premio cuando se reutiliza.	
+declare -A ResuTiempoOptimoAcumulado #Resumen - Índices: (proceso, marco, ordinal del tiempo de ejecución (página)). Dato: Histórico con el tiempo que hay hasta la reutilización de la página contenida en el marco.	
+declare -A colaTiempoRR #Índice: (proceso). Dato: Contiene el orden de ejecución de Round-Robin (RR). Será "-" mientras no esté en cola, o cuando haya terminado, y si aún no ha terminado contendrá el número ordinal del siguiente quantum. El proceso a ejecutar será, por tanto, el que tenga el número ordinal más bajo. Y el número de quantums realizados (cambios de contexto, será el número ordinal más alto.
 
-#EN-1750-
-#EN-1760-
-#EN-1770-
-#EN-1780-
-#EN-1790-
-#EN-1800-
-#EN-1810-
-#EN-1820-
-#EN-1830-
-#EN-1840-
-#EN-1850-
-#EN-1860-
-#EN-1870-
-#EN-1880-
-#EN-1890-
-
-####################################################################################
-#EN-1900-
-####################################################################################
-#EN-1910-
-#EN-1920-
-#EN-1930-
-#EN-1940-
-#EN-1950-
-#EN-1960-
-#EN-1970-
-
-#EN-1980-
-#EN-1990-
-
-#EN-2000-
-#EN-2010-
-
-#EN-2020-
-#EN-2030-
-
-#EN-2040-
-#EN-2050-
-#EN-2060-
+declare -A filaAlgPagFrecUsoRecTituloColor #Almacena el Título en color para la impresión de volcados
+declare -A filaAlgPagFrecUsoRecTituloBN #Almacena el Título en blanco y negro para la impresión de volcados
+declare -A filaAlgPagFrecUsoRecNotas1Color #Almacena la interpretación de los datos en color para la impresión de volcados
+declare -A filaAlgPagFrecUsoRecNotas1BN #Almacena la interpretación del formato en blanco y negro para la impresión de volcados
+declare -A filaAlgPagFrecUsoRecNotas2Color #Almacena la interpretación del formato en color para la impresión de volcados
+declare -A filaAlgPagFrecUsoRecNotas2BN #Almacena la interpretación de los datos en blanco y negro para la impresión de volcados
+declare -A filatiempoColor #Variables para la impresión de volcados
+declare -A filapagColor #Texto relativo a la página en color para la impresión de volcados
+declare -A filapagBN #Texto relativo a la página en blanco y negro para la impresión de volcados
+declare -A filatiempoColor #Texto relativo al tiempo en color para la impresión de volcados
+declare -A filatiempoBN #Texto relativo al tiempo en blanco y negro para la impresión de volcados
+declare -A filapagColor #Texto relativo a la página en color para la impresión de volcados
+declare -A filapagBN #Texto relativo a la página en blanco y negro para la impresión de volcados
+declare -A filaFallosColor #Texto relativo a los fallos de página en color para la impresión de volcados
+declare -A filaFallosBN #Texto relativo a los fallos de página en blanco y negro para la impresión de volcados
 
 ####################################################################################
+# Ficheros de salida. 
 ####################################################################################
-#EN-2070-
+dirFLast="./FLast" #Directorio que contiene los ficheros de última ejecución (datos (DatosLast.txt), rangos (RangosLast.txt) y rangos amplios (RangosAleTotalLast)).
+dirFDatos="./FDatos" #Directorio con los ficheros de datos generados por defecto (DatosDefault.txt) o por decisión del susuario.
+dirFRangos="./FRangos" #Directorio con los ficheros de datos generados por defecto (RangosDefault.txt) o con el nombre por decisión del susuario.
+dirFRangosAleT="./FRangosAleT" #Directorio con los ficheros de datos generados por defecto (RangosAleTotalDefault.txt) o con el nombre por decisión del susuario.
+dirInformes="./Informes" #Directorio con los ficheros que contendrán todos los volcados de la ejecución del script en color (informeCOLOR.txt) y en blanco y negro (informeBN.txt).
+informeSinColorTotal="./Informes/informeBN.txt" #Informe en blanco/negro de todo lo visto en pantalla durante la ejecución del script.
+informeConColorTotal="./Informes/informeCOLOR.txt" #Informe a color de todo lo visto en pantalla durante la ejecución del script.
+
+ficheroDatosAnteriorEjecucion="./FLast/DatosLast.txt" #Datos de particiones y procesos de la ejecución anterior.
+ficheroDatosDefault="./FDatos/DatosDefault.txt" #Datos de particiones y procesos de la copia estándar (por defecto).
+
+ficheroRangosAnteriorEjecucion="./FLast/RangosLast.txt" #Rangos de particiones y procesos de la ejecución anterior.
+ficheroRangosDefault="./FRangos/RangosDefault.txt" #Rangos de particiones y procesos de la copia estándar (por defecto).
+
+ficheroRangosAleTotalAnteriorEjecucion="./FLast/RangosAleTotalLast.txt" #Rangos amplios de particiones y procesos de la ejecución anterior para la extracción de subrangos.
+ficheroRangosAleTotalDefault="./FRangosAleT/RangosAleTotalDefault.txt" #Rangos amplios de particiones y procesos de la copia estándar (por defecto) para la extracción de subrangos.
+
+nomFicheroDatos="./FDatos/DatosDefault.txt" #Se inicializa la variable del fichero de datos
+nomFicheroRangos="./FRangos/RangosDefault.txt" #Se inicializa la variable del fichero de rangos
+nomFicheroRangosAleT="./FRangosAleT/RangosAleTotalDefault.txt" #Se inicializa la variable del fichero de rangos amplios  
+
 ####################################################################################
-#EN-2080-
+####################################################################################
+#             FUNCIONES
+####################################################################################
+# Sinopsis: Al inicio del programa muestra la cabecera por pantalla y la envía a los informes de B/N y COLOR. 
 ####################################################################################
 function presentacionPantallaInforme {
 	clear
@@ -375,7 +375,7 @@ function presentacionPantallaInforme {
 }
 
 ####################################################################################
-#EN-2090-
+# Sinopsis: Cabecera de inicio 
 ####################################################################################
 function cabecerainicio {
 	echo -e "\n$CYAN ############################################################################$NC\n"\
@@ -390,13 +390,13 @@ function cabecerainicio {
 	"#   GESTIÓN DE MEMORIA: MEMORIA PAGINADA                                     #\n"\
 	"#                                                                            #\n"\
 	"##############################################################################\n" >> $informeSinColorTotal
-#EN-2100-
+} #Fin de cabecerainicio()
 
 ####################################################################################
-#EN-2110-
+# Sinopsis: Menú inicial con ayuda y ejecución
 ####################################################################################
 function menuInicio {
-#EN-2120-
+#	clear
 	cabecerainicio
 	echo -ne "\n MENÚ INICIO\n"\
 	"\n  1. Ejecutar el algoritmo - Memoria NO Virtual - Paginación Simple\n"\
@@ -414,21 +414,21 @@ function menuInicio {
 	done
 	case "$seleccionMenuInicio" in
 		'1')
-#EN-2130-
-#EN-2140-
-#EN-2150-
+			menuAlgoritmoGestionProcesos #Menú de elección de algoritmo de gestión de procesos. 
+			menuContinuidad #Menú de elección de continuidad.
+			menuReubicabilidad #Menú de elección de reubicabilidad.
 			seleccionAlgoritmoPaginacion=0
-#EN-2160-
+			menuEleccionEntradaDatos #Menú de elección de entrada de datos.
 			;;
 		'2')
-#EN-2170-
-#EN-2180-
-#EN-2190-
-#EN-2200-
-#EN-2210-
+			menuAlgoritmoGestionProcesos #Menú de elección de algoritmo de gestión de procesos. 
+			menuContinuidad #Menú de elección de continuidad.
+			menuReubicabilidad #Menú de elección de reubicabilidad.
+			menuAlgoritmoPaginacion #Menú de elección del algoritmo de paginación.
+			menuEleccionEntradaDatos #Menú de elección de entrada de datos.
 			;;
 		'3')
-#EN-2220-
+			menuAyuda #Permite ver los ficheros de ayuda en formato PDF y de vídeo
 			;;
 		'4')
 			echo $0
@@ -436,26 +436,26 @@ function menuInicio {
 			echo " El informe resultante es ./zsdoc/$0.adc junto con el subdirectorio ./zsdoc/data." >> $informeSinColorTotal
 			echo " Si el formato no es el adecuado o para estandarizar ese formato, se puede imprimir o transformar el documento a fichero pdf." | tee -a $informeConColorTotal
 			echo " Si el formato no es el adecuado o para estandarizar ese formato, se puede imprimir o transformar el documento a fichero pdf." >> $informeSinColorTotal
-#EN-2230-
+			/home/$USER/opt/local/bin/zsd --verbose $0 #...O el directorio que se corresponda con la localización de zshelldoc, dependiendo de dónde se haya instalado
 			exit 0
 			;;
 		'5')
 			echo -e $ROJO"\n SE HA SALIDO DEL PROGRAMA"$NORMAL
 			exit 0 ;;
 		'33')
-#EN-2240-
+			menuEnsayos #Menú de elección de opciones de ensayos de los algoritmos de gestión de procesos y paginación y tomas de datos. 
 			;;
-#EN-2250-
+		*) #No es necesario. Existe por si se modifica y no se revisa el until anterior.
 			echo -e " Error en la elección de una opción válida" | tee -a $informeConColorTotal
 			echo -e " Error en la elección de una opción válida" >> $informeSinColorTotal ;;
 	esac
-#EN-2260-
+} #Fin de menuInicio()
 
 ####################################################################################
-#EN-2270-
+# Sinopsis: Menú de ayuda con ficheros PDF y de vídeo
 ####################################################################################
 function menuAyuda {
-#EN-2280-
+#	clear
 	cabecerainicio
 	echo -ne "\n MENÚ DE AYUDA\n"\
 	"\n  1. Ver documentos de ayuda del en formato PDF desde el listado de problemas (requiere 'evince')\n"\
@@ -475,18 +475,18 @@ function menuAyuda {
 		'1')
 			menuDOCPDF
 			;;
-#EN-2290-
+		'2') #Un fichero a elegir
 			echo -e "\n\nFicheros de ayuda existentes en formato PDF:\n$NORMAL" | tee -a $informeConColorTotal
 			echo -e "\n\nFicheros de ayuda existentes en formato PDF:\n" >> $informeSinColorTotal 
 			files=("./DOCPDF"/*)
-#EN-2300-
+			for i in "${!files[@]}"; do #Localiza en qué posición encuentra el dato (da la posición, pero no la variable en el array)
 				echo -e "$i) ${files[$i]}" | tee -a $informeConColorTotal
 				echo -e "$i) ${files[$i]}" >> $informeSinColorTotal 
 			done
 			echo -ne "\n$AMARILLO\n\nIntroduce el número correspondiente al fichero elegido: $NORMAL" | tee -a $informeConColorTotal
 			echo -ne "\n\n\nIntroduce el número correspondiente al fichero elegido: " >> $informeSinColorTotal 
 			read -r numeroFicheroPDF
-#EN-2310-
+			until [[ "0" -le $numeroFicheroPDF && $numeroFicheroPDF -lt ${#files[@]} && $numeroFicheroPDF -ne "" ]]; do
 				echo -ne "Error en la elección de una opción válida\n\n  --> " | tee -a $informeConColorTotal
 				echo -ne "Error en la elección de una opción válida\n\n  --> " >> $informeSinColorTotal
 				read -r numeroFicheroPDF
@@ -506,14 +506,14 @@ function menuAyuda {
 			echo -e "\n\nFicheros de ayuda existentes en formato de Vídeo:\n$NORMAL" | tee -a $informeConColorTotal
 			echo -e "\n\nFicheros de ayuda existentes en formato de Vídeo:\n" >> $informeSinColorTotal 
 			files=("./DOCVideo"/*)
-#EN-2320-
+			for i in "${!files[@]}"; do #Localiza en qué posición encuentra el dato (da la posición, pero no la variable en el array)
 				echo -e "$i) ${files[$i]}" | tee -a $informeConColorTotal
 				echo -e "$i) ${files[$i]}" >> $informeSinColorTotal 
 			done
 			echo -ne "\n$AMARILLO\n\nIntroduce el número correspondiente al fichero elegido: $NORMAL" | tee -a $informeConColorTotal
 			echo -ne "\n\n\nIntroduce el número correspondiente al fichero elegido: " >> $informeSinColorTotal 
 			read -r numeroFicheroVideo
-#EN-2330-
+			until [[ "0" -le $numeroFicheroVideo && $numeroFicheroVideo -lt ${#files[@]} && $numeroFicheroVideo -ne "" ]]; do
 				echo -ne "Error en la elección de una opción válida\n\n  --> " | tee -a $informeConColorTotal
 				echo -ne "Error en la elección de una opción válida\n\n  --> " >> $informeSinColorTotal
 				read -r numeroFicheroVideo
@@ -529,17 +529,17 @@ function menuAyuda {
 		'5')
 			echo -e $ROJO"\n SE HA SALIDO DEL PROGRAMA"$NORMAL
 			exit 0 ;;
-#EN-2340-
+		*) #No es necesario. Existe por si se modifica y no se revisa el until anterior.
 			echo -e " Error en la elección de una opción válida" | tee -a $informeConColorTotal
 			echo -e " Error en la elección de una opción válida" >> $informeSinColorTotal ;;
 	esac
-#EN-2350-
+} #Fin de menuAyuda()
 
 ####################################################################################
-#EN-2360-
+# Sinopsis: Menú de elección del Algoritmo de Gestión de Procesos; FCFS, SJF, SRPT.
 ####################################################################################
 function menuDOCPDF { 
-#EN-2370-
+#    clear
 	cabecerainicio
 	echo -ne $AMARILLO"\n MENÚ DE ELECCIÓN DE DOCUMENTOS DE AYUDA (Texto en formato PDF - Necesita 'evince')\n"$NORMAL | tee -a $informeConColorTotal
 	echo -ne "\n MENÚ DE ELECCIÓN DE DOCUMENTOS DE AYUDA (Texto en formato PDF - Necesita 'evince')\n" >> $informeSinColorTotal
@@ -748,7 +748,7 @@ function menuDOCPDF {
 	echo -n -e "$seleccionMenuDOCPDF\n\n" >> $informeConColorTotal
 	echo -n -e "$seleccionMenuDOCPDF\n\n" >> $informeSinColorTotal
 
-#EN-2380-
+	#Comprobación de que el número introducido por el usuario es de 1 a 4
 	until [[ "0" -lt $seleccionMenuDOCPDF && $seleccionMenuDOCPDF -lt "202" ]];	do
 		echo -ne "\n Error en la elección de una opción válida  --> " | tee -a $informeConColorTotal
 		echo -ne " Error en la elección de una opción válida  --> " >> $informeSinColorTotal
@@ -975,13 +975,13 @@ function menuDOCPDF {
 		echo -e " Error en la elección de una opción válida" | tee -a $informeConColorTotal
 		echo -e " Error en la elección de una opción válida" >> $informeSinColorTotal
 	fi
-#EN-2390-
+} #Fin de menuDOCPDF()
 
 ####################################################################################
-#EN-2400-
+# Sinopsis: Menú de elección del Algoritmo de Gestión de Procesos; FCFS, SJF, SRPT.
 ####################################################################################
 function menuDOCVideo { 
-#EN-2410-
+#    clear
 	cabecerainicio
 	echo -ne $AMARILLO"\n MENÚ DE ELECCIÓN DE DOCUMENTOS DE AYUDA (Vídeos - Necesita 'mplayer')"$NORMAL | tee -a $informeConColorTotal
 	echo -ne "\n MENÚ DE ELECCIÓN DE DOCUMENTOS DE AYUDA (Vídeos - Necesita 'mplayer')" >> $informeSinColorTotal
@@ -1190,7 +1190,7 @@ function menuDOCVideo {
 	echo -n -e "$seleccionMenuDOCVideo\n\n" >> $informeConColorTotal
 	echo -n -e "$seleccionMenuDOCVideo\n\n" >> $informeSinColorTotal
 
-#EN-2420-
+	#Comprobación de que el número introducido por el usuario es de 1 a 4
 	until [[ "0" -lt $seleccionMenuDOCVideo && $seleccionMenuDOCVideo -lt "202" ]];	do
 		echo -ne "\n Error en la elección de una opción válida\n  --> " | tee -a $informeConColorTotal
 		echo -ne "\Error en la elección de una opción válida\n  --> " >> $informeSinColorTotal
@@ -1419,13 +1419,13 @@ function menuDOCVideo {
 		echo -e " Error en la elección de una opción válida" | tee -a $informeConColorTotal
 		echo -e " Error en la elección de una opción válida" >> $informeSinColorTotal
 	fi
-#EN-2430-
+} #Fin de menuDOCVideo()
 
 ####################################################################################
-#EN-2440-
+# Sinopsis: Menú de elección del Algoritmo de Gestión de Procesos; FCFS, SJF, SRPT, Prioridades.
 ####################################################################################
 function menuAlgoritmoGestionProcesos {
-#EN-2450-
+#	clear
 	cabecerainicio
 	echo -ne $AMARILLO"\n MENÚ DE ELECCIÓN DE ALGORITMO"$NORMAL\
 	"\n\n  1. FCFS"\
@@ -1444,7 +1444,7 @@ function menuAlgoritmoGestionProcesos {
 	read seleccionMenuAlgoritmoGestionProcesos
 	echo -ne "$seleccionMenuAlgoritmoGestionProcesos\n\n" >> $informeConColorTotal
 	echo -ne "$seleccionMenuAlgoritmoGestionProcesos\n\n" >> $informeSinColorTotal
-#EN-2460-
+	#Se comprueba que el número introducido por el usuario es de 1 a 6
 	until [[ 0 -lt $seleccionMenuAlgoritmoGestionProcesos && $seleccionMenuAlgoritmoGestionProcesos -lt 7 ]];   do
 		echo -ne "\nError en la elección de una opción válida\n  --> " | tee -a $informeConColorTotal
 		echo -ne "\nError en la elección de una opción válida\n  --> " >> $informeSinColorTotal
@@ -1454,17 +1454,17 @@ function menuAlgoritmoGestionProcesos {
 	done
 	case "$seleccionMenuAlgoritmoGestionProcesos" in
 		'4')
-#EN-2470-
-#EN-2480-
+			menuTipoPrioridad #Menú de elección del tipo de prioridad (Mayor/Menor).
+			menuApropiatividad #Menú de elección de apropiatividad. Cuando se ejecuta con Prioridades. Se hace en menuAlgoritmoGestionProcesos()
 			;;
 	esac
-#EN-2490-
+} #Fin de menuAlgoritmoGestionProcesos()
 
 ####################################################################################
-#EN-2500-
+# Sinopsis: Menú de elección de Tipo de Prioridad (Mayor/Menor). Cuando se ejecuta con Prioridades.
 ####################################################################################
 function menuTipoPrioridad { 
-#EN-2510-
+#	clear
 	cabecerainicio
 	echo -ne $AMARILLO"\n MENÚ DE ELECCIÓN DEL TIPO DE PRIORIDAD"$NORMAL\
 	"\n\n  1. Prioridad Mayor"\
@@ -1492,13 +1492,13 @@ function menuTipoPrioridad {
 	else
 		exit 0
 	fi
-#EN-2520-
+} #Fin de menuApropiatividad()
 
 ####################################################################################
-#EN-2530-
+# Sinopsis: Menú de elección de Apropiatividad. Cuando se ejecuta con Prioridades.
 #################################################################################### 
 function menuApropiatividad { 
-#EN-2540-
+#	clear
 	cabecerainicio
 	echo -ne $AMARILLO"\n MENÚ DE ELECCIÓN DE APROPIATIVIDAD"$NORMAL\
 	"\n\n  1. No apropiativo"\
@@ -1526,17 +1526,17 @@ function menuApropiatividad {
 		'3')
 			echo -e $ROJO"\n SE HA SALIDO DEL PROGRAMA"$NORMAL
 			exit 0 ;;
-#EN-2550-
+		*) #No es necesario. Existe por si se modifica y no se revisa el until anterior.
 			echo -e " Error en la elección de una opción válida" | tee -a $informeConColorTotal
 			echo -e " Error en la elección de una opción válida" >> $informeSinColorTotal ;;
 	esac
-#EN-2560-
+} #Fin de menuApropiatividad()
 
 ####################################################################################
-#EN-2570-
+# Sinopsis: Menú de elección de reubicabilidad. 
 ####################################################################################
-#EN-2580-
-#EN-2590-
+function menuReubicabilidad { #Si reubicabilidadNo0Si1 vale 0 no es reubicable. Si vale 1 es reubicable.
+#	clear
 	cabecerainicio
 	echo -ne $AMARILLO"\n MENÚ DE ELECCIÓN DE REUBICABILIDAD"$NORMAL\
 	$AMARILLO"\n\n La elección será aplicable sólo en caso de introducción de datos de forma manual."$NORMAL\
@@ -1553,7 +1553,7 @@ function menuApropiatividad {
 	read seleccionMenuReubicabilidad
 	echo -ne "$seleccionMenuReubicabilidad\n\n" >> $informeConColorTotal
 	echo -ne "$seleccionMenuReubicabilidad\n\n" >> $informeSinColorTotal
-#EN-2600-
+	#Se comprueba que el número introducido por el usuario es de 1 a 3
 	until [[ "0" -lt $seleccionMenuReubicabilidad && $seleccionMenuReubicabilidad -lt 4 ]];   do
 		echo -ne "\n Error en la elección de una opción válida\n  --> " | tee -a $informeConColorTotal
 		echo -ne "\n Error en la elección de una opción válida\n  --> " >> $informeSinColorTotal
@@ -1569,18 +1569,18 @@ function menuApropiatividad {
 		'3')
 			echo -e $ROJO"\n SE HA SALIDO DEL PROGRAMA"$NORMAL
 			exit 0 ;;
-#EN-2610-
+		*) #No es necesario. Existe por si se modifica y no se revisa el until anterior.
 			echo -e " Error en la elección de una opción válida" | tee -a $informeConColorTotal
 			echo -e " Error en la elección de una opción válida" >> $informeSinColorTotal
 			;;
 	esac
-#EN-2620-
+} #Fin de menuReubicabilidad()
 
 ####################################################################################
-#EN-2630-
+# Sinopsis: Menú de elección de continuidad. 
 ####################################################################################
-#EN-2640-
-#EN-2650-
+function menuContinuidad { #Si vale 0 es no continua. Si vale 1 es continua.
+#	clear
 	cabecerainicio
 	echo -ne $AMARILLO"\n\n MENÚ DE ELECCIÓN DE CONTINUIDAD"$NORMAL\
 	$AMARILLO"\n\n La elección será aplicable sólo en caso de introducción de datos de forma manual."$NORMAL\
@@ -1597,7 +1597,7 @@ function menuApropiatividad {
 	read seleccionMenuContinuidad
 	echo -ne "$seleccionMenuContinuidad\n\n" >> $informeConColorTotal
 	echo -ne "$seleccionMenuContinuidad\n\n" >> $informeSinColorTotal
-#EN-2660-
+	#Se comprueba que el número introducido por el usuario es de 1 a 3
 	until [[ 0 -lt $seleccionMenuContinuidad && $seleccionMenuContinuidad -lt 4 ]];   do
 		echo -ne "\n Error en la elección de una opción válida\n  --> " | tee -a $informeConColorTotal
 		echo -ne "\n Error en la elección de una opción válida\n  --> " >> $informeSinColorTotal
@@ -1613,18 +1613,18 @@ function menuApropiatividad {
 		'3')
 			echo -e $ROJO"\n SE HA SALIDO DEL PROGRAMA"$NORMAL
 			exit 0 ;;
-#EN-2670-
+		*) #No es necesario. Existe por si se modifica y no se revisa el until anterior.
 			echo -e " Error en la elección de una opción válida" | tee -a $informeConColorTotal
 			echo -e " Error en la elección de una opción válida" >> $informeSinColorTotal
 			;;
 	esac
-#EN-2680-
+} #Fin de menuContinuidad()
 
 ####################################################################################
-#EN-2690-
+# Sinopsis: Menú de elección de Continuidad. 
 ####################################################################################
 function menuAlgoritmoPaginacion { 
-#EN-2700-
+#	clear
 	cabecerainicio
 	echo -ne $AMARILLO"\n\n MENÚ DE ELECCIÓN DEL ALGORITMO DE PAGINACIÓN"$NORMAL\
 	$AMARILLO"\n\n La elección será aplicable sólo en caso de introducción de datos de forma manual."$NORMAL\
@@ -1680,73 +1680,73 @@ function menuAlgoritmoPaginacion {
 	done
 	case "$seleccionMenuAlgoritmoPaginacion" in
 		'1')
-#EN-2710-
+			seleccionAlgoritmoPaginacion=1 ;; #FIFO
 		'2')
-#EN-2720-
+			seleccionAlgoritmoPaginacion=2 ;; #FIFO - Segunda Oportunidad
 		'3')
-#EN-2730-
+			seleccionAlgoritmoPaginacion=3 ;; #Reloj
 		'4')
-#EN-2740-
+			seleccionAlgoritmoPaginacion=4 ;; #Reloj - Segunda Oportunidad
 		'5')
-#EN-2750-
+			seleccionAlgoritmoPaginacion=5 ;; #Óptimo
 		'6')
-#EN-2760-
+			seleccionAlgoritmoPaginacion=6 ;; #More Frequently Used (MFU)
 		'7')
-#EN-2770-
+			seleccionAlgoritmoPaginacion=7 ;; #Lest Frequently Used (LFU)
 		'8')
-#EN-2780-
-#EN-2790-
+			seleccionAlgoritmoPaginacion=8 #No Frequently Used (NFU) sobre MFU con límite de frecuencia
+			menuAlgoritmoPaginacion_frecuencia #Se pide el valor máximo del contador de frecuencia, a partir de la cual, no será considerada.
 			;;
 		'9')
-#EN-2800-
-#EN-2810-
+			seleccionAlgoritmoPaginacion=9 #No Frequently Used (NFU) sobre LFU con límite de frecuencia
+			menuAlgoritmoPaginacion_frecuencia #Se pide el valor máximo del contador de frecuencia, a partir de la cual, no será considerada.
 			;;
 		'10')
-#EN-2820-
-#EN-2830-
-#EN-2840-
-#EN-2850-
+			seleccionAlgoritmoPaginacion=10 #No Frequently Used (NFU) con clases sobre MFU con límite de frecuencia en un intervalo de tiempo. Se inician los datos en ordenarDatosEntradaFicheros() y ordenarDatosEntradaFicheros_cuatro_cinco_seis_siete_ocho_nueve().
+			menuAlgoritmoPaginacion_TiempoConsiderado_valor #Se pide el valor del tiempo de ejecución de un proceso a partir del cual serán consideradas la "frecuencia de uso/tiempo de uso" de una página y su clase.
+			menuAlgoritmoPaginacion_clases_frecuencia #Se pide el valor máximo del contador de frecuencia en un intervalo de tiempo, a partir de la cual, no será considerada.
+			menuAlgoritmoPaginacion_clases_valor #Se pide el valor máximo de unidades de tiempo de antigüedad a partir de la cual una página será considerada como NO referenciada
 			;;
 		'11')
-#EN-2860-
-#EN-2870-
-#EN-2880-
-#EN-2890-
+			seleccionAlgoritmoPaginacion=11 #No Frequently Used (NFU) con clases sobre LFU con límite de frecuencia en un intervalo de tiempo. Se inician los datos en ordenarDatosEntradaFicheros() y ordenarDatosEntradaFicheros_cuatro_cinco_seis_siete_ocho_nueve().
+			menuAlgoritmoPaginacion_TiempoConsiderado_valor #Se pide el valor del tiempo de ejecución de un proceso a partir del cual serán consideradas la "frecuencia de uso/tiempo de uso" de una página y su clase.
+			menuAlgoritmoPaginacion_clases_frecuencia #Se pide el valor máximo del contador de frecuencia en un intervalo de tiempo, a partir de la cual, no será considerada.
+			menuAlgoritmoPaginacion_clases_valor #Se pide el valor máximo de unidades de tiempo de antigüedad a partir de la cual una página será considerada como NO referenciada
 			;;
 		'12')
-#EN-2900-
+			seleccionAlgoritmoPaginacion=12 ;; #More Recently Used (MRU)
 		'13')
-#EN-2910-
+			seleccionAlgoritmoPaginacion=13 ;; #Lest Recently Used (LRU)
 		'14')
-#EN-2920-
-#EN-2930-
+			seleccionAlgoritmoPaginacion=14 #No Recently Used (NRU) sobre MRU con límite de tiempo de uso
+			menuAlgoritmoPaginacion_uso_rec #Se pide el valor máximo del contador de la antigüedad a partir de la cual no será considerada.
 			;;
 		'15')
-#EN-2940-
-#EN-2950-
+			seleccionAlgoritmoPaginacion=15 #No Recently Used (NRU) sobre LRU con límite de tiempo de uso
+			menuAlgoritmoPaginacion_uso_rec #Se pide el valor máximo del contador de la antigüedad a partir de la cual no será considerada.
 			;;
 		'16')
-#EN-2960-
-#EN-2970-
-#EN-2980-
-#EN-2990-
+			seleccionAlgoritmoPaginacion=16 #No Recently Used (NRU) con clases sobre MRU con límite de tiempo de uso en un intervalo de tiempo. Se inician los datos en ordenarDatosEntradaFicheros() y ordenarDatosEntradaFicheros_cuatro_cinco_seis_siete_ocho_nueve().
+			menuAlgoritmoPaginacion_TiempoConsiderado_valor #Se pide el valor del tiempo de ejecución de un proceso a partir del cual serán consideradas la "frecuencia de uso/tiempo de uso" de una página y su clase.
+			menuAlgoritmoPaginacion_clases_uso_rec #Se pide el valor máximo del contador de antigüedad en un intervalo de tiempo, a partir de la cual, no será considerada.
+			menuAlgoritmoPaginacion_clases_valor #Se pide el valor máximo de unidades de tiempo de antigüedad a partir de la cual una página será considerada como NO referenciada
 			;;
 		'17')
-#EN-3000-
-#EN-3010-
-#EN-3020-
-#EN-3030-
+			seleccionAlgoritmoPaginacion=17 #No Recently Used (NRU) con clases sobre LRU con límite de tiempo de uso en un intervalo de tiempo. Se inician los datos en ordenarDatosEntradaFicheros() y ordenarDatosEntradaFicheros_cuatro_cinco_seis_siete_ocho_nueve().
+			menuAlgoritmoPaginacion_TiempoConsiderado_valor #Se pide el valor del tiempo de ejecución de un proceso a partir del cual serán consideradas la "frecuencia de uso/tiempo de uso" de una página y su clase.
+			menuAlgoritmoPaginacion_clases_uso_rec #Se pide el valor máximo del contador de antigüedad en un intervalo de tiempo, a partir de la cual, no será considerada.
+			menuAlgoritmoPaginacion_clases_valor #Se pide el valor máximo de unidades de tiempo de antigüedad a partir de la cual una página será considerada como NO referenciada
 			;;
 		'18')
 			echo -e $ROJO"\n SE HA SALIDO DEL PROGRAMA"$NORMAL
 			exit 0 ;;
-#EN-3040-
+		*) #No es necesario. Existe por si se modifica y no se revisa el until anterior.
 			echo -e " Error en la elección de una opción válida" | tee -a $informeConColorTotal $informeSinColorTotal ;;
 	esac
-#EN-3050-
+} #Fin de menuAlgoritmoPaginacion()
 
 ####################################################################################
-#EN-3060-
+# Sinopsis: Se pide el valor máximo del contador de frecuencia, a partir de la cual, no será considerada.
 ####################################################################################
 function menuAlgoritmoPaginacion_frecuencia { 
 	seleccionAlgoritmoPaginacion_frecuencia_valor=0
@@ -1762,10 +1762,10 @@ function menuAlgoritmoPaginacion_frecuencia {
 		echo -e "$seleccionAlgoritmoPaginacion_frecuencia_valor\n\n" >> $informeConColorTotal
 		echo -e "$seleccionAlgoritmoPaginacion_frecuencia_valor\n\n" >> $informeSinColorTotal
 	done
-#EN-3070-
+} #Fin de menuAlgoritmoPaginacion_frecuencia()
 
 ####################################################################################
-#EN-3080-
+# Sinopsis: Se pide el valor máximo del contador de frecuencia en un intervalo de tiempo, a partir de la cual, no será considerada.
 ####################################################################################
 function menuAlgoritmoPaginacion_clases_frecuencia { 
 	seleccionAlgoritmoPaginacion_clases_frecuencia_valor=0
@@ -1781,10 +1781,10 @@ function menuAlgoritmoPaginacion_clases_frecuencia {
 		echo -e "$seleccionAlgoritmoPaginacion_clases_frecuencia_valor\n\n" >> $informeConColorTotal
 		echo -e "$seleccionAlgoritmoPaginacion_clases_frecuencia_valor\n\n" >> $informeSinColorTotal
 	done
-#EN-3090-
+} #Fin de menuAlgoritmoPaginacion_clases_frecuencia()
 
 ####################################################################################
-#EN-3100-
+# Sinopsis: Se pide el valor máximo del contador de la antigüedad a partir de la cual no será considerada.
 ####################################################################################
 function menuAlgoritmoPaginacion_uso_rec { 
 	seleccionAlgoritmoPaginacion_uso_rec_valor=0
@@ -1800,10 +1800,10 @@ function menuAlgoritmoPaginacion_uso_rec {
 		echo -e "$seleccionAlgoritmoPaginacion_uso_rec_valor\n\n" >> $informeConColorTotal
 		echo -e "$seleccionAlgoritmoPaginacion_uso_rec_valor\n\n" >> $informeSinColorTotal
 	done
-#EN-3110-
+} #Fin de menuAlgoritmoPaginacion_uso_rec()
 
 ####################################################################################
-#EN-3120-
+# Sinopsis: Se pide el valor máximo del contador de antigüedad en un intervalo de tiempo, a partir de la cual, no será considerada.
 ####################################################################################
 function menuAlgoritmoPaginacion_clases_uso_rec { 
 	seleccionAlgoritmoPaginacion_clases_uso_rec_valor=0
@@ -1819,10 +1819,10 @@ function menuAlgoritmoPaginacion_clases_uso_rec {
 		echo -e "$seleccionAlgoritmoPaginacion_clases_uso_rec_valor\n\n" >> $informeConColorTotal
 		echo -e "$seleccionAlgoritmoPaginacion_clases_uso_rec_valor\n\n" >> $informeSinColorTotal
 	done
-#EN-3130-
+} #Fin de menuAlgoritmoPaginacion_clases_uso_rec()
 
 ####################################################################################
-#EN-3140-
+# Sinopsis: Se pide el valor máximo de unidades de tiempo de antigüedad a partir de la cual una página será considerada como NO referenciada
 ####################################################################################
 function menuAlgoritmoPaginacion_clases_valor { 
 	seleccionAlgoritmoPaginacion_clases_valor=0
@@ -1838,10 +1838,10 @@ function menuAlgoritmoPaginacion_clases_valor {
 		echo -e "$seleccionAlgoritmoPaginacion_clases_valor\n\n" >> $informeConColorTotal
 		echo -e "$seleccionAlgoritmoPaginacion_clases_valor\n\n" >> $informeSinColorTotal
 	done
-#EN-3150-
+} #Fin de menuAlgoritmoPaginacion_clases_valor()
 
 ####################################################################################
-#EN-3160-
+# Sinopsis: Se pide el valor del tiempo de ejecución de un proceso a partir del cual serán consideradas la "frecuencia de uso/tiempo de uso" de una página y su clase.
 ####################################################################################
 function menuAlgoritmoPaginacion_TiempoConsiderado_valor { 
 	seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado=0
@@ -1857,14 +1857,14 @@ function menuAlgoritmoPaginacion_TiempoConsiderado_valor {
 		echo -e "$seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado\n\n" >> $informeConColorTotal
 		echo -e "$seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado\n\n" >> $informeSinColorTotal
 	done
-#EN-3170-
+} #Fin de menuAlgoritmoPaginacion_TiempoConsiderado_valor()
 
 ####################################################################################
-#EN-3180-
-#EN-3190-
+# Sinopsis: Menú de elección de opciones de entrada de datos/rangos/rangos amplios del programa:
+# Manul, Última ejecución, Otros ficheros.
 ####################################################################################
 function menuEleccionEntradaDatos {
-#EN-3200-
+#	clear
 	cabecerainicio
 	echo -ne $AMARILLO"\n MENÚ INICIO"$NORMAL\
 	"\n\n  1. Introducción de datos manual"\
@@ -1892,7 +1892,7 @@ function menuEleccionEntradaDatos {
 	echo -ne "$seleccionMenuEleccionEntradaDatos\n\n" >> $informeConColorTotal
 	echo -ne "$seleccionMenuEleccionEntradaDatos\n\n" >> $informeSinColorTotal
 
-#EN-3210-
+	#Se comprueba que el número introducido por el usuario es de 1 a 10
 	until [[ 0 -lt $seleccionMenuEleccionEntradaDatos && $seleccionMenuEleccionEntradaDatos -lt 11 ]];  do
 		echo -ne "\n Error en la elección de una opción válida\n\n  --> " | tee -a $informeConColorTotal
 		echo -ne "\n Error en la elección de una opción válida\n\n  --> " >> $informeSinColorTotal
@@ -1901,84 +1901,84 @@ function menuEleccionEntradaDatos {
 		echo -ne "$seleccionMenuEleccionEntradaDatos\n\n" >> $informeSinColorTotal
 	done
 	case "$seleccionMenuEleccionEntradaDatos" in
-#EN-3220-
+		'1') #1. Introducción de datos manual 
 			nuevaEjecucion
 			preguntaDondeGuardarDatosManuales
 			entradaMemoriaTeclado
 			entradaProcesosTeclado
 			menuModoTiempoEjecucionAlgormitmo
 			;;
-#EN-3230-
-#EN-3240-
+		'2') #2. Fichero de datos de última ejecución (./FLast/DatosLast.txt).
+			menuModoTiempoEjecucionAlgormitmo #Elección del algoritmo de gestión de procesos y la fuente de datos.
 			leer_datos_desde_fichero $ficheroDatosAnteriorEjecucion
-#EN-3250-
+			ordenarDatosEntradaFicheros #Ordenar los datos sacados desde $ficheroDatosAnteriorEjecucion por el tiempo de llegada.
 			;;
-#EN-3260-
-#EN-3270-
-#EN-3280-
-#EN-3290-
-#EN-3300-
+		'3') #3. Otros ficheros de datos $ficheroDatosAnteriorEjecucion
+			entradaMemoriaDatosFichero #Elegir el fichero para la entrada de datos $ficheroParaLectura.
+			menuModoTiempoEjecucionAlgormitmo #Elección del algoritmo de gestión de procesos y la fuente de datos.
+			leer_datos_desde_fichero $ficheroParaLectura #Leer los datos desde el fichero elegido $ficheroParaLectura
+			ordenarDatosEntradaFicheros #Ordenar los datos sacados desde $ficheroParaLectura por el tiempo de llegada.
 			;;
-#EN-3310-
-#EN-3320-
-#EN-3330-
+		'4') #4. Introducción de rangos manual (modo aleatorio)
+			preguntaDondeGuardarRangosManuales #Resuelve los nombres de los ficheros de rangos
+			preguntaDondeGuardarDatosManuales #Resuelve los nombres de los ficheros de datos
 			nuevaEjecucion 
 			entradaMemoriaRangosFichero_op_cuatro
 			menuModoTiempoEjecucionAlgormitmo
 			ordenarDatosEntradaFicheros
 			;;
-#EN-3340-
+		'5') #5. Fichero de rangos de última ejecución (./FLast/RangosLast.txt)
 			entradaMemoriaRangosFichero_op_cinco_Previo
-#EN-3350-
+			leer_rangos_desde_fichero $ficheroRangosAnteriorEjecucion #Leer los datos desde el fichero elegido $ficheroParaLectura
 			entradaMemoriaRangosFichero_op_cinco_seis
 			menuModoTiempoEjecucionAlgormitmo
 			ordenarDatosEntradaFicheros
 			;;
-#EN-3360-
+		'6') #6. Otros ficheros de rangos
 			nuevaEjecucion 
 			entradaMemoriaRangosFichero_op_seis_Previo 
-#EN-3370-
+			leer_rangos_desde_fichero $ficheroParaLectura #Leer los datos desde el fichero elegido $ficheroParaLectura
 			entradaMemoriaRangosFichero_op_cinco_seis
 			menuModoTiempoEjecucionAlgormitmo
 			ordenarDatosEntradaFicheros
 			;;
-#EN-3380-
+		'7') #7. Introducción de rangos amplios manual (modo aleatorio total)
 			nuevaEjecucion 
 			entradaMemoriaRangosFichero_op_siete_Previo
 			entradaMemoriaRangosFichero_op_siete_ocho_nueve
 			menuModoTiempoEjecucionAlgormitmo
 			ordenarDatosEntradaFicheros
 			;;
-#EN-3390-
-#EN-3400-
-#EN-3410-
+		'8') #8. Fichero de rangos amplios de última ejecución
+			entradaMemoriaRangosFichero_op_ocho_Previo #Pregunta en qué fichero guardar los rangos para la opción 8.
+			leer_rangos_desde_fichero $ficheroRangosAleTotalAnteriorEjecucion #Leer los datos desde el fichero elegido $ficheroRangosAleTotalAnteriorEjecucion
 			entradaMemoriaRangosFichero_op_siete_ocho_nueve
 			menuModoTiempoEjecucionAlgormitmo
 			ordenarDatosEntradaFicheros
 			;;
-#EN-3420-
+		'9') #9. Otros ficheros de rangos amplios
 			nuevaEjecucion 
 			entradaMemoriaRangosFichero_op_nueve_Previo
-#EN-3430-
+			leer_rangos_desde_fichero $ficheroParaLectura #Leer los datos desde el fichero elegido $ficheroParaLectura
 			entradaMemoriaRangosFichero_op_siete_ocho_nueve
 			menuModoTiempoEjecucionAlgormitmo
 			ordenarDatosEntradaFicheros
 			;;
-#EN-3440-
+		'10') #10. Salir  
 			echo -e $ROJO"\n SE HA SALIDO DEL PROGRAMA"$NORMAL
 			exit 0 ;;
-#EN-3450-
+		*) #No es necesario. Existe por si se modifica y no se revisa el until anterior.
 			echo -e " Error en la elección de una opción válida" | tee -a $informeConColorTotal
 			echo -e " Error en la elección de una opción válida" >> $informeSinColorTotal
 			;;
 	esac
-#EN-3460-
+} #Fin de menuEleccionEntradaDatos()
 
 ####################################################################################
-#EN-3470-
+# Sinopsis: Se decide el modo de ejecución: Por eventos, Automática, Completa, Unidad de tiempo a unidad de tiempo  
 ####################################################################################
 function menuModoTiempoEjecucionAlgormitmo {
-#EN-3480-
+#	clear
 	cabecerainicio
 	echo -ne $AMARILLO"\n\n Introduce una opción: \n$NORMAL"\
 	"\n\n  1. Ejecución por eventos (Presionando Enter en cada evento)."\
@@ -1996,7 +1996,7 @@ function menuModoTiempoEjecucionAlgormitmo {
 	read seleccionMenuModoTiempoEjecucionAlgormitmo
 	echo -e "$seleccionMenuModoTiempoEjecucionAlgormitmo" >> $informeConColorTotal
 	echo -e "$seleccionMenuModoTiempoEjecucionAlgormitmo" >> $informeSinColorTotal
-#EN-3490-
+	# Se comprueba que el número introducido por el usuario esta entre 1 y 5
 	until [[ "0" -lt $seleccionMenuModoTiempoEjecucionAlgormitmo && $seleccionMenuModoTiempoEjecucionAlgormitmo -lt "6" ]]; do
 		echo -ne "\n Error en la elección de una opción válida\n\n  --> " | tee -a $informeConColorTotal
 		echo -ne " Error en la elección de una opción válida\n\n  --> " >> $informeSinColorTotal
@@ -2005,14 +2005,14 @@ function menuModoTiempoEjecucionAlgormitmo {
 		echo -e "$seleccionMenuModoTiempoEjecucionAlgormitmo\n" >> $informeSinColorTotal
 	done
 	case "$seleccionMenuModoTiempoEjecucionAlgormitmo" in
-#EN-3500-
+		'1') # Por eventos
 			optejecucion=1
 			;;
-#EN-3510-
+		'2') # Automática
 			tiempoejecucion=0
 			optejecucion=2
 			;;
-#EN-3520-
+		'3') # Completa
 			echo -ne " Introduce el tiempo entre actualizaciones de datos (segundos): " | tee -a $informeConColorTotal
 			echo -ne " Introduce el tiempo entre actualizaciones de datos (segundos): " >> $informeSinColorTotal
 			read tiempoejecucion
@@ -2025,26 +2025,26 @@ function menuModoTiempoEjecucionAlgormitmo {
 			done
 			optejecucion=3
 			;;
-#EN-3530-
+		'4') # De unidad de tiempo en unidad de tiempo
 			optejecucion=4
 			;;
-#EN-3540-
+		'5') # Sólo muestra el resumen final
 			optejecucion=5
 			;;
-#EN-3550-
+		*) #No es necesario. Existe por si se modifica y no se revisa el until anterior.
 			echo -e " Error en la elección de una opción válida" | tee -a $informeConColorTotal
 			echo -e " Error en la elección de una opción válida" >> $informeSinColorTotal
 			;;
 	esac
-#EN-3560-
-#EN-3570-
+#    clear
+} #Fin de menuModoTiempoEjecucionAlgormitmo()
 
 ####################################################################################
-#EN-3580-
+# Sinopsis: Comprobar si existe el árbol de directorios utilizados en el programa
 ####################################################################################
-#EN-3590-
-#EN-3600-
-#EN-3610-
+function revisarArbolDirectorios { #Regenera el árbol de directorios si no se encuentra. 
+#    clear
+	#Se regenera la estructura de directorios en caso de no existir
 	if [[ ! -d $dirFLast ]]; then
 		mkdir $dirFLast   
 	fi
@@ -2060,22 +2060,22 @@ function menuModoTiempoEjecucionAlgormitmo {
 	if [[ ! -d $dirInformes ]]; then
 		mkdir $dirInformes   
 	fi
-#EN-3620-
+	#Informes y temporales 
 	if [[ -f $informeConColorTotal ]]; then
-#EN-3630-
+		truncate -s 0 $informeConColorTotal #Se borran los ficheros de informes COLOR
 	fi
 	if [[ -f $informeSinColorTotal ]]; then
-#EN-3640-
+		truncate -s 0 $informeSinColorTotal #Se borran los ficheros de informes BN
 	fi
-#EN-3650-
+} #Fin de revisarArbolDirectorios()
 
 ####################################################################################
-#EN-3660-
-#EN-3670-
-#EN-3680-
+# Sinopsis: Se pregunta por las opciones de guardar lo datos de particiones y procesos.
+# Se pregunta si se quiere guardar los datos en el fichero estándar (Default) o en otro.
+# Si es en otro, pide el nombre del archivo.
 ####################################################################################
 function preguntaDondeGuardarDatosManuales {
-#EN-3690-
+	#Pregunta para los datos por teclado  
 	echo -e $AMARILLO"\n¿Dónde quiere guardar los datos resultantes?\n"$NORMAL | tee -a $informeConColorTotal
 	echo -e " 1- En el fichero estándar ($ficheroDatosDefault)" | tee -a $informeConColorTotal
 	echo -ne " 2- En otro fichero\n\n\n  --> " | tee -a $informeConColorTotal
@@ -2085,7 +2085,7 @@ function preguntaDondeGuardarDatosManuales {
 	read seleccionMenuPreguntaDondeGuardarDatosManuales
 	echo -e " $seleccionMenuPreguntaDondeGuardarDatosManuales\n\n" >> $informeConColorTotal
 	echo -e " $seleccionMenuPreguntaDondeGuardarDatosManuales\n\n" >> $informeSinColorTotal
-#EN-3700-
+	# Se comprueba que el número introducido por el usuario esta entre 1 y 2
 	until [[ "0" -lt $seleccionMenuPreguntaDondeGuardarDatosManuales && $seleccionMenuPreguntaDondeGuardarDatosManuales -lt "3" ]]; do
 		echo -ne "\n Error en la elección de una opción válida\n\n  --> " | tee -a $informeConColorTotal
 		echo -ne "\n Error en la elección de una opción válida\n\n  --> " >> $informeSinColorTotal
@@ -2094,15 +2094,15 @@ function preguntaDondeGuardarDatosManuales {
 		echo -e " $seleccionMenuPreguntaDondeGuardarDatosManuales\n\n" >> $informeSinColorTotal
 	done
 	case "${seleccionMenuPreguntaDondeGuardarDatosManuales}" in
-#EN-3710-
-#EN-3720-
+		'1') #En el fichero estándar
+			truncate -s 0 $ficheroDatosDefault #Se borran los datos del fichero por defecto de la anterior ejecución
 			nomFicheroDatos="$ficheroDatosDefault"
 			;;
-#EN-3730-
+		'2') #En otro fichero
 			echo -e $ROJO"\n Ficheros de datos ya existentes en './FDatos/': "$NORMAL | tee -a $informeConColorTotal
 			echo -e "\n Ficheros de datos ya existentes en './FDatos/': " >> $informeSinColorTotal
 			files=($(ls -l ./FDatos/ | awk '{print $9}'))
-#EN-3740-
+			for i in "${!files[@]}"; do #Localiza en qué posición encuentra el dato (da la posición, pero no la variable en el array)
 				echo -e "   ${files[$i]}"
 			done
 			echo -e $AMARILLO" Introduce el nombre que le quieres dar al fichero de datos (sin '.txt'):\n"$NORMAL | tee -a $informeConColorTotal
@@ -2144,21 +2144,21 @@ function preguntaDondeGuardarDatosManuales {
 					echo -e " $seleccionNombreFicheroDatos" >> $informeSinColorTotal
 					echo -e " $nomFicheroDatos\n" >> $informeConColorTotal
 					echo -e " $nomFicheroDatos\n" >> $informeSinColorTotal
-#EN-3750-
+				fi #cierre el sobreescribir NO
 			done
 			;;
-#EN-3760-
+		*) #No es necesario. Existe por si se modifica y no se revisa el until anterior.
 			echo -e " Error en la elección de una opción válida" | tee -a $informeConColorTotal
 			echo -e " Error en la elección de una opción válida" >> $informeSinColorTotal
 			;;
 	esac
-#EN-3770-
-#EN-3780-
+#    clear
+} #Fin de preguntaDondeGuardarDatosManuales()
 		
 ####################################################################################
-#EN-3790-
-#EN-3800-
-#EN-3810-
+# Sinopsis: Se pregunta por las opciones de guardar lo rangos de particiones y procesos.
+# Se pregunta si se quiere guardar los rangos en el fichero estándar (Default) o en otro.
+# Si es en otro, pide el nombre del archivo.
 ####################################################################################
 function preguntaDondeGuardarRangosManuales {
 	echo -e $AMARILLO"¿Dónde quiere guardar los rangos?"$NORMAL | tee -a  $informeConColorTotal
@@ -2173,7 +2173,7 @@ function preguntaDondeGuardarRangosManuales {
 	echo -e "$seleccionMenuPreguntaDondeGuardarRangosManuales\n\n" >> $informeConColorTotal
 	echo -e "$seleccionMenuPreguntaDondeGuardarRangosManuales\n\n" >> $informeSinColorTotal
 
-#EN-3820-
+	# Se comprueba que el número introducido por el usuario esta entre 1 y 2
 	until [[ "0" -lt $seleccionMenuPreguntaDondeGuardarRangosManuales && $seleccionMenuPreguntaDondeGuardarRangosManuales -lt "3" ]];   do
 		echo -e "\nError en la elección de una opción válida" | tee -a $informeConColorTotal
 		echo -e "\nError en la elección de una opción válida" >> $informeSinColorTotal
@@ -2184,11 +2184,11 @@ function preguntaDondeGuardarRangosManuales {
 		echo -e "$seleccionMenuPreguntaDondeGuardarRangosManuales\n\n" >> $informeSinColorTotal
 	done
 	case "${seleccionMenuPreguntaDondeGuardarRangosManuales}" in
-#EN-3830-
-#EN-3840-
+		'1') #En el fichero estándar
+			truncate -s 0 $ficheroRangosDefault #Se borran los rangos del fichero por defecto de la anterior ejecución
 			nomFicheroRangos="$ficheroRangosDefault"
 			;;
-#EN-3850-
+		'2') #En otro fichero
 			echo -e $AMARILLO"Introduce el nombre que le quieres dar al fichero de datos (sin '.txt'):\n"$NORMAL | tee -a $informeConColorTotal
 			echo -e "Introduce el nombre que le quieres dar al fichero de datos (sin '.txt'):\n" >> $informeSinColorTotal
 			read seleccionNombreFicheroRangos
@@ -2228,20 +2228,20 @@ function preguntaDondeGuardarRangosManuales {
 					echo -e " $seleccionNombreFicheroRangos" >> $informeSinColorTotal
 					echo -e " $nomFicheroRangos\n" >> $informeConColorTotal
 					echo -e " $nomFicheroRangos\n" >> $informeSinColorTotal
-#EN-3860-
+				fi #cierre el sobreescribir NO
 			done
 			;;
-#EN-3870-
+		*) #No es necesario. Existe por si se modifica y no se revisa el until anterior.
 			echo -e "Error en la elección de una opción válida" | tee -a $informeConColorTotal
 			echo -e "Error en la elección de una opción válida" >> $informeSinColorTotal
 			;;
 	esac
-#EN-3880-
+} #Fin de preguntaDondeGuardarRangosManuales()
 
 ####################################################################################
-#EN-3890-
-#EN-3900-
-#EN-3910-
+# Sinopsis: Se pregunta por las opciones de guardar los mínimos y máximos de los rangos amplios.
+# Se pregunta si se quiere guardar los rangos en el fichero estándar (Default) o en otro.
+# Si es en otro, pide el nombre del archivo.
 ####################################################################################
 function preguntaDondeGuardarRangosAleTManuales {
 	echo -e $AMARILLO"¿Dónde quiere guardar los mínimos y máximos de los rangos amplios?"$NORMAL | tee -a  $informeConColorTotal
@@ -2255,7 +2255,7 @@ function preguntaDondeGuardarRangosAleTManuales {
 	read seleccionMenuPreguntaDondeGuardarRangosAleTManuales
 	echo -e "$seleccionMenuPreguntaDondeGuardarRangosAleTManuales\n\n" >> $informeConColorTotal
 	echo -e "$seleccionMenuPreguntaDondeGuardarRangosAleTManuales\n\n" >> $informeSinColorTotal
-#EN-3920-
+	# Se comprueba que el número introducido por el usuario esta entre 1 y 2
 	until [[ "0" -lt $seleccionMenuPreguntaDondeGuardarRangosAleTManuales && $seleccionMenuPreguntaDondeGuardarRangosAleTManuales -lt "3" ]];   do
 		echo -e "\nError en la elección de una opción válida" | tee -a $informeConColorTotal
 		echo -e "\nError en la elección de una opción válida" >> $informeSinColorTotal
@@ -2266,11 +2266,11 @@ function preguntaDondeGuardarRangosAleTManuales {
 		echo -e "$seleccionMenuPreguntaDondeGuardarRangosAleTManuales\n\n" >> $informeSinColorTotal
 	done
 	case "${seleccionMenuPreguntaDondeGuardarRangosAleTManuales}" in
-#EN-3930-
-#EN-3940-
+		'1') #En el fichero estándar
+			truncate -s 0 $ficheroRangosDefault #Se borran los rangos del fichero por defecto de la anterior ejecución
 			nomFicheroRangosAleT="$ficheroRangosAleTotalDefault"
 			;;
-#EN-3950-
+		'2') #En otro fichero
 			echo -e $AMARILLO"Introduce el nombre que le quieres dar al fichero de rangos amplios (sin '.txt'):\n"$NORMAL | tee -a $informeConColorTotal
 			echo -e "Introduce el nombre que le quieres dar al fichero de rangos amplios (sin '.txt'):\n" >> $informeSinColorTotal
 			read seleccionNombreFicheroRangosAleT
@@ -2310,26 +2310,26 @@ function preguntaDondeGuardarRangosAleTManuales {
 					echo -e " $seleccionNombreFicheroRangosAleT" >> $informeSinColorTotal
 					echo -e " $nomFicheroRangosAleT\n" >> $informeConColorTotal
 					echo -e " $nomFicheroRangosAleT\n" >> $informeSinColorTotal
-#EN-3960-
+				fi #cierre el sobreescribir NO
 			done
 			;;
-#EN-3970-
+		*) #No es necesario. Existe por si se modifica y no se revisa el until anterior.
 			echo -e "Error en la elección de una opción válida" | tee -a $informeConColorTotal
 			echo -e "Error en la elección de una opción válida" >> $informeSinColorTotal
 			;;
 	esac
-#EN-3980-
+} #Fin de preguntaDondeGuardarRangosAleTManuales()
 
 #######################################################################
 #######################################################################
-#EN-3990-
+#    Funciones de recogida de datos con ejecución cíclica automatizada
 #######################################################################
 #######################################################################
 ####################################################################################
-#EN-4000-
+# Sinopsis: Menú para la captura de datos a comparar para obtener un análisis del rendimiento de los algoritmos de gestión de procesos con diferentes algoritmos de paginación usados.
 ####################################################################################
 function menuEnsayos {
-#EN-4010-
+#	clear
 	cabecerainicio
 	echo -ne "\n ¿Quieres leer el fichero de ayuda, o ejecutar el algoritmo?\n"\
 	"\n  1. Ejecución automática de los distintos algoritmos de paginación sobre diferentes conjuntos de datos, para localizar errores en el código\n"\
@@ -2347,42 +2347,42 @@ function menuEnsayos {
 	done
 	case "$seleccionMenuEnsayos" in
 		'1')
-#EN-4020-
-#EN-4030-
-#EN-4040-
-#EN-4050-
-#EN-4060-
+			menuAlgoritmoGestionProcesos #Menú de elección de algoritmo de gestión de procesos. 
+			menuContinuidad #Menú de elección de continuidad.
+			menuReubicabilidad #Menú de elección de reubicabilidad.
+			menuNumEnsayos #Menú de elección del número de ensayos automáticos a realizar de forma continua.
+			ejecutarEnsayosDatosDiferentes #Se definen y ejecutan los ensayos automáticos y se recogen los datos en ficheros secuenciales.
 			;;
 		'2')
-#EN-4070-
-#EN-4080-
-#EN-4090-
-#EN-4100-
-#EN-4110-
+			menuAlgoritmoGestionProcesos #Menú de elección de algoritmo de gestión de procesos. 
+			menuContinuidad #Menú de elección de continuidad.
+			menuReubicabilidad #Menú de elección de reubicabilidad.
+			menuNumEnsayos #Menú de elección del número de ensayos automáticos a realizar de forma continua.
+			ejecutarEnsayosDatosIguales #Se definen y ejecutan los ensayos automáticos y se recogen los datos en ficheros secuenciales.
 			;;
 		'3')
-#EN-4120-
-#EN-4130-
-#EN-4140-
-#EN-4150-
-#EN-4160-
+			menuAlgoritmoGestionProcesos #Menú de elección de algoritmo de gestión de procesos. 
+			menuContinuidad #Menú de elección de continuidad.
+			menuReubicabilidad #Menú de elección de reubicabilidad.
+			menuNumEnsayos #Menú de elección del número de ensayos automáticos a realizar de forma continua.
+			ejecutarEnsayosDatosIgualesAnteriores #Se usan los conjuntos de datos ya definidos anteriormente para ejecutar los ensayos automáticos sobre los diferentes algoritmos de paginación y se recoger los datos en ficheros secuenciales. Se usa el mismo conjunto de datos para el ensayo de todos y cada uno de los algoritmos.
 			;;
 		'4') 
-#EN-4170-
-#EN-4180-
-#EN-4190-
+			menuNumEnsayos #Menú de elección del número de ensayos automáticos a realizar de forma continua.
+			ejecutarEnsayosDatosIgualesAnterioresCompleto #Se usan los conjuntos de datos ya definidos anteriormente para ejecutar los ensayos automáticos sobre los diferentes algoritmos de gestión de procesos y de paginación y se recoger los datos en ficheros secuenciales. Se usa el mismo conjunto de datos para el ensayo de todos y cada uno de los algoritmos.
+			menuInicio #Se vuelve a inicial la aplicación
 			;;
 		'5')
 			echo -e $ROJO"\n SE HA SALIDO DEL PROGRAMA"$NORMAL
 			exit 0 ;;
-#EN-4200-
+		*) #No es necesario. Existe por si se modifica y no se revisa el until anterior.
 			echo -e " Error en la elección de una opción válida" | tee -a $informeConColorTotal
 			echo -e " Error en la elección de una opción válida" >> $informeSinColorTotal ;;
 	esac
-#EN-4210-
+} #Fin de menuEnsayos()
 
 ####################################################################################
-#EN-4220-
+# Sinopsis: Menú de elección del número de ensayos automáticos a ejecutar de forma continua.
 ####################################################################################
 function menuNumEnsayos { 
 	seleccionNumEnsayos=0
@@ -2398,348 +2398,348 @@ function menuNumEnsayos {
 		echo -e "$seleccionNumEnsayos\n\n" >> $informeConColorTotal
 		echo -e "$seleccionNumEnsayos\n\n" >> $informeSinColorTotal
 	done
-#EN-4230-
+} #Fin de menuAlgoritmoPaginacion_TiempoConsiderado_valor()
 
 ####################################################################################
 # Sinopsis: #Se definen y ejecutan los ensayos automáticos y se recogen los datos en ficheros secuenciales. Se usan datos diferentes en cada aloritmo de paginación y ensayo para buscar errores.
 ####################################################################################
 function ejecutarEnsayosDatosDiferentes { 
 #	numAlgoritmosPaginacion=17 #Número de algoritmos de paginación que se probarán con cada conjunto de datos sacados de los subrangos, previamente calculados desde el fichero de rangos amplios.
-#EN-4240-
-#EN-4250-
-#EN-4260-
-#EN-4270-
+	numAlgoritmosPaginacion=9 #Número de algoritmos de paginación que se probarán con cada conjunto de datos sacados de los subrangos, previamente calculados desde el fichero de rangos amplios.
+	seleccionMenuEleccionEntradaDatos=8 #Rango desde el que se extraen subrangos, desde los que se extraen datos, que se ejecutan con las diferentes opciones.
+	#Se pueden definir los diferentes modos de ejecución (1-Ejecución por eventos // 2-Ejecución automática (Por eventos y sin pausas) // 3-Ejecución completa (Por eventos con pausas de cierto número de segundos) // 4-Ejecución por unidad de tiempo (Con un volcado en cada unidad de tiempo) // 5-Ejecución completa (Sin representación de resultados intermedios)) 
+	optejecucion=5 #Sólo se guardan los datos de las medias de los tiempos de espera y retorno, el número de fallos de página totales y el número de expulsiones de procesos forzadas en RR totales. Viene de la variable $seleccionMenuModoTiempoEjecucionAlgormitmo en el menú de selección de modo de ejecución MenuModoTiempoEjecucionAlgormitmo()			
 	dirInformes="./Informes/RecogerDatosAutomDiferentes"
 	if [[ ! -d $dirInformes ]]; then
 		mkdir $dirInformes   
 	fi
-#EN-4280-
+	nomFicheroDatosEjecucionAutomatica="./Informes/RecogerDatosAutomDiferentes/DatosEjecucionAutomatica.txt" #Se inicializa la variable de fichero de datos dond se recogen todos los datos finales.
 	if [[ -f $nomFicheroDatosEjecucionAutomatica ]]; then
-#EN-4290-
+		truncate -s 0 $nomFicheroDatosEjecucionAutomatica #Se borran los ficheros anteriores
 	fi
-#EN-4300-
+	ficheroRangosAleTotalAnteriorEjecucion="./Informes/RecogerDatosAutomDiferentes/RangosAleTotalLast.txt" #Origen de los datos sobre los que se desarrollan los subrangos, sobre lso que se extraen los datos, sobre los que se ejecuta el programa.
 	for (( seleccionAlgoritmoPaginacion = 1; seleccionAlgoritmoPaginacion <= $numAlgoritmosPaginacion; seleccionAlgoritmoPaginacion++ )); do 
 		for (( indEnsayos = 1; indEnsayos <= $seleccionNumEnsayos; indEnsayos++ )); do 
-#EN-4310-
+			ficheroRangosAleTotalDefault="./Informes/RecogerDatosAutomDiferentes/RangosAleTotalDefault.txt" #Se define el fichero sobre el que se guarda el rango amplio.
 			if [[ -f $ficheroRangosAleTotalDefault ]]; then
-#EN-4320-
+				truncate -s 0 $ficheroRangosAleTotalDefault #Se borran los ficheros anteriores
 			fi
-#EN-4330-
+			nomFicheroRangos="./Informes/RecogerDatosAutomDiferentes/RangosDefault"$seleccionAlgoritmoPaginacion"_"$indEnsayos".txt" #Se define el fichero sobre el que se guardan los subrangos.
 			if [[ -f $nomFicheroRangos ]]; then
-#EN-4340-
+				truncate -s 0 $nomFicheroRangos #Se borran los ficheros anteriores
 			fi
-#EN-4350-
+			nomFicheroDatos="./Informes/RecogerDatosAutomDiferentes/DatosDefault"$seleccionAlgoritmoPaginacion"_"$indEnsayos".txt" #Se define el fichero sobre el que se guardan los datos que se extraen de los subrangos.
 			if [[ -f $nomFicheroDatos ]]; then
-#EN-4360-
+				truncate -s 0 $nomFicheroDatos #Se borran los ficheros anteriores
 			fi
-#EN-4370-
+			informeSinColorTotal="./Informes/RecogerDatosAutomDiferentes/informeBN"$seleccionAlgoritmoPaginacion"_"$indEnsayos".txt" #Se define el fichero sobre el que se guardan los volcados en COLOR.
 			if [[ -f $informeSinColorTotal ]]; then
-#EN-4380-
+				truncate -s 0 $informeSinColorTotal #Se borran los ficheros anteriores
 			fi
-#EN-4390-
+			informeConColorTotal="./Informes/RecogerDatosAutomDiferentes/informeCOLOR"$seleccionAlgoritmoPaginacion"_"$indEnsayos".txt" #Se define el fichero sobre el que se guardan los volcados en BN.
 			if [[ -f $informeConColorTotal ]]; then
-#EN-4400-
+				truncate -s 0 $informeConColorTotal #Se borran los ficheros anteriores
 			fi
-#EN-4410-
-#EN-4420-
-#EN-4430-
+			leer_rangos_desde_fichero $ficheroRangosAleTotalAnteriorEjecucion #Leer los datos desde el fichero elegido $ficheroRangosAleTotalAnteriorEjecucion
+			entradaMemoriaRangosFichero_op_siete_ocho_nueve #Se piden y tratan los mínimos y máximos de los rangos. El cálculo de los datos aleatorios con los que se trabajará se hace en entradaMemoriaRangosFichero_op_siete_ocho_nueve_Comun. 
+			ordenarDatosEntradaFicheros #Ordena los datos para ser mostrados y considerados por orden de llegada.
 			echo -e "Algoritmo de paginación: $seleccionAlgoritmoPaginacion\n" >> $informeConColorTotal
 			echo -e "Número de Ensayo: $indEnsayos\n" >> $informeConColorTotal
-#EN-4440-
-#EN-4450-
+			inicioNuevo #Cuando se han definido todas las opciones se inicia la ejecución del programa
+			mostrarEventos #Se define la variable con el título completo del algoritmo ejecutado ($algoritmoPaginacionContinuidadReubicabilidadSeleccionado).
 			echo -e "$algoritmoPaginacionContinuidadReubicabilidadSeleccionado AlgPag $seleccionAlgoritmoPaginacion NumEnsayo $indEnsayos Tesperamedio $promedio_espera T.retornomedio $promedio_retorno TotalFallosPagina $suma_contadorAlgPagFallosProcesoAcumulado TotalExpulsionesForzadasRR $suma_contadorAlgPagExpulsionesForzadasProcesoAcumulado" >> $nomFicheroDatosEjecucionAutomatica
 		done
 	done
-#EN-4460-
+} #Fin de ejecutarEnsayosDatosDiferentes()
 
 ####################################################################################
 # Sinopsis: #Se definen y ejecutan los ensayos automáticos y se recogen los datos en ficheros secuenciales. Se usa el mismo conjunto de datos para el ensayo de todos y cada uno de los algoritmos.
 ####################################################################################
 function ejecutarEnsayosDatosIguales { 
-#EN-4470-
-#EN-4480-
-#EN-4490-
-#EN-4500-
+	numAlgoritmosPaginacion=17 #Número de algoritmos de paginación que se probarán con cada conjunto de datos sacados de los subrangos, previamente calculados desde el fichero de rangos amplios.
+	seleccionMenuEleccionEntradaDatos=8 #Rango desde el que se extraen subrangos, desde los que se extraen datos, que se ejecutan con las diferentes opciones.
+	#Se pueden definir los diferentes modos de ejecución (1-Ejecución por eventos // 2-Ejecución automática (Por eventos y sin pausas) // 3-Ejecución completa (Por eventos con pausas de cierto número de segundos) // 4-Ejecución por unidad de tiempo (Con un volcado en cada unidad de tiempo) // 5-Ejecución completa (Sin representación de resultados intermedios)) 
+	optejecucion=5 #Sólo se guardan los datos de las medias de los tiempos de espera y retorno, el número de fallos de página totales y el número de expulsiones de procesos forzadas en RR totales. Viene de la variable $seleccionMenuModoTiempoEjecucionAlgormitmo en el menú de selección de modo de ejecución MenuModoTiempoEjecucionAlgormitmo()			
 	dirInformes="./Informes/RecogerDatosAutomIguales"
-#EN-4510-
-#EN-4520-
+	seleccionAlgoritmoPaginacion_uso_rec_valor="" #Se define el valor máximo del contador de la antigüedad a partir de la cual no será considerada.
+	seleccionAlgoritmoPaginacion_frecuencia_valor="" #Se define el valor máximo del contador de frecuencia, a partir de la cual, no será considerada.
 	if [[ ! -d $dirInformes ]]; then
 		mkdir $dirInformes   
 	fi
-#EN-4530-
+	nomFicheroDatosEjecucionAutomatica="./Informes/RecogerDatosAutomIguales/DatosEjecucionAutomatica.txt" #Se inicializa la variable de fichero de datos dond se recogen todos los datos finales.
 	if [[ -f $nomFicheroDatosEjecucionAutomatica ]]; then
-#EN-4540-
+		truncate -s 0 $nomFicheroDatosEjecucionAutomatica #Se borran los ficheros anteriores
 	fi
 			echo -ne "Título AlgPag NumEnsayo T.esperamedio T.retornomedio TotalFallosPagina TotalExpulsionesForzadasRR" >> $nomFicheroDatosEjecucionAutomatica
 			echo -ne " MáxFrec TiempoConsiderado FrecValor Clase" >> $nomFicheroDatosEjecucionAutomatica
 			echo -e " MáxUsoRec TiempoConsiderado UsoRecValor Clase" >> $nomFicheroDatosEjecucionAutomatica
-#EN-4550-
-#EN-4560-
-#EN-4570-
+	ficheroRangosAleTotalAnteriorEjecucion="./Informes/RecogerDatosAutomIguales/RangosAleTotalLast.txt" #Origen de los datos sobre los que se desarrollan los subrangos, sobre lso que se extraen los datos, sobre los que se ejecuta el programa.
+	for (( indEnsayos = 1; indEnsayos <= $seleccionNumEnsayos; indEnsayos++ )); do #Primero se inicializan los ficheros con los datos a tratar.
+		ficheroRangosAleTotalDefault="./Informes/RecogerDatosAutomIguales/RangosAleTotalDefault.txt" #Se define el fichero sobre el que se guarda el rango amplio.
 		if [[ -f $ficheroRangosAleTotalDefault ]]; then
-#EN-4580-
+			truncate -s 0 $ficheroRangosAleTotalDefault #Se borran los ficheros anteriores
 		fi
-#EN-4590-
+		nomFicheroRangos="./Informes/RecogerDatosAutomIguales/RangosDefault"$indEnsayos".txt" #Se define el fichero sobre el que se guardan los subrangos.
 		if [[ -f $nomFicheroRangos ]]; then
-#EN-4600-
+			truncate -s 0 $nomFicheroRangos #Se borran los ficheros anteriores
 		fi
-#EN-4610-
+		nomFicheroDatos="./Informes/RecogerDatosAutomIguales/DatosDefault"$indEnsayos".txt" #Se define el fichero sobre el que se guardan los datos que se extraen de los subrangos.
 		if [[ -f $nomFicheroDatos ]]; then
-#EN-4620-
+			truncate -s 0 $nomFicheroDatos #Se borran los ficheros anteriores
 		fi
-#EN-4630-
-#EN-4640-
+		leer_rangos_desde_fichero $ficheroRangosAleTotalAnteriorEjecucion #Leer los datos desde el fichero elegido $ficheroRangosAleTotalAnteriorEjecucion
+		entradaMemoriaRangosFichero_op_siete_ocho_nueve #Se piden y tratan los mínimos y máximos de los rangos. El cálculo de los datos aleatorios con los que se trabajará se hace en entradaMemoriaRangosFichero_op_siete_ocho_nueve_Comun. 
 	done
-#EN-4650-
-#EN-4660-
+	for (( indEnsayos = 1; indEnsayos <= $seleccionNumEnsayos; indEnsayos++ )); do #Ahora se leen los datos ya guardados en los ficheros de datos y se tratan.
+		nomFicheroDatos="./Informes/RecogerDatosAutomIguales/DatosDefault"$indEnsayos".txt" #Se define el fichero desde el que se leen los datos que se extraen de los subrangos.
 		maxDatoCierre=0
 		leer_datos_desde_fichero $nomFicheroDatos
-#EN-4670-
+		if [[ $maxDatoCierre -eq 0 ]]; then #Permite calcular el máximo del valor una única vez para cada conjunto de datos en cada ensayo, pero que sirve para todos los algoritmos de paginación.
 			maxDato=0
 			maxDatoCierre=1
-#EN-4680-
+			for (( i=0; i<$nprocesos; i++ )); do #Se calcula el mayor de lso tiempos de ejecución para calcular un valor aleatorio entre 1 y ese máximo. Podría usarse cualquier rango, pero este dato puede estar relacionado con lso datos del problema.
 				if [[ ${ejecucion[$i]} -gt $maxDato ]]; then 
 					maxDato=${ejecucion[$i]} 
 				fi
 			done
 		fi
 		for (( seleccionAlgoritmoPaginacion = 1; seleccionAlgoritmoPaginacion <= $numAlgoritmosPaginacion; seleccionAlgoritmoPaginacion++ )); do 
-#EN-4690-
+			informeSinColorTotal="./Informes/RecogerDatosAutomIguales/informeBN"$indEnsayos"_"$seleccionAlgoritmoPaginacion".txt" #Se define el fichero sobre el que se guardan los volcados en COLOR.
 			if [[ -f $informeSinColorTotal ]]; then
-#EN-4700-
+				truncate -s 0 $informeSinColorTotal #Se borran los ficheros anteriores
 			fi
-#EN-4710-
+			informeConColorTotal="./Informes/RecogerDatosAutomIguales/informeCOLOR"$indEnsayos"_"$seleccionAlgoritmoPaginacion".txt" #Se define el fichero sobre el que se guardan los volcados en BN.
 			if [[ -f $informeConColorTotal ]]; then
-#EN-4720-
+				truncate -s 0 $informeConColorTotal #Se borran los ficheros anteriores
 			fi
-#EN-4730-
-#EN-4740-
-#EN-4750-
+			if [[ $seleccionAlgoritmoPaginacion -eq 8 || $seleccionAlgoritmoPaginacion -eq 9 ]]; then #Permite calcular el máximo del valor una única vez para cada conjunto de datos en cada ensayo, pero que sirve para todos los algoritmos de paginación.
+				#8-9-Introduce el valor máximo de la frecuencia, a partir de la cual, no será considerada.: \n$NORMAL" | tee -a $informeConColorTotal
+				calcDatoAleatorioGeneral 1 $maxDato # Generar un número aleatorio dentro del rango
 				seleccionAlgoritmoPaginacion_frecuencia_valor=$datoAleatorioGeneral
 			fi
-#EN-4760-
-#EN-4770-
-#EN-4780-
+			if [[ $seleccionAlgoritmoPaginacion -eq 10 || $seleccionAlgoritmoPaginacion -eq 11 ]]; then #Permite calcular el máximo del valor una única vez para cada conjunto de datos en cada ensayo, pero que sirve para todos los algoritmos de paginación.
+				#10-11-Se pide el valor del tiempo de ejecución de un proceso a partir del cual serán consideradas la "frecuencia de uso/tiempo de uso" de una página y su clase.
+				calcDatoAleatorioGeneral 1 $maxDato # Generar un número aleatorio dentro del rango
 				seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado=$datoAleatorioGeneral
-#EN-4790-
-#EN-4800-
+				#10-11-Se pide el valor máximo del contador de frecuencia en un intervalo de tiempo, a partir de la cual, no será considerada.
+				calcDatoAleatorioGeneral 1 $maxDato # Generar un número aleatorio dentro del rango
 				seleccionAlgoritmoPaginacion_clases_frecuencia_valor=$datoAleatorioGeneral
-#EN-4810-
-#EN-4820-
+				#10-11-Se pide el valor máximo de unidades de tiempo de antigüedad a partir de la cual una página será considerada como NO referenciada
+				calcDatoAleatorioGeneral 1 $maxDato # Generar un número aleatorio dentro del rango
 				seleccionAlgoritmoPaginacion_clases_valor=$datoAleatorioGeneral
 			fi
-#EN-4830-
-#EN-4840-
-#EN-4850-
+			if [[ $seleccionAlgoritmoPaginacion -eq 14 || $seleccionAlgoritmoPaginacion -eq 15 ]]; then #Permite calcular el máximo del valor una única vez para cada conjunto de datos en cada ensayo, pero que sirve para todos los algoritmos de paginación.
+				#14-15-Introduce el valor máximo de la frecuencia, a partir de la cual, no será considerada.: \n$NORMAL" | tee -a $informeConColorTotal
+				calcDatoAleatorioGeneral 1 $maxDato # Generar un número aleatorio dentro del rango
 				seleccionAlgoritmoPaginacion_uso_rec_valor=$datoAleatorioGeneral
 			fi
-#EN-4860-
-#EN-4870-
-#EN-4880-
+			if [[ $seleccionAlgoritmoPaginacion -eq 16 || $seleccionAlgoritmoPaginacion -eq 17 ]]; then #Permite calcular el máximo del valor una única vez para cada conjunto de datos en cada ensayo, pero que sirve para todos los algoritmos de paginación.
+				#16-17-Se pide el número de unidades de tiempo de ejecución de un proceso, a partir del cual, serán consideradas la frecuencia/tiempo de uso de una página y su clase: \n$NORMAL" | tee -a $informeConColorTotal
+				calcDatoAleatorioGeneral 1 $maxDato # Generar un número aleatorio dentro del rango
 				seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado=$datoAleatorioGeneral
-#EN-4890-
-#EN-4900-
+				#16-17-Se pide el valor máximo de la antigüedad en un intervalo de tiempo, a partir de la cual, no será considerada.: \n$NORMAL" | tee -a $informeConColorTotal
+				calcDatoAleatorioGeneral 1 $maxDato # Generar un número aleatorio dentro del rango
 				seleccionAlgoritmoPaginacion_clases_uso_rec_valor=$datoAleatorioGeneral
-#EN-4910-
-#EN-4920-
+				#16-17-Se pide el valor máximo de unidades de tiempo de antigüedad de ejecución de un proceso, a partir de la cual, una página será considerada como NO referenciada: \n$NORMAL" | tee -a $informeConColorTotal
+				calcDatoAleatorioGeneral 1 $maxDato # Generar un número aleatorio dentro del rango
 				seleccionAlgoritmoPaginacion_clases_valor=$datoAleatorioGeneral
 			fi
-#EN-4930-
+			ordenarDatosEntradaFicheros #Ordena los datos para ser mostrados y considerados por orden de llegada.
 			echo -ne "$NORMAL\nAlgoritmo de paginación:$seleccionAlgoritmoPaginacion" | tee -a $informeConColorTotal
 			echo -ne "$NORMAL\nNúmero de Ensayo:$indEnsayos\n" | tee -a $informeConColorTotal
 			echo -e "Algoritmo de paginación: $seleccionAlgoritmoPaginacion" >> $informeSinColorTotal
 			echo -e "Número de Ensayo: $indEnsayos" >> $informeSinColorTotal
-#EN-4940-
-#EN-4950-
+			inicioNuevo #Cuando se han definido todas las opciones se inicia la ejecución del programa
+			mostrarEventos #Se define la variable con el título completo del algoritmo ejecutado ($algoritmoPaginacionContinuidadReubicabilidadSeleccionado).
 			echo -ne "$algoritmoPaginacionContinuidadReubicabilidadSeleccionado $seleccionAlgoritmoPaginacion $indEnsayos $promedio_espera $promedio_retorno $suma_contadorAlgPagFallosProcesoAcumulado $suma_contadorAlgPagExpulsionesForzadasProcesoAcumulado" >> $nomFicheroDatosEjecucionAutomatica
 			echo -ne " $seleccionAlgoritmoPaginacion_frecuencia_valor $seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado $seleccionAlgoritmoPaginacion_clases_frecuencia_valor $seleccionAlgoritmoPaginacion_clases_valor" >> $nomFicheroDatosEjecucionAutomatica
 			echo -e " $seleccionAlgoritmoPaginacion_uso_rec_valor $seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado $seleccionAlgoritmoPaginacion_clases_uso_rec_valor $seleccionAlgoritmoPaginacion_clases_valor" >> $nomFicheroDatosEjecucionAutomatica
 		done
 	done	
-#EN-4960-
+} #Fin de ejecutarEnsayosDatosIguales()
 
 ####################################################################################
 # Sinopsis: #Se usan los conjuntos de datos ya definidos anteriormente para ejecutar los ensayos automáticos y se recoger los datos en ficheros secuenciales. Se usa el mismo conjunto de datos para el ensayo de todos y cada uno de los algoritmos.
 ####################################################################################
 function ejecutarEnsayosDatosIgualesAnteriores { 
-#EN-4970-
-#EN-4980-
-#EN-4990-
-#EN-5000-
+	numAlgoritmosPaginacion=17 #Número de algoritmos de paginación que se probarán con cada conjunto de datos sacados de los subrangos, previamente calculados desde el fichero de rangos amplios.
+	seleccionMenuEleccionEntradaDatos=2 #Datos, que se ejecutan con las diferentes opciones.
+	#Se pueden definir los diferentes modos de ejecución (1-Ejecución por eventos // 2-Ejecución automática (Por eventos y sin pausas) // 3-Ejecución completa (Por eventos con pausas de cierto número de segundos) // 4-Ejecución por unidad de tiempo (Con un volcado en cada unidad de tiempo) // 5-Ejecución completa (Sin representación de resultados intermedios)) 
+	optejecucion=5 #Sólo se guardan los datos de las medias de los tiempos de espera y retorno, el número de fallos de página totales y el número de expulsiones de procesos forzadas en RR totales. Viene de la variable $seleccionMenuModoTiempoEjecucionAlgormitmo en el menú de selección de modo de ejecución MenuModoTiempoEjecucionAlgormitmo()			
 	dirInformes="./Informes/RecogerDatosAutomIguales"
 	dirInformesAnteriores="./Informes/RecogerDatosAutomIgualesAnteriores"
-#EN-5010-
-#EN-5020-
+	seleccionAlgoritmoPaginacion_uso_rec_valor="" #Se define el valor máximo del contador de la antigüedad a partir de la cual no será considerada.
+	seleccionAlgoritmoPaginacion_frecuencia_valor="" #Se define el valor máximo del contador de frecuencia, a partir de la cual, no será considerada.
 	if [[ ! -d $dirInformesAnteriores ]]; then
 		mkdir $dirInformesAnteriores   
 	fi
-#EN-5030-
-#EN-5040-
+	for (( indEnsayos = 1; indEnsayos <= $seleccionNumEnsayos; indEnsayos++ )); do #Primero se inicializan los ficheros con los datos a tratar.
+		nomFicheroDatos="./Informes/RecogerDatosAutomIgualesAnteriores/DatosDefault"$indEnsayos".txt" #Se define el fichero sobre el que se guardan los datos que se extraen de los subrangos.
 		if [[ -f $nomFicheroDatos ]]; then
-#EN-5050-
+			truncate -s 0 $nomFicheroDatos #Se borran los ficheros anteriores
 		fi
 	done
 	files=($dirInformes"/DatosDefault"*".txt")
 	echo -e "\n\nFicheros existentes:\n$NORMAL" | tee -a $informeConColorTotal
 	echo -e "\n\nFicheros existentes:\n" >> $informeSinColorTotal 
-#EN-5060-
+	for i in "${!files[@]}"; do #Localiza en qué posición encuentra el dato (da la posición, pero no la variable en el array)
 		echo -e ${files[$i]} 
 		cp ${files[$i]} "$dirInformesAnteriores/"
 	done
-#EN-5070-
+	nomFicheroDatosEjecucionAutomatica="$dirInformesAnteriores/DatosEjecucionAutomatica.txt" #Se inicializa la variable de fichero de datos dond se recogen todos los datos finales.
 	if [[ -f $nomFicheroDatosEjecucionAutomatica ]]; then
-#EN-5080-
+		truncate -s 0 $nomFicheroDatosEjecucionAutomatica #Se borran los ficheros anteriores
 	fi
 	echo -ne "Título AlgPag NumEnsayo T.esperamedio T.retornomedio TotalFallosPagina TotalExpulsionesForzadasRR" >> $nomFicheroDatosEjecucionAutomatica
 	echo -ne " MáxFrec TiempoConsiderado FrecValor Clase" >> $nomFicheroDatosEjecucionAutomatica
 	echo -e " MáxUsoRec TiempoConsiderado UsoRecValor Clase" >> $nomFicheroDatosEjecucionAutomatica
-#EN-5090-
-#EN-5100-
+	for (( indEnsayos = 1; indEnsayos <= $seleccionNumEnsayos; indEnsayos++ )); do #Ahora se leen los datos ya guardados en los ficheros de datos y se tratan.
+		nomFicheroDatos=$dirInformesAnteriores"/DatosDefault"$indEnsayos".txt" #Se define el fichero desde el que se leen los datos que se extraen de los subrangos.
 		maxDatoCierre=0
 		leer_datos_desde_fichero $nomFicheroDatos
-#EN-5110-
+		if [[ $maxDatoCierre -eq 0 ]]; then #Permite calcular el máximo del valor una única vez para cada conjunto de datos en cada ensayo, pero que sirve para todos los algoritmos de paginación.
 			maxDato=0
 			maxDatoCierre=1
-#EN-5120-
+			for (( i=0; i<$nprocesos; i++ )); do #Se calcula el mayor de lso tiempos de ejecución para calcular un valor aleatorio entre 1 y ese máximo. Podría usarse cualquier rango, pero este dato puede estar relacionado con lso datos del problema.
 				if [[ ${ejecucion[$i]} -gt $maxDato ]]; then 
 					maxDato=${ejecucion[$i]} 
 				fi
 			done
 		fi
 		for (( seleccionAlgoritmoPaginacion = 1; seleccionAlgoritmoPaginacion <= $numAlgoritmosPaginacion; seleccionAlgoritmoPaginacion++ )); do 
-#EN-5130-
+			informeSinColorTotal="./Informes/RecogerDatosAutomIgualesAnteriores/informeBN"$indEnsayos"_"$seleccionAlgoritmoPaginacion".txt" #Se define el fichero sobre el que se guardan los volcados en COLOR.
 			if [[ -f $informeSinColorTotal ]]; then
-#EN-5140-
+				truncate -s 0 $informeSinColorTotal #Se borran los ficheros anteriores
 			fi
-#EN-5150-
+			informeConColorTotal="./Informes/RecogerDatosAutomIgualesAnteriores/informeCOLOR"$indEnsayos"_"$seleccionAlgoritmoPaginacion".txt" #Se define el fichero sobre el que se guardan los volcados en BN.
 			if [[ -f $informeConColorTotal ]]; then
-#EN-5160-
+				truncate -s 0 $informeConColorTotal #Se borran los ficheros anteriores
 			fi
-#EN-5170-
-#EN-5180-
-#EN-5190-
+			if [[ $seleccionAlgoritmoPaginacion -eq 8 || $seleccionAlgoritmoPaginacion -eq 9 ]]; then #Permite calcular el máximo del valor una única vez para cada conjunto de datos en cada ensayo, pero que sirve para todos los algoritmos de paginación.
+				#8-9-Introduce el valor máximo de la frecuencia, a partir de la cual, no será considerada.: \n$NORMAL" | tee -a $informeConColorTotal
+				calcDatoAleatorioGeneral 1 $maxDato # Generar un número aleatorio dentro del rango
 				seleccionAlgoritmoPaginacion_frecuencia_valor=$datoAleatorioGeneral
 			fi
-#EN-5200-
-#EN-5210-
-#EN-5220-
+			if [[ $seleccionAlgoritmoPaginacion -eq 10 || $seleccionAlgoritmoPaginacion -eq 11 ]]; then #Permite calcular el máximo del valor una única vez para cada conjunto de datos en cada ensayo, pero que sirve para todos los algoritmos de paginación.
+				#10-11-Se pide el valor del tiempo de ejecución de un proceso a partir del cual serán consideradas la "frecuencia de uso/tiempo de uso" de una página y su clase.
+				calcDatoAleatorioGeneral 1 $maxDato # Generar un número aleatorio dentro del rango
 				seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado=$datoAleatorioGeneral
-#EN-5230-
-#EN-5240-
+				#10-11-Se pide el valor máximo del contador de frecuencia en un intervalo de tiempo, a partir de la cual, no será considerada.
+				calcDatoAleatorioGeneral 1 $maxDato # Generar un número aleatorio dentro del rango
 				seleccionAlgoritmoPaginacion_clases_frecuencia_valor=$datoAleatorioGeneral
-#EN-5250-
-#EN-5260-
+				#10-11-Se pide el valor máximo de unidades de tiempo de antigüedad a partir de la cual una página será considerada como NO referenciada
+				calcDatoAleatorioGeneral 1 $maxDato # Generar un número aleatorio dentro del rango
 				seleccionAlgoritmoPaginacion_clases_valor=$datoAleatorioGeneral
 			fi
-#EN-5270-
-#EN-5280-
-#EN-5290-
+			if [[ $seleccionAlgoritmoPaginacion -eq 14 || $seleccionAlgoritmoPaginacion -eq 15 ]]; then #Permite calcular el máximo del valor una única vez para cada conjunto de datos en cada ensayo, pero que sirve para todos los algoritmos de paginación.
+				#14-15-Introduce el valor máximo de la frecuencia, a partir de la cual, no será considerada.: \n$NORMAL" | tee -a $informeConColorTotal
+				calcDatoAleatorioGeneral 1 $maxDato # Generar un número aleatorio dentro del rango
 				seleccionAlgoritmoPaginacion_uso_rec_valor=$datoAleatorioGeneral
 			fi
-#EN-5300-
-#EN-5310-
-#EN-5320-
+			if [[ $seleccionAlgoritmoPaginacion -eq 16 || $seleccionAlgoritmoPaginacion -eq 17 ]]; then #Permite calcular el máximo del valor una única vez para cada conjunto de datos en cada ensayo, pero que sirve para todos los algoritmos de paginación.
+				#16-17-Se pide el número de unidades de tiempo de ejecución de un proceso, a partir del cual, serán consideradas la frecuencia/tiempo de uso de una página y su clase: \n$NORMAL" | tee -a $informeConColorTotal
+				calcDatoAleatorioGeneral 1 $maxDato # Generar un número aleatorio dentro del rango
 				seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado=$datoAleatorioGeneral
-#EN-5330-
-#EN-5340-
+				#16-17-Se pide el valor máximo de la antigüedad en un intervalo de tiempo, a partir de la cual, no será considerada.: \n$NORMAL" | tee -a $informeConColorTotal
+				calcDatoAleatorioGeneral 1 $maxDato # Generar un número aleatorio dentro del rango
 				seleccionAlgoritmoPaginacion_clases_uso_rec_valor=$datoAleatorioGeneral
-#EN-5350-
-#EN-5360-
+				#16-17-Se pide el valor máximo de unidades de tiempo de antigüedad de ejecución de un proceso, a partir de la cual, una página será considerada como NO referenciada: \n$NORMAL" | tee -a $informeConColorTotal
+				calcDatoAleatorioGeneral 1 $maxDato # Generar un número aleatorio dentro del rango
 				seleccionAlgoritmoPaginacion_clases_valor=$datoAleatorioGeneral
 			fi
-#EN-5370-
+			ordenarDatosEntradaFicheros #Ordena los datos para ser mostrados y considerados por orden de llegada.
 			echo -ne "$NORMAL\nAlgoritmo de paginación:$seleccionAlgoritmoPaginacion" | tee -a $informeConColorTotal
 			echo -ne "$NORMAL\nNúmero de Ensayo:$indEnsayos\n" | tee -a $informeConColorTotal
 			echo -e "Algoritmo de paginación: $seleccionAlgoritmoPaginacion" >> $informeSinColorTotal
 			echo -e "Número de Ensayo: $indEnsayos" >> $informeSinColorTotal
-#EN-5380-
-#EN-5390-
+			inicioNuevo #Cuando se han definido todas las opciones se inicia la ejecución del programa
+			mostrarEventos #Se define la variable con el título completo del algoritmo ejecutado ($algoritmoPaginacionContinuidadReubicabilidadSeleccionado).
 			echo -ne "$algoritmoPaginacionContinuidadReubicabilidadSeleccionado $seleccionAlgoritmoPaginacion $indEnsayos $promedio_espera $promedio_retorno $suma_contadorAlgPagFallosProcesoAcumulado $suma_contadorAlgPagExpulsionesForzadasProcesoAcumulado" >> $nomFicheroDatosEjecucionAutomatica
 			echo -ne " $seleccionAlgoritmoPaginacion_frecuencia_valor $seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado $seleccionAlgoritmoPaginacion_clases_frecuencia_valor $seleccionAlgoritmoPaginacion_clases_valor" >> $nomFicheroDatosEjecucionAutomatica
 			echo -e " $seleccionAlgoritmoPaginacion_uso_rec_valor $seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado $seleccionAlgoritmoPaginacion_clases_uso_rec_valor $seleccionAlgoritmoPaginacion_clases_valor" >> $nomFicheroDatosEjecucionAutomatica
 		done
 	done	
-#EN-5400-
+} #Fin de ejecutarEnsayosDatosIgualesAnteriores()
 
 ####################################################################################
 # Sinopsis: #Se usan los conjuntos de datos ya definidos anteriormente para ejecutar los ensayos automáticos y se recoger los datos en ficheros secuenciales. Se usa el mismo conjunto de datos para el ensayo de todos y cada uno de los algoritmos.
 ####################################################################################
 function ejecutarEnsayosDatosIgualesAnterioresCompleto { 	
-#EN-5410-
-#EN-5420-
-#EN-5430-
-#EN-5440-
-#EN-5450-
+	#Se define la fuente de datos utilizada para la obtención de los datos a utilizar en el posterior tratamiento. 
+	seleccionMenuEleccionEntradaDatos=2 #Datos, que se ejecutan con las diferentes opciones.
+	#Se definen los diferentes modos de ejecución (1-Ejecución por eventos // 2-Ejecución automática (Por eventos y sin pausas) // 3-Ejecución completa (Por eventos con pausas de cierto número de segundos) // 4-Ejecución por unidad de tiempo (Con un volcado en cada unidad de tiempo) // 5-Ejecución completa (Sin representación de resultados intermedios)) 
+	optejecucion=5 #Sólo se guardan los datos de las medias de los tiempos de espera y retorno, el número de fallos de página totales y el número de expulsiones de procesos forzadas en RR totales. Viene de la variable $seleccionMenuModoTiempoEjecucionAlgormitmo en el menú de selección de modo de ejecución MenuModoTiempoEjecucionAlgormitmo()			
+	#Se definen los diferentes directorios utilizados para guardar los datos obtenidos
 	dirInformes="./Informes/RecogerDatosAutomIguales"
 	dirInformesAnterioresCompleto="./Informes/RecogerDatosAutomIgualesAnterioresCompleto"
-#EN-5460-
-#EN-5470-
-#EN-5480-
-#EN-5490-
-#EN-5500-
-#EN-5510-
-#EN-5520-
-#EN-5530-
-#EN-5540-
-#EN-5550-
-#EN-5560-
-#EN-5570-
-#EN-5580-
-#EN-5590-
-#EN-5600-
-#EN-5610-
-#EN-5620-
-#EN-5630-
-#EN-5640-
-#EN-5650-
-#EN-5660-
-#EN-5670-
-#EN-5680-
-#EN-5690-
+	#Se definen las variables necesarias para ejecutar los diferentes algoritmos y opciones.
+	algoritmoPaginacionContinuidadReubicabilidadSeleccionado="" #Define el título de la cabecera de los volcados
+	indEnsayos="" #Define el número de ensayo tratado 
+	seleccionMenuAlgoritmoGestionProcesos="" #Define el algoritmo usado para resolver la gestión de Procesos (FCFS/SJF/SRPT/Prioridades/Round-Robin)
+	numAlgoritmosGestionProcesos=5 #Máximo número de algoritmos de gestión de procesos (FCFS (1), SJF (2), SRPT (3), Prioridades (4), Round-Robin (5)) que se probarán con cada conjunto de datos sacados de los subrangos, previamente calculados desde el fichero de rangos amplios.
+	numAlgoritmosContinuidad=2 #Máximo número de opciones del tipo de memoria (No Continua (1)/Continua (2)) 
+	numAlgoritmoscontinuidadNo0Si1=1 #Máximo número de opciones del tipo de memoria (No Continua (0)/Continua (1)) 
+	numAlgoritmosReubicabilidad=2 #Máximo número de opciones del tipo de memoria (No Reubicable (1)/Reubicable (2)) 
+	numAlgoritmosreubicabilidadNo0Si1=1 #Máximo número de opciones del tipo de reubicabilidad (No Reubicable (0)/Reubicable (1)) 
+	seleccionAlgoritmoPaginacion="" #Define el algoritmo usado para resolver los fallos de página.
+	numAlgoritmosPaginacion=17 #Máximo número de algoritmos de paginación (FIFO, Reloj, SegOp, Óptimo, MFU, LFU, NFU, MRU, LRU, NRU,...) que se probarán con cada conjunto de datos sacados de los subrangos, previamente calculados desde el fichero de rangos amplios.
+	numAlgoritmosTipoPrioridad=2 #Máximo número de opciones del tipo de prioridad (Mayor (1)/Menor (2)) 
+	numAlgoritmosApropiatividad=2 #Máximo número de opciones del tipo de apropiatividad (No Apropiativo (1)/Apropiativo (2)) 
+	numAlgoritmosapropiatividadNo0Si1=1 #Máximo número de opciones del tipo de apropiatividad (No Apropiativo (0)/Apropiativo (1)) 
+	promedio_espera="" #Define el tiempo de espera medio de los procesos 
+	promedio_retorno="" #Define el tiempo de retorno medio de los procesos
+	suma_contadorAlgPagFallosProcesoAcumulado="" #Define el número de fallos de página producidos
+	suma_contadorAlgPagExpulsionesForzadasProcesoAcumulado="" #Define el número de expulsiones forzadas por Round-Robin (RR)
+	seleccionAlgoritmoPaginacion_frecuencia_valor="" #Define el valor máximo del contador de frecuencia, a partir de la cual, no será considerada.
+	seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado="" #Define el valor del tiempo de ejecución de un proceso a partir del cual serán consideradas la "frecuencia de uso/tiempo de uso" de una página y su clase.
+	seleccionAlgoritmoPaginacion_clases_frecuencia_valor="" #Define el valor máximo del contador de frecuencia en un intervalo de tiempo, a partir de la cual, no será considerada.
+	seleccionAlgoritmoPaginacion_clases_valor="" #Define el valor máximo de unidades de tiempo de antigüedad a partir de la cual una página será considerada como NO referenciada en algoritmos basados en la "frecuencia/tiempo de antigüedad" de uso
+	seleccionAlgoritmoPaginacion_uso_rec_valor="" #Define el valor máximo del contador de la antigüedad a partir de la cual no será considerada.
+	seleccionAlgoritmoPaginacion_clases_uso_rec_valor="" #Define el valor máximo del contador de antigüedad en un intervalo de tiempo, a partir de la cual, no será considerada.
 	
 	if [[ ! -d $dirInformesAnterioresCompleto ]]; then
 		mkdir $dirInformesAnterioresCompleto   
 	fi
-#EN-5700-
-#EN-5710-
+	for (( indEnsayos = 1; indEnsayos <= $seleccionNumEnsayos; indEnsayos++ )); do #Primero se inicializan los ficheros con los datos a tratar.
+		nomFicheroDatos="./Informes/RecogerDatosAutomIgualesAnterioresCompleto/DatosDefault"$indEnsayos".txt" #Se define el fichero sobre el que se guardan los datos que se extraen de los subrangos.
 		if [[ -f $nomFicheroDatos ]]; then
-#EN-5720-
+			truncate -s 0 $nomFicheroDatos #Se borran los ficheros anteriores
 		fi
 	done
 	files=($dirInformes"/DatosDefault"*".txt")
 	echo -e "\n\nFicheros existentes:\n$NORMAL" | tee -a $informeConColorTotal
 	echo -e "\n\nFicheros existentes:\n" >> $informeSinColorTotal 
-#EN-5730-
+	for i in "${!files[@]}"; do #Localiza en qué posición encuentra el dato (da la posición, pero no la variable en el array)
 		echo -e ${files[$i]} 
 		cp ${files[$i]} "$dirInformesAnterioresCompleto/"
 	done
-#EN-5740-
+	nomFicheroDatosEjecucionAutomatica="$dirInformesAnterioresCompleto/DatosEjecucionAutomatica.txt" #Se inicializa la variable de fichero de datos dond se recogen todos los datos finales.
 	if [[ -f $nomFicheroDatosEjecucionAutomatica ]]; then
-#EN-5750-
+		truncate -s 0 $nomFicheroDatosEjecucionAutomatica #Se borran los ficheros anteriores
 	fi
 	echo -ne "Título NumEnsayo AlgGestProc Contin Reubic AlgPag TipoPrio Apropia Quantum" >> $nomFicheroDatosEjecucionAutomatica
 	echo -ne " T.esperamedio T.retornomedio TotalFallosPagina TotalExpulsionesForzadasRR" >> $nomFicheroDatosEjecucionAutomatica
 	echo -ne " MáxFrec TiempoConsiderado FrecValor FrecClase" >> $nomFicheroDatosEjecucionAutomatica
 	echo -e " MáxUsoRec TiempoConsiderado UsoRecValor UsoRecClase" >> $nomFicheroDatosEjecucionAutomatica
-#EN-5760-
-#EN-5770-
-#EN-5780-
+	for (( indEnsayos = 1; indEnsayos <= $seleccionNumEnsayos; indEnsayos++ )); do #Ahora se leen los datos ya guardados en los ficheros de datos y se tratan.
+		nomFicheroDatos=$dirInformesAnterioresCompleto"/DatosDefault"$indEnsayos".txt" #Se define el fichero desde el que se leen los datos que se extraen de los subrangos.
+	if ! [[ -f $nomFicheroDatosEjecucionAutomatica ]]; then #Si no se encuentra un archivo de datos por no haber creado previamente el conjunto de datos necesario, se muestra un mensaje de error y se para el bucle.
 		echo -ne "Error: No se encuentra el fichero de datos "$nomFicheroDatos | tee -a $informeConColorTotal
 		echo -ne "Error: No se encuentra el fichero de datos "$nomFicheroDatos >> $informeSinColorTotal 
 		break
 	fi		
 		maxDatoCierre=0
 		leer_datos_desde_fichero $nomFicheroDatos
-#EN-5790-
-#EN-5800-
-#EN-5810-
-#EN-5820-
-#EN-5830-
-#EN-5840-
-#EN-5850-
+		quantumSec=$quantum #Define el quantum utilizado en Round-Robin (RR). Se usa para salvar el dato hasta que se necesite y que no se repita en los listados.
+		quantum="" #Define el quantum utilizado en Round-Robin (RR)
+		seleccionTipoPrioridadSec=$seleccionTipoPrioridad #Define el tipo de apropiatividad utilizado en Prioridad. Se usa para salvar el dato hasta que se necesite y que no se repita en los listados.
+		seleccionTipoPrioridad="" #Define el Tipo de Prioridad (Mayor (1)/Menor (2)).
+		seleccionMenuApropiatividadSec=$seleccionMenuApropiatividad #Define el modo de apropiatividad utilizado en Prioridad. Se usa para salvar el dato hasta que se necesite y que no se repita en los listados.
+		seleccionMenuApropiatividad="" #Define el Tipo de Apropiatividad (No Apropiativo (1)/Apropiativo (2)).
+		if [[ $maxDatoCierre -eq 0 ]]; then #Permite calcular el máximo del valor una única vez para cada conjunto de datos en cada ensayo, pero que sirve para todos los algoritmos de paginación.
 			maxDato=0
 			maxDatoCierre=1
-#EN-5860-
+			for (( i=0; i<$nprocesos; i++ )); do #Se calcula el mayor de lso tiempos de ejecución para calcular un valor aleatorio entre 1 y ese máximo. Podría usarse cualquier rango, pero este dato puede estar relacionado con lso datos del problema.
 				if [[ ${ejecucion[$i]} -gt $maxDato ]]; then 
 					maxDato=${ejecucion[$i]} 
 				fi
@@ -2747,57 +2747,57 @@ function ejecutarEnsayosDatosIgualesAnterioresCompleto {
 		fi
 		for (( seleccionMenuAlgoritmoGestionProcesos=1 ; seleccionMenuAlgoritmoGestionProcesos<=$numAlgoritmosGestionProcesos ; seleccionMenuAlgoritmoGestionProcesos++ )); do
 			if ([[ $seleccionMenuAlgoritmoGestionProcesos -ge 1 && $seleccionMenuAlgoritmoGestionProcesos -le 3 ]]) || [[ $seleccionMenuAlgoritmoGestionProcesos -eq 5 ]]; then
-#EN-5870-
-#EN-5880-
+				if [[ $seleccionMenuAlgoritmoGestionProcesos -eq 5 ]]; then #Define el quantum utilizado en Round-Robin (RR). Se usa para recuperar el dato cuando se necesite y que no se repita en los listados.
+					quantum=$(($quantumSec + 0)) #Se hace para eliminar el espacio que contiene la variable, y por el que la exportación a fichero da problemas porque el resto de datos se desplazan hacia la derecha.
 				fi
-#EN-5890-
+				seleccionMenuContinuidad="" #Define el número de opciones del tipo de memoria (Continua/No Continua)
 				for (( seleccionMenuContinuidad=1 ; seleccionMenuContinuidad<=$numAlgoritmosContinuidad ; seleccionMenuContinuidad++ )); do
-#EN-5900-
+					seleccionMenuReubicabilidad="" #Define el número de opciones del tipo de memoria (Reubicable/No Reubicable)
 					for (( seleccionMenuReubicabilidad=1 ; seleccionMenuReubicabilidad<=$numAlgoritmosReubicabilidad ; seleccionMenuReubicabilidad++ )); do		
 						for (( seleccionAlgoritmoPaginacion = 1; seleccionAlgoritmoPaginacion <= $numAlgoritmosPaginacion; seleccionAlgoritmoPaginacion++ )); do 
-#EN-5910-
+							informeSinColorTotal="./Informes/RecogerDatosAutomIgualesAnterioresCompleto/informeBN"$indEnsayos"_"$seleccionMenuAlgoritmoGestionProcesos"_"$seleccionMenuContinuidad"_"$seleccionMenuReubicabilidad"_"$seleccionAlgoritmoPaginacion".txt" #Se define el fichero sobre el que se guardan los volcados en COLOR.
 							if [[ -f $informeSinColorTotal ]]; then
-#EN-5920-
+								truncate -s 0 $informeSinColorTotal #Se borran los ficheros anteriores
 							fi
-#EN-5930-
+							informeConColorTotal="./Informes/RecogerDatosAutomIgualesAnterioresCompleto/informeCOLOR"$indEnsayos"_"$seleccionMenuAlgoritmoGestionProcesos"_"$seleccionMenuContinuidad"_"$seleccionMenuReubicabilidad"_"$seleccionAlgoritmoPaginacion".txt" #Se define el fichero sobre el que se guardan los volcados en BN.
 							if [[ -f $informeConColorTotal ]]; then
-#EN-5940-
+								truncate -s 0 $informeConColorTotal #Se borran los ficheros anteriores
 							fi
-#EN-5950-
-#EN-5960-
-#EN-5970-
+							if [[ $seleccionAlgoritmoPaginacion -eq 8 || $seleccionAlgoritmoPaginacion -eq 9 ]]; then #Permite calcular el máximo del valor una única vez para cada conjunto de datos en cada ensayo, pero que sirve para todos los algoritmos de paginación.
+								#8-9-Introduce el valor máximo de la frecuencia, a partir de la cual, no será considerada.: \n$NORMAL" | tee -a $informeConColorTotal
+								calcDatoAleatorioGeneral 1 $maxDato # Generar un número aleatorio dentro del rango
 								seleccionAlgoritmoPaginacion_frecuencia_valor=$datoAleatorioGeneral
 							fi
-#EN-5980-
-#EN-5990-
-#EN-6000-
+							if [[ $seleccionAlgoritmoPaginacion -eq 10 || $seleccionAlgoritmoPaginacion -eq 11 ]]; then #Permite calcular el máximo del valor una única vez para cada conjunto de datos en cada ensayo, pero que sirve para todos los algoritmos de paginación.
+								#10-11-Se pide el valor del tiempo de ejecución de un proceso a partir del cual serán consideradas la "frecuencia de uso/tiempo de uso" de una página y su clase.
+								calcDatoAleatorioGeneral 1 $maxDato # Generar un número aleatorio dentro del rango
 								seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado=$datoAleatorioGeneral
-#EN-6010-
-#EN-6020-
+								#10-11-Se pide el valor máximo del contador de frecuencia en un intervalo de tiempo, a partir de la cual, no será considerada.
+								calcDatoAleatorioGeneral 1 $maxDato # Generar un número aleatorio dentro del rango
 								seleccionAlgoritmoPaginacion_clases_frecuencia_valor=$datoAleatorioGeneral
-#EN-6030-
-#EN-6040-
+								#10-11-Se pide el valor máximo de unidades de tiempo de antigüedad a partir de la cual una página será considerada como NO referenciada
+								calcDatoAleatorioGeneral 1 $maxDato # Generar un número aleatorio dentro del rango
 								seleccionAlgoritmoPaginacion_clases_valor=$datoAleatorioGeneral
 							fi
-#EN-6050-
-#EN-6060-
-#EN-6070-
+							if [[ $seleccionAlgoritmoPaginacion -eq 14 || $seleccionAlgoritmoPaginacion -eq 15 ]]; then #Permite calcular el máximo del valor una única vez para cada conjunto de datos en cada ensayo, pero que sirve para todos los algoritmos de paginación.
+								#14-15-Introduce el valor máximo de la frecuencia, a partir de la cual, no será considerada.: \n$NORMAL" | tee -a $informeConColorTotal
+								calcDatoAleatorioGeneral 1 $maxDato # Generar un número aleatorio dentro del rango
 								seleccionAlgoritmoPaginacion_uso_rec_valor=$datoAleatorioGeneral
 							fi
-#EN-6080-
-#EN-6090-
-#EN-6100-
+							if [[ $seleccionAlgoritmoPaginacion -eq 16 || $seleccionAlgoritmoPaginacion -eq 17 ]]; then #Permite calcular el máximo del valor una única vez para cada conjunto de datos en cada ensayo, pero que sirve para todos los algoritmos de paginación.
+								#16-17-Se pide el número de unidades de tiempo de ejecución de un proceso, a partir del cual, serán consideradas la frecuencia/tiempo de uso de una página y su clase: \n$NORMAL" | tee -a $informeConColorTotal
+								calcDatoAleatorioGeneral 1 $maxDato # Generar un número aleatorio dentro del rango
 								seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado=$datoAleatorioGeneral
-#EN-6110-
-#EN-6120-
+								#16-17-Se pide el valor máximo de la antigüedad en un intervalo de tiempo, a partir de la cual, no será considerada.: \n$NORMAL" | tee -a $informeConColorTotal
+								calcDatoAleatorioGeneral 1 $maxDato # Generar un número aleatorio dentro del rango
 								seleccionAlgoritmoPaginacion_clases_uso_rec_valor=$datoAleatorioGeneral
-#EN-6130-
-#EN-6140-
+								#16-17-Se pide el valor máximo de unidades de tiempo de antigüedad de ejecución de un proceso, a partir de la cual, una página será considerada como NO referenciada: \n$NORMAL" | tee -a $informeConColorTotal
+								calcDatoAleatorioGeneral 1 $maxDato # Generar un número aleatorio dentro del rango
 								seleccionAlgoritmoPaginacion_clases_valor=$datoAleatorioGeneral
 							fi
-#EN-6150-
-#EN-6160-
-#EN-6170-
+							ordenarDatosEntradaFicheros #Ordena los datos para ser mostrados y considerados por orden de llegada.
+							inicioNuevo #Cuando se han definido todas las opciones se inicia la ejecución del programa
+							mostrarEventos #Se define la variable con el título completo del algoritmo ejecutado ($algoritmoPaginacionContinuidadReubicabilidadSeleccionado).
 							echo -e "$NORMAL\n Número de Ensayo:$indEnsayos" | tee -a $informeConColorTotal
 							echo -e "$NORMAL Algoritmo:$algoritmoPaginacionContinuidadReubicabilidadSeleccionado" | tee -a $informeConColorTotal
 							echo -e " Número de Ensayo: $indEnsayos" >> $informeSinColorTotal
@@ -2807,71 +2807,71 @@ function ejecutarEnsayosDatosIgualesAnterioresCompleto {
 							echo -ne " $seleccionAlgoritmoPaginacion_frecuencia_valor $seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado $seleccionAlgoritmoPaginacion_clases_frecuencia_valor $seleccionAlgoritmoPaginacion_clases_valor" >> $nomFicheroDatosEjecucionAutomatica
 							echo -e " $seleccionAlgoritmoPaginacion_uso_rec_valor $seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado $seleccionAlgoritmoPaginacion_clases_uso_rec_valor $seleccionAlgoritmoPaginacion_clases_valor" >> $nomFicheroDatosEjecucionAutomatica
 							
-#EN-6180-
+							seleccionAlgoritmoPaginacion_frecuencia_valor="" #Se inicializan a "" para empezar el siguiente ciclo.
 							seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado=""
 							seleccionAlgoritmoPaginacion_clases_frecuencia_valor=""
 							seleccionAlgoritmoPaginacion_clases_valor=""
 							seleccionAlgoritmoPaginacion_uso_rec_valor=""
 							seleccionAlgoritmoPaginacion_clases_uso_rec_valor=""
 
-#EN-6190-
+						done #$seleccionAlgoritmoPaginacion_frecuencia_valor $seleccionAlgoritmoPaginacion_clases_frecuencia_valor $seleccionAlgoritmoPaginacion_uso_rec_valor
 					done
 				done
-#EN-6200-
+				quantum="" #Define el quantum utilizado en Round-Robin (RR). Se vuelve a anular hasta que se necesite.
 			fi
 			if [[ $seleccionMenuAlgoritmoGestionProcesos -eq 4 ]]; then
-#EN-6210-
+				seleccionTipoPrioridad="" #Define el Tipo de Prioridad (Mayor (1)/Menor (2)).
 				for (( seleccionTipoPrioridad=1 ; seleccionTipoPrioridad<=$numAlgoritmosTipoPrioridad ; seleccionTipoPrioridad++ )); do
-#EN-6220-
+					seleccionMenuApropiatividad="" #Define el Tipo de Apropiatividad (No Apropiativo (1)/Apropiativo (2)).
 					for (( seleccionMenuApropiatividad=1 ; seleccionMenuApropiatividad<=numAlgoritmosApropiatividad ; seleccionMenuApropiatividad++ )); do
-#EN-6230-
+						seleccionMenuContinuidad="" #Define el número de opciones del tipo de memoria (Continua/No Continua)
 						for (( seleccionMenuContinuidad=1 ; seleccionMenuContinuidad<=$numAlgoritmosContinuidad ; seleccionMenuContinuidad++ )); do
-#EN-6240-
+							seleccionMenuReubicabilidad="" #Define el número de opciones del tipo de memoria (Reubicable/No Reubicable)
 							for (( seleccionMenuReubicabilidad=1 ; seleccionMenuReubicabilidad<=$numAlgoritmosReubicabilidad ; seleccionMenuReubicabilidad++ )); do		
 								for (( seleccionAlgoritmoPaginacion = 1; seleccionAlgoritmoPaginacion <= $numAlgoritmosPaginacion; seleccionAlgoritmoPaginacion++ )); do 
-#EN-6250-
+									informeSinColorTotal="./Informes/RecogerDatosAutomIgualesAnterioresCompleto/informeBN"$indEnsayos"_"$seleccionMenuAlgoritmoGestionProcesos"_"$seleccionMenuContinuidad"_"$seleccionMenuReubicabilidad"_"$seleccionAlgoritmoPaginacion".txt" #Se define el fichero sobre el que se guardan los volcados en COLOR.
 									if [[ -f $informeSinColorTotal ]]; then
-#EN-6260-
+										truncate -s 0 $informeSinColorTotal #Se borran los ficheros anteriores
 									fi
-#EN-6270-
+									informeConColorTotal="./Informes/RecogerDatosAutomIgualesAnterioresCompleto/informeCOLOR"$indEnsayos"_"$seleccionMenuAlgoritmoGestionProcesos"_"$seleccionMenuContinuidad"_"$seleccionMenuReubicabilidad"_"$seleccionAlgoritmoPaginacion".txt" #Se define el fichero sobre el que se guardan los volcados en BN.
 									if [[ -f $informeConColorTotal ]]; then
-#EN-6280-
+										truncate -s 0 $informeConColorTotal #Se borran los ficheros anteriores
 									fi
-#EN-6290-
-#EN-6300-
-#EN-6310-
+									if [[ $seleccionAlgoritmoPaginacion -eq 8 || $seleccionAlgoritmoPaginacion -eq 9 ]]; then #Permite calcular el máximo del valor una única vez para cada conjunto de datos en cada ensayo, pero que sirve para todos los algoritmos de paginación.
+										#8-9-Introduce el valor máximo de la frecuencia, a partir de la cual, no será considerada.: \n$NORMAL" | tee -a $informeConColorTotal
+										calcDatoAleatorioGeneral 1 $maxDato # Generar un número aleatorio dentro del rango
 										seleccionAlgoritmoPaginacion_frecuencia_valor=$datoAleatorioGeneral
 									fi
-#EN-6320-
-#EN-6330-
-#EN-6340-
+									if [[ $seleccionAlgoritmoPaginacion -eq 10 || $seleccionAlgoritmoPaginacion -eq 11 ]]; then #Permite calcular el máximo del valor una única vez para cada conjunto de datos en cada ensayo, pero que sirve para todos los algoritmos de paginación.
+										#10-11-Se pide el valor del tiempo de ejecución de un proceso a partir del cual serán consideradas la "frecuencia de uso/tiempo de uso" de una página y su clase.
+										calcDatoAleatorioGeneral 1 $maxDato # Generar un número aleatorio dentro del rango
 										seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado=$datoAleatorioGeneral
-#EN-6350-
-#EN-6360-
+										#10-11-Se pide el valor máximo del contador de frecuencia en un intervalo de tiempo, a partir de la cual, no será considerada.
+										calcDatoAleatorioGeneral 1 $maxDato # Generar un número aleatorio dentro del rango
 										seleccionAlgoritmoPaginacion_clases_frecuencia_valor=$datoAleatorioGeneral
-#EN-6370-
-#EN-6380-
+										#10-11-Se pide el valor máximo de unidades de tiempo de antigüedad a partir de la cual una página será considerada como NO referenciada
+										calcDatoAleatorioGeneral 1 $maxDato # Generar un número aleatorio dentro del rango
 										seleccionAlgoritmoPaginacion_clases_valor=$datoAleatorioGeneral
 									fi
-#EN-6390-
-#EN-6400-
-#EN-6410-
+									if [[ $seleccionAlgoritmoPaginacion -eq 14 || $seleccionAlgoritmoPaginacion -eq 15 ]]; then #Permite calcular el máximo del valor una única vez para cada conjunto de datos en cada ensayo, pero que sirve para todos los algoritmos de paginación.
+										#14-15-Introduce el valor máximo de la frecuencia, a partir de la cual, no será considerada.: \n$NORMAL" | tee -a $informeConColorTotal
+										calcDatoAleatorioGeneral 1 $maxDato # Generar un número aleatorio dentro del rango
 										seleccionAlgoritmoPaginacion_uso_rec_valor=$datoAleatorioGeneral
 									fi
-#EN-6420-
-#EN-6430-
-#EN-6440-
+									if [[ $seleccionAlgoritmoPaginacion -eq 16 || $seleccionAlgoritmoPaginacion -eq 17 ]]; then #Permite calcular el máximo del valor una única vez para cada conjunto de datos en cada ensayo, pero que sirve para todos los algoritmos de paginación.
+										#16-17-Se pide el número de unidades de tiempo de ejecución de un proceso, a partir del cual, serán consideradas la frecuencia/tiempo de uso de una página y su clase: \n$NORMAL" | tee -a $informeConColorTotal
+										calcDatoAleatorioGeneral 1 $maxDato # Generar un número aleatorio dentro del rango
 										seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado=$datoAleatorioGeneral
-#EN-6450-
-#EN-6460-
+										#16-17-Se pide el valor máximo de la antigüedad en un intervalo de tiempo, a partir de la cual, no será considerada.: \n$NORMAL" | tee -a $informeConColorTotal
+										calcDatoAleatorioGeneral 1 $maxDato # Generar un número aleatorio dentro del rango
 										seleccionAlgoritmoPaginacion_clases_uso_rec_valor=$datoAleatorioGeneral
-#EN-6470-
-#EN-6480-
+										#16-17-Se pide el valor máximo de unidades de tiempo de antigüedad de ejecución de un proceso, a partir de la cual, una página será considerada como NO referenciada: \n$NORMAL" | tee -a $informeConColorTotal
+										calcDatoAleatorioGeneral 1 $maxDato # Generar un número aleatorio dentro del rango
 										seleccionAlgoritmoPaginacion_clases_valor=$datoAleatorioGeneral
 									fi
-#EN-6490-
-#EN-6500-
-#EN-6510-
+									ordenarDatosEntradaFicheros #Ordena los datos para ser mostrados y considerados por orden de llegada.
+									inicioNuevo #Cuando se han definido todas las opciones se inicia la ejecución del programa
+									mostrarEventos #Se define la variable con el título completo del algoritmo ejecutado ($algoritmoPaginacionContinuidadReubicabilidadSeleccionado).
 									echo -e "$NORMAL\n Número de Ensayo: $indEnsayos" | tee -a $informeConColorTotal
 									echo -e "$NORMAL Algoritmo: $algoritmoPaginacionContinuidadReubicabilidadSeleccionado" | tee -a $informeConColorTotal
 									echo -e " Número de Ensayo: $indEnsayos" >> $informeSinColorTotal
@@ -2881,32 +2881,32 @@ function ejecutarEnsayosDatosIgualesAnterioresCompleto {
 									echo -ne " $seleccionAlgoritmoPaginacion_frecuencia_valor $seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado $seleccionAlgoritmoPaginacion_clases_frecuencia_valor $seleccionAlgoritmoPaginacion_clases_valor" >> $nomFicheroDatosEjecucionAutomatica
 									echo -e " $seleccionAlgoritmoPaginacion_uso_rec_valor $seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado $seleccionAlgoritmoPaginacion_clases_uso_rec_valor $seleccionAlgoritmoPaginacion_clases_valor" >> $nomFicheroDatosEjecucionAutomatica
 								
-#EN-6520-
+									seleccionAlgoritmoPaginacion_frecuencia_valor="" #Se inicializan a "" para empezar el siguiente ciclo.
 									seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado=""
 									seleccionAlgoritmoPaginacion_clases_frecuencia_valor=""
 									seleccionAlgoritmoPaginacion_clases_valor=""
 									seleccionAlgoritmoPaginacion_uso_rec_valor=""
 									seleccionAlgoritmoPaginacion_clases_uso_rec_valor=""
-#EN-6530-
+								done #$seleccionAlgoritmoPaginacion_frecuencia_valor $seleccionAlgoritmoPaginacion_clases_uso_rec_valor $seleccionAlgoritmoPaginacion_uso_rec_valor 
 							done
 						done
 					done
-#EN-6540-
+					seleccionMenuApropiatividad="" #Define el Tipo de Apropiatividad (No Apropiativo (1)/Apropiativo (2)). Se vuelve a anular hasta que se vuelva a necesitar.
 				done
-#EN-6550-
+				seleccionTipoPrioridad="" #Define el Tipo de Prioridad (Mayor (1)/Menor (2)). Se vuelve a anular hasta que se vuelva a necesitar.
 			fi
 		done
 	done	
 	
-#EN-6560-
+} #Fin de ejecutarEnsayosDatosIgualesAnterioresCompleto()
 
 #######################################################################
 #######################################################################
-#EN-6570-
+#    Funciones
 #######################################################################
 #######################################################################
 #######################################################################
-#EN-6580-
+# Sinopsis: Para colorear lo impreso en pantalla.
 #######################################################################
 function cecho {
 	local default_msg="No message passed."                     
@@ -2916,104 +2916,104 @@ function cecho {
 	echo "$message"
 	tput sgr0                    
 	return
-#EN-6590-
+} #Fin de cecho()
 
 ####################################################################################
-#EN-6600-
+# Sinopsis: Genera los números de página a partir de las direcciones del proceso. 
 ####################################################################################
 function transformapag {
 	let pagTransformadas[$2]=`expr $1/$mem_direcciones`
-#EN-6610-
+} #Fin de transformapag()
 
 ####################################################################################
-#EN-6620-
+# Sinopsis: Calcula el número de direcciones por cada proceso y lo guarda en npagprocesos y el mayor número de páginas entre todos los procesos.
 ####################################################################################
 function vermaxpagsfichero {
-#EN-6630-
+	i=16 #Empieza en 14 por ser la primera línea del fichero con procesos.
 	for (( npagp = 0; npagp <= $p; npagp++ )); do
 		npagprocesos[$p]=`awk "NR==$i" $1 | wc -w `
 		(( i++ ))	
 	done
-#EN-6640-
-#EN-6650-
+	maxpags=0 #No se usa para nada
+	for verlas in ${npagprocesos[@]}; do #Calcula el mayor número de páginas de entre todos los procesos.
 		if (( $verlas > $maxpags )); then
 			maxpags=$verlas
 		fi
 	done
-#EN-6660-
+} #Fin de vermaxpagsfichero()
 
 ####################################################################################
-#EN-6670-
+# Sinopsis: Se leen datos desde fichero 
 ####################################################################################
-#EN-6680-
-#EN-6690-
-#EN-6700-
+function leer_datos_desde_fichero { #Lee los datos del fichero por el número de la línea
+	mem_num_marcos=`awk "NR==2" $1`  #Primer dato -> Tamaño en memoria
+	mem_direcciones=`awk "NR==4" $1`  #Quinto dato -> Tamaño de pagina
 	numDireccionesTotales=$(($mem_num_marcos * $mem_direcciones))
-#EN-6710-
-#EN-6720-
-#EN-6730-
-#EN-6740-
-#EN-6750-
-#EN-6760-
+	PriomInicial=`awk "NR==6" $1`  #Segundo dato -> Prioridad menor
+	PrioMInicial=`awk "NR==8" $1`  #Tercero dato -> Prioridad mayor
+	PrioR=`awk "NR==10" $1`  #Cuarto dato -> Tipo de prioridad - Realmente no se usa porque se introduce por teclado al seleccionar el algoritmo de gestión de procesos mediante la variable de selección $seleccionTipoPrioridad. 
+	tratarRangoPrioridadesDirecta $PriomInicial $PrioMInicial #Determina si el rango es de menor a mayor y si no lo es, lo modifica para convertir el problema con las prioridades invertidas, porque el código sólo resuelve ese caso.
+	variableReubicar=`awk "NR==12" $1`  #Sexto dato -> Variable para la reubicabilidad - Realmente no se usa porque se introduce por teclado tras seleccionar la posibilidad de reubicar procesos. 
+	quantum=`awk "NR==14" $1`  #Séptimo dato -> Quantum de Round Robin (RR)
 	maxfilas=`wc -l < $1`
-#EN-6770-
-#EN-6780-
-#EN-6790-
-#EN-6800-
-#EN-6810-
-#EN-6820-
-#EN-6830-
-#EN-6840-
+	nmarcostotales=$mem_num_marcos #Número de marcos totales de la memoria
+	memvacia=$nmarcostotales #Número de marcos vacíos
+	tamem=$(($nmarcostotales * $mem_direcciones)) #Tamaño de memoria total en direcciones
+	nprocesos=$(($maxfilas-15)) #Número de procesos definidos en el problema
+	p=0 #Índice local que recorre cada proceso definido en el problema
+	numOrdinalPagTeclado=0 #Índice que recorre cada dirección de cada proceso definido en el problema
+	one=0 #Define el número de dígitos de pantalla usados para controlar los saltos de línea. Deja 1 de margen izquierdo y varios más para controlar el comienzo del espacio usado para los datos en la tabla resumen.
+	for (( fila = 16; fila <= $maxfilas; fila++ )); do #Se inicia con 16 por ser la primera línea del fichero que contiene procesos. 
 		llegada[$p]=`awk "NR==$fila" $1 |  cut -d ' ' -f 1`
 		memoria[$p]=`awk "NR==$fila" $1 |  cut -d ' ' -f 2`
 		prioProc[$p]=`awk "NR==$fila" $1 |  cut -d ' ' -f 3`
-#EN-6850-
+		vermaxpagsfichero $1 #(Usa el número de línea donde empiezan a definirse los procesos.) Calcula el número de direcciones por cada proceso y lo guarda en npagprocesos[] y el mayor número de páginas entre todos los procesos (maxpags).
 		ejecucion[$p]=$(expr $[npagprocesos[$p]] - 3)
-#EN-6860-
-#EN-6870-
-#EN-6880-
+		tiempoEjecucion[$p]=${ejecucion[$p]} #Para ser equivalente al nuevo programa
+		numeroPaginasUsadasProceso[$p]=0 #Contendrá el número de páginas ya usadas en la ejecución de cada proceso
+		#El nombre de los procesos está predefinido: P01, P02, ...
 		numOrdinalPagTeclado=0
-#EN-6890-
+		for ((i=4;i<$((${tiempoEjecucion[$p]} + 4));i++)); do #maxpags es el mayor número de páginas entre todos los procesos. Se inicia con 4 por ser el primer campo que contiene direcciones en cada fila.
 			directionsYModificado=`awk "NR==$fila" $1 | cut -d ' ' -f $i` 
 			directions[$p,$numOrdinalPagTeclado]=`echo $directionsYModificado | cut -d '-' -f 1`
 			directions_AlgPagFrecUsoRec_pagina_modificada[$p,$numOrdinalPagTeclado,0]=`echo $directionsYModificado | cut -d '-' -f 2`
-#EN-6900-
+			transformapag directions[$p,$numOrdinalPagTeclado] $numOrdinalPagTeclado #let pagTransformadas[$2]=`expr $1/$mem_direcciones`
 			paginasDefinidasTotal[$p,$numOrdinalPagTeclado]=${pagTransformadas[$numOrdinalPagTeclado]} 
-#EN-6910-
+			if [[ $seleccionAlgoritmoPaginacion -eq 0 ]]; then #Este caso es para Memoria No Virtual, y por tanto, con la opción $seleccionMenuInicio=1
 				controlDatosNoVirtualFichero 
 			fi
-#EN-6920-
+			numOrdinalPagTeclado=$((numOrdinalPagTeclado+1)) #Posición en la que se define cada dirección dentro de un proceso.
 			((one++))
 		done
-#EN-6930-
+		unset pagTransformadas[@] #Analiza los datos para el caso de memoria No Virtual. Los procesos deben caber de forma completa en la memoria. Se elimina para poder hacer una segunda lectura sin datos anteriores.
 		p=$((p+1))
 	done 
-#EN-6940-
-#EN-6950-
+#	clear 
+} #Fin de leer_datos_desde_fichero() 
 
 #######################################################################
-#EN-6960-
+# Sinopsis: Analiza los datos para el caso de memoria No Virtual. Los procesos deben caber de forma completa en la memoria. 
 #######################################################################
 function controlDatosNoVirtualFichero {
-#EN-6970-
+	if [[ ${directions[$p,$numOrdinalPagTeclado]} -gt $(($numDireccionesTotales - 1)) ]]; then #Este caso es para Memoria No Virtual, y por tanto, con la opción $seleccionMenuInicio=1
 		echo -e "\n***Error en la lectura de datos. La dirección de memoria utilizada está fuera del rango definido por el número de marcos de página.\n"
 		echo -e "\n***Dirección definida: ${directions[$p,$numOrdinalPagTeclado]} \n"
 		echo -e "\n***Número de direcciones totales: $numDireccionesTotales \n"
 		exit 1
 	fi
-#EN-6980-
+	if [[ ${pagTransformadas[$numOrdinalPagTeclado]} -gt ${memoria[$p]} ]]; then #Este caso es para Memoria No Virtual, y por tanto, con la opción $seleccionMenuInicio=1
 		echo -e "\n***Error en la lectura de datos. La dirección de memoria utilizada está fuera del rango definido por el número de marcos de página y el número de direcciones por marco."
 		echo -ne "\n***Número de marcos: ${memoria[$p]}"
 		echo -e "\n***Número de páginas del proceso: ${pagTransformadas[$numOrdinalPagTeclado]}"
 		exit 1
 	fi
 	
-#EN-6990-
+} #Fin de controlDatosNoVirtualFichero() 
 
 #######################################################################
-#EN-7000-
+# Sinopsis: Extrae los límites de los rangos del fichero de rangos de última ejecución. 
 #######################################################################
-#EN-7010-
+function leer_rangos_desde_fichero { #Lee los datos del fichero por la posición en la línea
 	memoria_min=($(cat $1 | grep "RangoMarcosMemoria" | cut -f 2 -d " "))
 	memoria_max=($(cat $1 | grep "RangoMarcosMemoria" | cut -f 3 -d " "))
 	direcciones_min=($(cat $1 | grep "RangoDireccionesMarco" | cut -f 2 -d " "))
@@ -3043,13 +3043,13 @@ function controlDatosNoVirtualFichero {
 	direcciones_minInicial=$direcciones_min
 	direcciones_maxInicial=$direcciones_max
 	prio_menor_minInicial=$prio_menor_min #*Inicial - Datos a representar #Se invierten los rangos para calcular el mínimo, pero no para su representación, en la que se verán los datos originales *Inicial.
-#EN-7020-
-#EN-7030-
+	prio_menor_maxInicial=$prio_menor_max #*Inicial - Datos a representar
+	tratarRangoPrioridadesDirecta $prio_menor_minInicial $prio_menor_maxInicial #Determina si el rango es de menor a mayor y si no lo es, lo modifica para convertir el problema con las prioridades invertidas, porque el código sólo resuelve ese caso.
 	prio_menor_min=$PriomFinal
 	prio_menor_max=$PrioMFinal
 	prio_mayor_minInicial=$prio_mayor_min #*Inicial - Datos a representar #Se invierten los rangos para calcular el mínimo, pero no para su representación, en la que se verán los datos originales *Inicial.
-#EN-7040-
-#EN-7050-
+	prio_mayor_maxInicial=$prio_mayor_max #*Inicial - Datos a representar
+	tratarRangoPrioridadesDirecta $prio_mayor_minInicial $prio_mayor_maxInicial #Determina si el rango es de menor a mayor y si no lo es, lo modifica para convertir el problema con las prioridades invertidas, porque el código sólo resuelve ese caso.
 	prio_mayor_min=$PriomFinal
 	prio_mayor_max=$PrioMFinal
 	programas_minInicial=$programas_min
@@ -3068,12 +3068,12 @@ function controlDatosNoVirtualFichero {
 	quantum_maxInicial=$quantum_max
 	tamano_direcciones_proc_minInicial=$tamano_direcciones_proc_min
 	tamano_direcciones_proc_maxInicial=$tamano_direcciones_proc_max
-#EN-7060-
+	if [[ $memoria_min -gt $memoria_max ]]; then #Si el mayor es menor que el menor, se invierten los rangos 
 		invertirRangos $memoria_min $memoria_max
 		memoria_min=$min
 		memoria_max=$max
 	fi 
-#EN-7070-
+	if [[ $memoria_min -lt 0 ]]; then #Si ambos son negativos se desplazan a positivos
 		desplazarRangos $memoria_min $memoria_max
 		memoria_min=$min
 		memoria_max=$max
@@ -3115,7 +3115,7 @@ function controlDatosNoVirtualFichero {
 	fi
 	if [[ $llegada_min -lt 0 ]]; then 
 		desplazarRangos $llegada_min $llegada_max
-#EN-7080-
+		llegada_min=$(($min - 1)) #Este valor podría ser 0 
 		llegada_max=$(($max - 1))
 	fi 
 	if [[ $tiempo_ejec_min -gt $tiempo_ejec_max ]]; then
@@ -3125,7 +3125,7 @@ function controlDatosNoVirtualFichero {
 	fi
 	if [[ $tiempo_ejec_min -lt 0 ]]; then 
 		desplazarRangos $tiempo_ejec_min $tiempo_ejec_max
-#EN-7090-
+		tiempo_ejec_min=$(($min - 1)) #Este valor podría ser 0 
 		tiempo_ejec_max=$(($max - 1))
 	fi 
 	if [[ $tamano_marcos_proc_min -gt $tamano_marcos_proc_max ]]; then
@@ -3140,7 +3140,7 @@ function controlDatosNoVirtualFichero {
 	fi 
 	if [[ $prio_proc_min -gt $prio_proc_max ]]; then 
 		invertirRangos $prio_proc_min $prio_proc_max
-#EN-7100-
+		prio_proc_min=$min #Los valroes de las prioridades podrían ser 0 o negativos. 
 		prio_proc_max=$max
 	fi
 	if [[ $prio_proc_min -lt 0 ]]; then 
@@ -3159,7 +3159,7 @@ function controlDatosNoVirtualFichero {
 		tamano_direcciones_proc_max=$max
 	fi 
 	if [[ $seleccionAlgoritmoPaginacion -eq 0 ]]; then
-#EN-7110-
+		numDireccionesTotales_max=$(($memoria_max * $direcciones_max)) #Se comparará este valor con las direcciones definidas, ya que las direcciones deben ser menores en el caso de memoria No Virtual.
 	fi
 	
 	if [[ $quantum_min -gt $quantum_max ]]; then
@@ -3172,21 +3172,21 @@ function controlDatosNoVirtualFichero {
 		quantum_min=$min
 		quantum_max=$max
 	fi 
-#EN-7120-
+} #Fin de leer_rangos_desde_fichero()
 
 #######################################################################
-#EN-7130-
+# Sinopsis: Se comprueba que los datos son enteros.
 #######################################################################
 function es_entero {
-#EN-7140-
-#EN-7150-
-#EN-7160-
+	[[ "$1" -eq "$1" && "$1" -ge "0" ]] > /dev/null 2>&1 # En caso de error, sentencia falsa
+	return $? # Retorna si la sentencia anterior fue verdadera
+} #Fin de es_entero()
 
 #####################################################################################
-#EN-7170-
+# Sinopsis: Permite ordenar los datos de entrada sacados desde fichero y por teclado. 
 ####################################################################################
 function ordenarDatosEntradaFicheros_cuatro_cinco_seis_siete_ocho_nueve {
-#EN-7180-
+	for ((j = $((${#llegada[@]} - 1)); j >= 0; j--)); do
 		for ((i = 0; i <= $j; i++)); do
 			if [[ ${llegada[$i]} -gt ${llegada[$(($i + 1))]} ]]; then
 				aux=${proceso[$(($i + 1))]}
@@ -3195,11 +3195,11 @@ function ordenarDatosEntradaFicheros_cuatro_cinco_seis_siete_ocho_nueve {
 				aux=${llegada[$(($i + 1))]}
 				llegada[$(($i + 1))]=${llegada[$i]}
 				llegada[$i]=$aux
-#EN-7190-
+				aux2="" #Se permutan las páginas
 				for ((counter2=0;counter2<${ejecucion[$(($i + 1))]};counter2++)); do
 					aux2[$counter2]=${paginasDefinidasTotal[$(($i + 1)),$counter2]}
 				done
-#EN-7200-
+				for ((counter2=0;counter2<${ejecucion[$(($i + 1))]};counter2++)); do #Se borran para que no pueda haber valores anteriores residuales.
 					unset paginasDefinidasTotal[$(($i + 1)),$counter2]
 				done
 				for ((counter2=0;counter2<${ejecucion[$i]};counter2++)); do
@@ -3214,11 +3214,11 @@ function ordenarDatosEntradaFicheros_cuatro_cinco_seis_siete_ocho_nueve {
 				for ((counter2=0;counter2<${ejecucion[$(($i + 1))]};counter2++)); do
 					unset aux2[$counter2]
 				done
-#EN-7210-
+				aux2="" #Se permutan las direcciones
 				for ((counter2=0;counter2<${ejecucion[$(($i + 1))]};counter2++)); do
 					aux2[$counter2]=${directions[$(($i + 1)),$counter2]}
 				done
-#EN-7220-
+				for ((counter2=0;counter2<${ejecucion[$(($i + 1))]};counter2++)); do #Se borran para que no pueda haber valores anteriores residuales.
 					unset directions[$(($i + 1)),$counter2]
 				done
 				for ((counter2=0;counter2<${ejecucion[$i]};counter2++)); do
@@ -3237,80 +3237,80 @@ function ordenarDatosEntradaFicheros_cuatro_cinco_seis_siete_ocho_nueve {
 				ejecucion[$(($i + 1))]=${ejecucion[$i]} 
 				ejecucion[$i]=$aux
 				aux=${tiempoEjecucion[$(($i + 1))]}
-#EN-7230-
+				tiempoEjecucion[$(($i + 1))]=${tiempoEjecucion[$i]} #Se permutan los valores de esta variable auxiliar porque se definió en leer_datos_desde_fichero().
 				tiempoEjecucion[$i]=$aux
 				aux=${memoria[$(($i + 1))]}
 				memoria[$(($i + 1))]=${memoria[$i]} 
 				memoria[$i]=$aux
 				aux=${prioProc[$(($i + 1))]}
-#EN-7240-
+				prioProc[$(($i + 1))]=${prioProc[$i]} #En caso de usar el algoritmo basado en Prioridades...
 				prioProc[$i]=$aux
-#EN-7250-
+				#No se permutan los nombres de los procesos, como en ordenarDatosEntradaFicheros(), porque se definirán más tarde.
 			fi
 		done
 	done
-#EN-7260-
+} #Fin de ordenarDatosEntradaFicheros_cuatro_cinco_seis_siete_ocho_nueve()
 
 #######################################################################
-#EN-7270-
-#EN-7280-
+# Sinopsis: Se ordenan por t.llegada únicamente los datos que se meten en la introducción de procesos
+# (posteriormente se ordenará todo ya que se añaden el resto de arrays con todos los datos de cada proceso).
 #######################################################################
-#EN-7290-
-#EN-7300-
-#EN-7310-
+function ordenSJF { #En este caso se intercambian todos los datos al ordenar por tiempo de llegada.
+	for (( i=1; i<=${#llegada[@]}; i++ )); do
+		for (( j=i; j<=${#llegada[@]}; j++ )); do
 			a=${llegada[$i]};
-#EN-7320-
+			b=${llegada[$j]}; #Asignamos variables (tiempos de llegada)
 			if [[ $a -gt $b ]];      then
 				aux=${proceso[$i]};
-#EN-7330-
+				proceso[$i]=${proceso[$j]}; #Ordenar los nombres
 				proceso[$j]=$aux;
 				aux=${llegada[$i]};        
-#EN-7340-
+				llegada[$i]=${llegada[$j]}; #Ordenar por menor tiempo de llegada
 				llegada[$j]=$aux
 				aux=${ejecucion[$i]};
-#EN-7350-
+				ejecucion[$i]=${ejecucion[$j]}; #Ordenar tiempos de ejecución 
 				ejecucion[$j]=$aux;
 				aux=${memoria[$i]};
-#EN-7360-
+				memoria[$i]=${memoria[$j]}; #Ordenar los tamaños
 				memoria[$j]=$aux;
 				aux=${numeroproceso[$i]};
-#EN-7370-
+				numeroproceso[$i]=${numeroproceso[$j]}; #Ordenar los números de proceso
 				numeroproceso[$j]=$aux;
 			fi
-#EN-7380-
+			if [[ $a -eq $b ]]; then #Si el orden de entrada coincide se arreglan dependiendo de cuál se ha metido primero
 				c=${numeroproceso[$i]};
 				d=${numeroproceso[$j]};
 				if [[ $c -gt $d ]]; then
 					aux=${proceso[$i]};
-#EN-7390-
+					proceso[$i]=${proceso[$j]}; #Ordenar los nombres 
 					proceso[$j]=$aux
 					aux=${llegada[$i]};       
-#EN-7400-
+					llegada[$i]=${llegada[$j]}; #Ordenar los tiempo de llegada
 					llegada[$j]=$aux
 					aux=${ejecucion[$i]};
-#EN-7410-
+					ejecucion[$i]=${ejecucion[$j]}; #Ordenar tiempos de ejecución 
 					ejecucion[$j]=$aux;
 					aux=${memoria[$i]};
-#EN-7420-
+					memoria[$i]=${memoria[$j]}; #Ordenar los tamaños
 					memoria[$j]=$aux;
 					aux=${numeroproceso[$i]};
-#EN-7430-
+					numeroproceso[$i]=${numeroproceso[$j]}; #Ordenar los números de proceso
 					numeroproceso[$j]=$aux;
 				fi
 			fi
 		done
 	done
-#EN-7440-
+} #Fin de ordenSJF()
 
 #######################################################################
 #######################################################################
-#EN-7450-
+# Establecimiento de funciones para rangos                
 #######################################################################
 #######################################################################
-#EN-7460-
+# Sinopsis: Presenta una tabla con los rangos y valores calculados 
 #######################################################################
 function datos_memoria_tabla {
-#EN-7470-
+#    clear
 	if [[ $seleccionMenuEleccionEntradaDatos -eq 4 ]]; then 
 		echo -e "$amarillo Por favor establezca los rangos para datos"                  
 	elif [[ $seleccionMenuEleccionEntradaDatos -eq 5 || $seleccionMenuEleccionEntradaDatos -eq 6 ]]; then 
@@ -3318,73 +3318,73 @@ function datos_memoria_tabla {
 	fi
 	echo -e "$azul┌────────────────────────────────────────────────────────────┐" | tee -a $informeConColorTotal
 	printf  "$azul│$NC""${varhuecos:1:$((36))}""Min-Max rango     Valor""$azul │\n" | tee -a $informeConColorTotal
-#EN-7480-
+	printf  "$azul│$NC Rango Nº de Marcos de Memoria: ""${varhuecos:1:$((9 - ${#MIN_RANGE_MARCOS}))}""$MIN_RANGE_MARCOS"" - " | tee -a $informeConColorTotal 
 	printf "$MAX_RANGE_MARCOS""${varhuecos:1:$((4 - ${#MAX_RANGE_MARCOS}))}""     ""${varhuecos:1:$((6 - ${#mem_num_marcos}))}""$mem_num_marcos""$azul │\n" | tee -a $informeConColorTotal
-#EN-7490-
+	printf  "$azul│$NC Rango Nº de Direcciones/Marco: ""${varhuecos:1:$((9 - ${#MIN_RANGE_DIRECCIONES}))}""$MIN_RANGE_DIRECCIONES"" - " | tee -a $informeConColorTotal
 	printf "$MAX_RANGE_DIRECCIONES""${varhuecos:1:$((4 - ${#MAX_RANGE_DIRECCIONES}))}""     ""${varhuecos:1:$((6 - ${#mem_direcciones}))}""$mem_direcciones""$azul │\n" | tee -a $informeConColorTotal
-#EN-7500-
+	printf  "$azul│$NC Rango Prioridad Menor: ""${varhuecos:1:$((17 - ${#prio_menor_minInicial}))}""$prio_menor_minInicial"" - " | tee -a $informeConColorTotal
 #    printf "$MAX_RANGE_prio_menor""${varhuecos:1:$((4 - ${#MAX_RANGE_prio_menor}))}""     ""${varhuecos:1:$((6 - ${#prio_menorInicial}))}""$prio_menorInicial""$azul │\n" | tee -a $informeConColorTotal
 	echo -ne "$prio_menor_maxInicial""${varhuecos:1:$((4 - ${#prio_menor_maxInicial}))}""     ""${varhuecos:1:$((6 - ${#prio_menorInicial}))}""$prio_menorInicial""$azul │\n" | tee -a $informeConColorTotal
-#EN-7510-
+	printf  "$azul│$NC Rango Prioridad Mayor: ""${varhuecos:1:$((17 - ${#prio_mayor_minInicial}))}""$prio_mayor_minInicial"" - " | tee -a $informeConColorTotal
 #    printf "$MAX_RANGE_prio_mayor""${varhuecos:1:$((4 - ${#MAX_RANGE_prio_mayor}))}""     ""${varhuecos:1:$((6 - ${#prio_mayorInicial}))}""$prio_mayorInicial""$azul │\n" | tee -a $informeConColorTotal
 	echo -ne "$prio_mayor_maxInicial""${varhuecos:1:$((4 - ${#prio_mayor_maxInicial}))}""     ""${varhuecos:1:$((6 - ${#prio_mayorInicial}))}""$prio_mayorInicial""$azul │\n" | tee -a $informeConColorTotal
-#EN-7520-
+	printf  "$azul│$NC Rango Reubicacion: ""${varhuecos:1:$((21 - ${#MIN_RANGE_REUB}))}""$MIN_RANGE_REUB"" - " | tee -a $informeConColorTotal
 	printf "$MAX_RANGE_REUB""${varhuecos:1:$((4 - ${#MAX_RANGE_REUB}))}""     ""${varhuecos:1:$((6 - ${#reub}))}""$reub""$azul │\n" | tee -a $informeConColorTotal
-#EN-7530-
+	printf  "$azul│$NC Rango Nº de procesos: ""${varhuecos:1:$((18 - ${#MIN_RANGE_NPROC}))}""$MIN_RANGE_NPROC"" - " | tee -a $informeConColorTotal
 	printf "$MAX_RANGE_NPROC""${varhuecos:1:$((4 - ${#MAX_RANGE_NPROC}))}""     ""${varhuecos:1:$((6 - ${#n_prog}))}""$n_prog""$azul │\n" | tee -a $informeConColorTotal
-#EN-7540-
-#EN-7550-
-#EN-7560-
-#EN-7570-
-#EN-7580-
-#EN-7590-
+	printf  "$azul│$NC Rango Tiempo de llegada: ""${varhuecos:1:$((15 - ${#MIN_RANGE_llegada}))}""$MIN_RANGE_llegada"" - " | tee -a $informeConColorTotal
+	printf "$MAX_RANGE_llegada""${varhuecos:1:$((13 - ${#MAX_RANGE_llegada}))}""$azul   │\n" | tee -a $informeConColorTotal
+	printf  "$azul│$NC Rango Tiempo de ejecución: ""${varhuecos:1:$((13 - ${#MIN_RANGE_tiempo_ejec}))}""$MIN_RANGE_tiempo_ejec"" - " | tee -a $informeConColorTotal
+	printf "$MAX_RANGE_tiempo_ejec""${varhuecos:1:$((13 - ${#MAX_RANGE_tiempo_ejec}))}""$azul   │\n" | tee -a $informeConColorTotal
+	printf  "$azul│$NC Rango Nº de marcos/proceso: ""${varhuecos:1:$((12 - ${#MIN_RANGE_tamano_marcos_proc}))}""$MIN_RANGE_tamano_marcos_proc"" - " | tee -a $informeConColorTotal
+	printf "$MAX_RANGE_tamano_marcos_proc""${varhuecos:1:$((13 - ${#MAX_RANGE_tamano_marcos_proc}))}""$azul   │\n" | tee -a $informeConColorTotal
 #    printf  "$azul│$NC Rango Prioridades/proceso: ""${varhuecos:1:$((13 - ${#MIN_RANGE_prio_proc}))}""$MIN_RANGE_prio_proc"" - " | tee -a $informeConColorTotal
 #    printf "$MAX_RANGE_prio_proc""${varhuecos:1:$((13 - ${#MAX_RANGE_prio_proc}))}""$azul   │\n" | tee -a $informeConColorTotal
-#EN-7600-
-#EN-7610-
-#EN-7620-
-#EN-7630-
-#EN-7640-
-#EN-7650-
+	printf  "$azul│$NC Rango Prioridades/proceso: ""${varhuecos:1:$((13 - ${#prio_menorInicial}))}""$prio_menorInicial"" - " | tee -a $informeConColorTotal
+	echo -ne "$prio_mayorInicial""${varhuecos:1:$((13 - ${#prio_mayorInicial}))}""$azul   │\n" | tee -a $informeConColorTotal
+	printf  "$azul│$NC Rango Quantum: ""${varhuecos:1:$((25 - ${#MIN_RANGE_quantum}))}""$MIN_RANGE_quantum"" - " | tee -a $informeConColorTotal
+	printf "$MAX_RANGE_quantum""${varhuecos:1:$((16 - ${#MAX_RANGE_quantum}))}""$azul│\n" | tee -a $informeConColorTotal
+	printf  "$azul│$NC Rango Nº de direcciones/proceso: ""${varhuecos:1:$((7 - ${#MIN_RANGE_tamano_direcciones_proc}))}""$MIN_RANGE_tamano_direcciones_proc"" - " | tee -a $informeConColorTotal
+	printf "$MAX_RANGE_tamano_direcciones_proc""${varhuecos:1:$((16 - ${#MAX_RANGE_tamano_direcciones_proc}))}""$azul│\n" | tee -a $informeConColorTotal
 	echo -e "$azul└────────────────────────────────────────────────────────────┘"  | tee -a $informeConColorTotal
 	echo -e "┌────────────────────────────────────────────────────────────┐" >> $informeSinColorTotal
 	printf  "│$NC""${varhuecos:1:$((36))}""Min-Max rango     Valor"" │\n" >> $informeSinColorTotal
-#EN-7660-
+	printf  "│$NC Rango Nº de Marcos de Memoria: ""${varhuecos:1:$((9 - ${#MIN_RANGE_MARCOS}))}""$MIN_RANGE_MARCOS"" - " >> $informeSinColorTotal
 	printf "$MAX_RANGE_MARCOS""${varhuecos:1:$((4 - ${#MAX_RANGE_MARCOS}))}""     ""${varhuecos:1:$((6 - ${#mem_num_marcos}))}""$mem_num_marcos"" │\n" >> $informeSinColorTotal
-#EN-7670-
+	printf  "│$NC Rango Nº de Direcciones/Marco: ""${varhuecos:1:$((9 - ${#MIN_RANGE_DIRECCIONES}))}""$MIN_RANGE_DIRECCIONES"" - " >> $informeSinColorTotal
 	printf "$MAX_RANGE_DIRECCIONES""${varhuecos:1:$((4 - ${#MAX_RANGE_DIRECCIONES}))}""     ""${varhuecos:1:$((6 - ${#mem_direcciones}))}""$mem_direcciones"" │\n" >> $informeSinColorTotal
-#EN-7680-
+	printf  "│$NC Rango Prioridad Menor: ""${varhuecos:1:$((17 - ${#prio_menor_minInicial}))}""$prio_menor_minInicial"" - " >> $informeSinColorTotal
 #    printf "$MAX_RANGE_prio_menor""${varhuecos:1:$((4 - ${#MAX_RANGE_prio_menor}))}""     ""${varhuecos:1:$((6 - ${#prio_menorInicial}))}""$prio_menorInicial"" │\n" >> $informeSinColorTotal
 	echo -ne "$prio_menor_maxInicial""${varhuecos:1:$((4 - ${#prio_menor_maxInicial}))}""     ""${varhuecos:1:$((6 - ${#prio_menorInicial}))}""$prio_menorInicial"" │\n" >> $informeSinColorTotal
-#EN-7690-
+	printf  "│$NC Rango Prioridad Mayor: ""${varhuecos:1:$((17 - ${#prio_mayor_minInicial}))}""$prio_mayor_minInicial"" - " >> $informeSinColorTotal
 #    printf "$MAX_RANGE_prio_mayor""${varhuecos:1:$((4 - ${#MAX_RANGE_prio_mayor}))}""     ""${varhuecos:1:$((6 - ${#prio_mayorInicial}))}""$prio_mayorInicial"" │\n" >> $informeSinColorTotal
 	echo -ne "$prio_mayor_maxInicial""${varhuecos:1:$((4 - ${#prio_mayor_maxInicial}))}""     ""${varhuecos:1:$((6 - ${#prio_mayorInicial}))}""$prio_mayorInicial"" │\n" >> $informeSinColorTotal
-#EN-7700-
+	printf  "│$NC Rango Reubicacion: ""${varhuecos:1:$((21 - ${#MIN_RANGE_REUB}))}""$MIN_RANGE_REUB"" - " >> $informeSinColorTotal
 	printf "$MAX_RANGE_REUB""${varhuecos:1:$((4 - ${#MAX_RANGE_REUB}))}""     ""${varhuecos:1:$((6 - ${#reub}))}""$reub"" │\n" >> $informeSinColorTotal
-#EN-7710-
+	printf  "│$NC Rango Nº de procesos: ""${varhuecos:1:$((18 - ${#MIN_RANGE_NPROC}))}""$MIN_RANGE_NPROC"" - " >> $informeSinColorTotal
 	printf "$MAX_RANGE_NPROC""${varhuecos:1:$((4 - ${#MAX_RANGE_NPROC}))}""     ""${varhuecos:1:$((6 - ${#n_prog}))}""$n_prog"" │\n" >> $informeSinColorTotal
-#EN-7720-
-#EN-7730-
-#EN-7740-
-#EN-7750-
-#EN-7760-
-#EN-7770-
+	printf  "│$NC Rango Tiempo de llegada: ""${varhuecos:1:$((15 - ${#MIN_RANGE_llegada}))}""$MIN_RANGE_llegada"" - " >> $informeSinColorTotal
+	printf "$MAX_RANGE_llegada""${varhuecos:1:$((13 - ${#MAX_RANGE_llegada}))}""   │\n" >> $informeSinColorTotal
+	printf  "│$NC Rango Tiempo de ejecución: ""${varhuecos:1:$((13 - ${#MIN_RANGE_tiempo_ejec}))}""$MIN_RANGE_tiempo_ejec"" - " >> $informeSinColorTotal
+	printf "$MAX_RANGE_tiempo_ejec""${varhuecos:1:$((13 - ${#MAX_RANGE_tiempo_ejec}))}""   │\n" >> $informeSinColorTotal
+	printf  "│$NC Rango Nº de marcos/proceso: ""${varhuecos:1:$((12 - ${#MIN_RANGE_tamano_marcos_proc}))}""$MIN_RANGE_tamano_marcos_proc"" - " >> $informeSinColorTotal
+	printf "$MAX_RANGE_tamano_marcos_proc""${varhuecos:1:$((13 - ${#MAX_RANGE_tamano_marcos_proc}))}""   │\n" >> $informeSinColorTotal
 #    printf  "│$NC Rango Prioridades/proceso: ""${varhuecos:1:$((13 - ${#MIN_RANGE_prio_proc}))}""$MIN_RANGE_prio_proc"" - " >> $informeSinColorTotal
 #    printf "$MAX_RANGE_prio_proc""${varhuecos:1:$((13 - ${#MAX_RANGE_prio_proc}))}""   │\n" >> $informeSinColorTotal
-#EN-7780-
-#EN-7790-
-#EN-7800-
-#EN-7810-
-#EN-7820-
-#EN-7830-
+	printf  "│$NC Rango Prioridades/proceso: ""${varhuecos:1:$((13 - ${#prio_menorInicial}))}""$prio_menorInicial"" - " >> $informeSinColorTotal
+	echo -ne "$prio_mayorInicial""${varhuecos:1:$((13 - ${#prio_mayorInicial}))}""   │\n" >> $informeSinColorTotal
+	printf  "│$NC Rango Quantum: ""${varhuecos:1:$((25 - ${#MIN_RANGE_quantum}))}""$MIN_RANGE_quantum"" - " >> $informeSinColorTotal
+	printf "$MAX_RANGE_quantum""${varhuecos:1:$((16 - ${#MAX_RANGE_quantum}))}""│\n" >> $informeSinColorTotal
+	printf  "│$NC Rango Nº de direcciones/proceso: ""${varhuecos:1:$((7 - ${#MIN_RANGE_tamano_direcciones_proc}))}""$MIN_RANGE_tamano_direcciones_proc"" - " >> $informeSinColorTotal
+	printf "$MAX_RANGE_tamano_direcciones_proc""${varhuecos:1:$((16 - ${#MAX_RANGE_tamano_direcciones_proc}))}""│\n" >> $informeSinColorTotal
 	echo -e "└────────────────────────────────────────────────────────────┘" >> $informeSinColorTotal
-#EN-7840-
+} #Fin de datos_memoria_tabla()
 
 #######################################################################
-#EN-7850-
+# Sinopsis: Presenta una tabla con los datos de los rangos introducidos, y los subrangos y los valores calculables.
 #######################################################################
 function datos_amplio_memoria_tabla {
-#EN-7860-
+#    clear
 	if [[ $seleccionMenuEleccionEntradaDatos -eq 4 ]]; then 
 		echo -e "$amarillo Por favor establezca los rangos para datos"                  
 	elif [[ $seleccionMenuEleccionEntradaDatos -eq 5 || $seleccionMenuEleccionEntradaDatos -eq 6 ]]; then 
@@ -3447,98 +3447,98 @@ function datos_amplio_memoria_tabla {
 	printf "│$NC Rango Nº de direcciones/proceso: ""${varhuecos:1:$((5 - ${#tamano_direcciones_proc_minInicial}))}""$tamano_direcciones_proc_minInicial"" - ""$tamano_direcciones_proc_maxInicial""${varhuecos:1:$((7 - ${#tamano_direcciones_proc_maxInicial}))}""  " >> $informeSinColorTotal
 	printf "${varhuecos:1:$((5 - ${#MIN_RANGE_tamano_direcciones_proc}))}""$MIN_RANGE_tamano_direcciones_proc"" - ""$MAX_RANGE_tamano_direcciones_proc""${varhuecos:1:$((12 - ${#MAX_RANGE_tamano_direcciones_proc}))}"" │\n" >> $informeSinColorTotal
 	echo -e "└────────────────────────────────────────────────────────────────────────┘" >> $informeSinColorTotal 
-#EN-7870-
+} #Fin de datos_amplio_memoria_tabla()
 
 #######################################################################
 #######################################################################
 # funciones para la petición de datos de la opción 4 ##################
 #######################################################################
-#EN-7880-
+# Sinopsis: Se piden por pantalla el mínimo y máximo del rango de la memoria total 
 #######################################################################
 function datos_numero_marcos_memoria {
 	datos_memoria_tabla 
 	until [[ $MAX_RANGE_MARCOS -ge $MIN_RANGE_MARCOS && $MIN_RANGE_MARCOS -gt 0 ]]; do
 		echo -e "$cian Por favor, establezca el mínimo del rango para el número de marcos de memoria$cian:$NC" 
-#EN-7890-
+		read MIN_RANGE_MARCOS #Rango minimo para la memoria
 		echo -e "$cian Por favor, establezca el máximo del rango para el número de marcos de memoria$cian:$NC"
-#EN-7900-
-#EN-7910-
+		read MAX_RANGE_MARCOS #Rango maximo para la memoria
+		if [[ $MIN_RANGE_MARCOS -gt $MAX_RANGE_MARCOS ]]; then #Si el mayor es menor que el menor, se invierten los rangos
 			invertirRangos $MIN_RANGE_MARCOS $MAX_RANGE_MARCOS
 			MIN_RANGE_MARCOS=$min
 			MAX_RANGE_MARCOS=$max
 		fi
-#EN-7920-
+		if [[ $MIN_RANGE_MARCOS -lt 0 && $MAX_RANGE_MARCOS -lt 0 ]]; then #Si ambos son negativos se desplazan a positivos 
 			desplazarRangos $MIN_RANGE_MARCOS $MAX_RANGE_MARCOS
 			MIN_RANGE_MARCOS=$min
 			MAX_RANGE_MARCOS=$max
 		fi  
 	done
-#EN-7930-
+} #Fin de datos_numero_marcos_memoria()               
 
 #######################################################################
-#EN-7940-
+# Sinopsis: Se piden por pantalla el mínimo y máximo del rango de la memoria (rangos amplios) 
 #######################################################################
 function datos_numero_marcos_memoria_amplio {
 	datos_amplio_memoria_tabla
 	until [[ $memoria_maxInicial -ge $memoria_minInicial && $memoria_minInicial -gt 0 ]]; do
 		echo -e "$cian Por favor, establezca el mínimo del rango para el número de marcos de memoria$cian:$NC" 
-#EN-7950-
+		read memoria_minInicial #Rango minimo para la memoria
 		echo -e "$cian Por favor, establezca el máximo del rango para el número de marcos de memoria$cian:$NC"
-#EN-7960-
-#EN-7970-
+		read memoria_maxInicial #Rango maximo para la memoria
+		if [[ $memoria_minInicial -gt $memoria_maxInicial ]]; then #Si el mayor es menor que el menor, se invierten los rangos
 			invertirRangos $memoria_minInicial $memoria_maxInicial
 			memoria_minInicial=$min
 			memoria_maxInicial=$max
 		fi
-#EN-7980-
+		if [[ $memoria_minInicial -lt 0 && $memoria_maxInicial -lt 0 ]]; then #Si ambos son negativos se desplazan a positivos 
 			desplazarRangos $memoria_minInicial $memoria_maxInicial
 			memoria_minInicial=$min
 			memoria_maxInicial=$max
 		fi  
 	done
-#EN-7990-
+	memoria_min=$memoria_minInicial #Se definen nuevas variables para redefinir los límites de los subrangos sacados de los rangos amplios. 
 	memoria_max=$memoria_maxInicial
-#EN-8000-
+} #Fin de datos_numero_marcos_memoria_amplio()               
 
 #######################################################################
-#EN-8010-
+# Sinopsis: Se piden por pantalla el mínimo y máximo del rango del número de procesos 
 #######################################################################
 function datos_numero_direcciones_marco {
 	datos_memoria_tabla 
 	until [[ $MAX_RANGE_DIRECCIONES -ge $MIN_RANGE_DIRECCIONES && $MIN_RANGE_DIRECCIONES -gt 0 ]]; do                 
 		echo -e "$cian Por favor, establezca el mínimo del rango para el número de direcciones por marco$cian:$NC" 
-#EN-8020-
+		read MIN_RANGE_DIRECCIONES #Rango minimo para la memoria
 		echo -e "$cian Por favor, establezca el máximo del rango para el número de direcciones por marco$cian:$NC"
-#EN-8030-
-#EN-8040-
+		read MAX_RANGE_DIRECCIONES #Rango maximo para la memoria
+		if [[ $MIN_RANGE_DIRECCIONES -gt $MAX_RANGE_DIRECCIONES ]]; then #Si el mayor es menor que el menor, se invierten los rangos
 			invertirRangos $MIN_RANGE_DIRECCIONES $MAX_RANGE_DIRECCIONES
 			MIN_RANGE_DIRECCIONES=$min
 			MAX_RANGE_DIRECCIONES=$max
 		fi
-#EN-8050-
+		if [[ $MIN_RANGE_DIRECCIONES -lt 0 && $MAX_RANGE_DIRECCIONES -lt 0 ]]; then #Si ambos son negativos se desplazan a positivos 
 			desplazarRangos $MIN_RANGE_DIRECCIONES $MAX_RANGE_DIRECCIONES
 			MIN_RANGE_DIRECCIONES=$min
 			MAX_RANGE_DIRECCIONES=$max
 		fi  
 	done                    
-#EN-8060-
+} #Fin de datos_numero_direcciones_marco() 
 
 #######################################################################
-#EN-8070-
+# Sinopsis: Se piden por pantalla el mínimo y máximo del rango del número de procesos (rangos amplios) 
 #######################################################################
 function datos_numero_direcciones_marco_amplio {
 	datos_amplio_memoria_tabla
 	until [[ $direcciones_maxInicial -ge $direcciones_minInicial && $direcciones_minInicial -gt 0 ]]; do                 
 		echo -e "$cian Por favor, establezca el mínimo del rango para el número de direcciones por marco$cian:$NC" 
-#EN-8080-
+		read direcciones_minInicial #Rango minimo para la memoria
 		echo -e "$cian Por favor, establezca el máximo del rango para el número de direcciones por marco$cian:$NC"
-#EN-8090-
-#EN-8100-
+		read direcciones_maxInicial #Rango maximo para la memoria
+		if [[ $direcciones_minInicial -gt $direcciones_maxInicial ]]; then #Si el mayor es menor que el menor, se invierten los rangos
 			invertirRangos $direcciones_minInicial $direcciones_maxInicial
 			direcciones_minInicial=$min
 			direcciones_maxInicial=$max
 		fi
-#EN-8110-
+		if [[ $direcciones_minInicial -lt 0 && $direcciones_maxInicial -lt 0 ]]; then #Si ambos son negativos se desplazan a positivos 
 			desplazarRangos $direcciones_minInicial $direcciones_maxInicial
 			direcciones_minInicial=$min
 			direcciones_maxInicial=$max
@@ -3546,99 +3546,99 @@ function datos_numero_direcciones_marco_amplio {
 	done                    
 	direcciones_min=$direcciones_minInicial
 	direcciones_max=$direcciones_maxInicial
-#EN-8120-
+} #Fin de datos_numero_direcciones_marco_amplio() 
 						
 #######################################################################
-#EN-8130-
+# Sinopsis: Se piden por pantalla el mínimo y máximo para el mínimo del rango de la prioridad
 #######################################################################
 function datos_prio_menor {
 	datos_memoria_tabla 
 	echo -e "$cian Por favor, establezca el mínimo del rango para la prioridad menor$cian:$NC" 
-#EN-8140-
+	read prio_menor_minInicial #Rango minimo para la variable prioridad
 	echo -e "$cian Por favor, establezca el máximo del rango para la prioridad menor$cian:$NC"
-#EN-8150-
+	read prio_menor_maxInicial #Rango maximo para la variable prioridad
 	prio_menor_min=$prio_menor_minInicial
 	prio_menor_max=$prio_menor_maxInicial
-#EN-8160-
+} #Fin de datos_prio_menor()                               
 						
 #######################################################################
-#EN-8170-
+# Sinopsis: Se piden por pantalla el mínimo y máximo para el mínimo del rango de la prioridad (rangos amplios) 
 #######################################################################
 function datos_prio_menor_amplio {
 	datos_amplio_memoria_tabla
 	echo -e "$cian Por favor, establezca el mínimo del rango para la prioridad menor$cian:$NC" 
-#EN-8180-
+	read prio_menor_minInicial #Rango minimo para la variable prioridad
 	echo -e "$cian Por favor, establezca el máximo del rango para la prioridad menor$cian:$NC"
-#EN-8190-
+	read prio_menor_maxInicial #Rango maximo para la variable prioridad
 	prio_menor_min=$prio_menor_minInicial
 	prio_menor_max=$prio_menor_maxInicial
-#EN-8200-
+} #Fin de datos_prio_menor_amplio()                               
 						
 #######################################################################
-#EN-8210-
+# Sinopsis: Se piden por pantalla el mínimo y máximo para el máximo del rango de la prioridad
 #######################################################################
 function datos_prio_mayor {
 	datos_memoria_tabla 
 	echo -e "$cian Por favor, establezca el mínimo del rango para la prioridad mayor$cian:$NC" 
-#EN-8220-
+	read prio_mayor_minInicial #Rango minimo para la variable prioridad
 	echo -e "$cian Por favor, establezca el máximo del rango para la prioridad mayor$cian:$NC"
-#EN-8230-
+	read prio_mayor_maxInicial #Rango maximo para la variable prioridad
 	prio_mayor_min=$prio_mayor_minInicial
 	prio_mayor_max=$prio_mayor_maxInicial
-#EN-8240-
+} #Fin de datos_prio_mayor()                               
 						
 #######################################################################
-#EN-8250-
+# Sinopsis: Se piden por pantalla el mínimo y máximo para el máximo del rango de la prioridad (rangos amplios) 
 #######################################################################
 function datos_prio_mayor_amplio {
 	datos_amplio_memoria_tabla
 	echo -e "$cian Por favor, establezca el mínimo del rango para la prioridad mayor$cian:$NC" 
-#EN-8260-
+	read prio_mayor_minInicial #Rango minimo para la variable prioridad
 	echo -e "$cian Por favor, establezca el máximo del rango para la prioridad mayor$cian:$NC"
-#EN-8270-
+	read prio_mayor_maxInicial #Rango maximo para la variable prioridad
 	prio_mayor_min=$prio_mayor_minInicial
 	prio_mayor_max=$prio_mayor_maxInicial
-#EN-8280-
+} #Fin de datos_prio_mayor_amplio()                               
 
 #######################################################################
-#EN-8290-
+# Sinopsis: Se piden por pantalla el mínimo y máximo del rango del número de procesos 
 #######################################################################
 function datos_numero_programas {
 	datos_memoria_tabla 
 	until [[ $MAX_RANGE_NPROC -ge $MIN_RANGE_NPROC && $MIN_RANGE_NPROC -gt 0 ]]; do                 
 		echo -e "$cian Por favor, establezca el mínimo del rango para el número de procesos$cian:$NC" 
-#EN-8300-
+		read MIN_RANGE_NPROC #Rango minimo para la memoria
 		echo -e "$cian Por favor, establezca el máximo del rango para el número de procesos$cian:$NC"
-#EN-8310-
-#EN-8320-
+		read MAX_RANGE_NPROC #Rango maximo para la memoria
+		if [[ $MIN_RANGE_NPROC -gt $MAX_RANGE_NPROC ]]; then #Si el mayor es menor que el menor, se invierten los rangos
 			invertirRangos $MIN_RANGE_NPROC $MAX_RANGE_NPROC
 			MIN_RANGE_NPROC=$min
 			MAX_RANGE_NPROC=$max
 		fi
-#EN-8330-
+		if [[ $MIN_RANGE_NPROC -lt 0 && $MAX_RANGE_NPROC -lt 0 ]]; then #Si ambos son negativos se desplazan a positivos 
 			desplazarRangos $MIN_RANGE_NPROC $MAX_RANGE_NPROC
 			MIN_RANGE_NPROC=$min
 			MAX_RANGE_NPROC=$max
 		fi  
 	done                    
-#EN-8340-
+} #Fin de datos_numero_programas() 
 
 #######################################################################
-#EN-8350-
+# Sinopsis: Se piden por pantalla el mínimo y máximo del rango del número de procesos (rangos amplios)  
 #######################################################################
 function datos_numero_programas_amplio {
 	datos_amplio_memoria_tabla
 	until [[ $programas_maxInicial -ge $programas_minInicial && $programas_minInicial -gt 0 ]]; do                 
 		echo -e "$cian Por favor, establezca el mínimo del rango para el número de procesos$cian:$NC" 
-#EN-8360-
+		read programas_minInicial #Rango minimo para la memoria
 		echo -e "$cian Por favor, establezca el máximo del rango para el número de procesos$cian:$NC"
-#EN-8370-
-#EN-8380-
+		read programas_maxInicial #Rango maximo para la memoria
+		if [[ $programas_minInicial -gt $programas_maxInicial ]]; then #Si el mayor es menor que el menor, se invierten los rangos
 			invertirRangos $programas_minInicial $programas_maxInicial
 			programas_minInicial=$min
 			programas_maxInicial=$max
 		fi
-#EN-8390-
+		if [[ $programas_minInicial -lt 0 && $programas_maxInicial -lt 0 ]]; then #Si ambos son negativos se desplazan a positivos 
 			desplazarRangos $programas_minInicial $programas_maxInicial
 			programas_minInicial=$min
 			programas_maxInicial=$max
@@ -3646,47 +3646,47 @@ function datos_numero_programas_amplio {
 	done                    
 		programas_min=$programas_minInicial
 		programas_max=$programas_maxInicial
-#EN-8400-
+} #Fin de datos_numero_programas_amplio() 
 
 #######################################################################
-#EN-8410-
+# Sinopsis: Se piden por pantalla el mínimo y máximo del rango del máximo de unidades de memoria admisible para la reubicabilidad
 #######################################################################
 function datos_tamano_reubicacion { 
 	datos_memoria_tabla 
-#EN-8420-
+	until [[ $MAX_RANGE_REUB -ge $MIN_RANGE_REUB && $MIN_RANGE_REUB -gt 0 ]]; do #Si el mayor es menor que el menor, se invierten los rangos
 		echo -e "$cian Por favor, establezca el mínimo del rango para la variable de reubicacion$cian:$NC" 
-#EN-8430-
+		read MIN_RANGE_REUB #Rango minimo para la variable reubicacion
 		echo -e "$cian Por favor, establezca el máximo del rango para la variable de reubicacion$cian:$NC" 
-#EN-8440-
-#EN-8450-
+		read MAX_RANGE_REUB #Rango maximo para la variable reubicacion
+		if [[ $MIN_RANGE_REUB -gt $MAX_RANGE_REUB ]]; then #Si límite mínimo mayor que límite máximo
 			invertirRangos $MIN_RANGE_REUB $MAX_RANGE_REUB
 			MIN_RANGE_REUB=$min
 			MAX_RANGE_REUB=$max
 		fi
-#EN-8460-
+		if [[ $MIN_RANGE_REUB -lt 0 && $MAX_RANGE_REUB -lt 0 ]]; then #Si ambos son negativos se desplazan a positivos 
 			desplazarRangos $MIN_RANGE_REUB $MAX_RANGE_REUB
 			MIN_RANGE_REUB=$min
 			MAX_RANGE_REUB=$max
 		fi  
 	done                        
-#EN-8470-
+} #Fin de datos_tamano_reubicacion()
 
 #######################################################################
-#EN-8480-
+# Sinopsis: Se piden por pantalla el mínimo y máximo del rango del máximo de unidades de memoria admisible para la reubicabilidad (rangos amplios) 
 #######################################################################
 function datos_tamano_reubicacion_amplio { 
 	datos_amplio_memoria_tabla
-#EN-8490-
+	until [[ $reubicacion_maxInicial -ge $reubicacion_minInicial && $reubicacion_minInicial -gt 0 ]]; do #Si el mayor es menor que el menor, se invierten los rangos
 		echo -e "$cian Por favor, establezca el mínimo del rango para la variable de reubicacion$cian:$NC" 
-#EN-8500-
+		read reubicacion_minInicial #Rango minimo para la variable reubicacion
 		echo -e "$cian Por favor, establezca el máximo del rango para la variable de reubicacion$cian:$NC" 
-#EN-8510-
-#EN-8520-
+		read reubicacion_maxInicial #Rango maximo para la variable reubicacion
+		if [[ $reubicacion_minInicial -gt $reubicacion_maxInicial ]]; then #Si límite mínimo mayor que límite máximo
 			invertirRangos $reubicacion_minInicial $reubicacion_maxInicial
 			reubicacion_minInicial=$min
 			reubicacion_maxInicial=$max
 		fi
-#EN-8530-
+		if [[ $reubicacion_minInicial -lt 0 && $reubicacion_maxInicial -lt 0 ]]; then #Si ambos son negativos se desplazan a positivos 
 			desplazarRangos $reubicacion_minInicial $reubicacion_maxInicial
 			reubicacion_minInicial=$min
 			reubicacion_maxInicial=$max
@@ -3694,97 +3694,97 @@ function datos_tamano_reubicacion_amplio {
 		reubicacion_min=$reubicacion_minInicial
 		reubicacion_max=$reubicacion_maxInicial
 	done                        
-#EN-8540-
+} #Fin de datos_tamano_reubicacion_amplio()
 				
 #######################################################################
-#EN-8550-
+# Sinopsis: Se piden por pantalla el mínimo y máximo del rango del tiempo de llegada de los procesos
 #######################################################################
 function datos_tiempo_llegada {
 	datos_memoria_tabla 
 	MIN_RANGE_llegada=-1 
 	until [[ $MAX_RANGE_llegada -ge $MIN_RANGE_llegada && $(($MIN_RANGE_llegada + 1)) -gt 0 ]]; do  
 		echo -e "$cian Por favor, establezca el mínimo del rango para el tiempo de llegada$cian:$NC" 
-#EN-8560-
+		read MIN_RANGE_llegada #Rango minimo para la variable tiempo de llegada
 		echo -e "$cian Por favor, establezca el máximo del rango para el tiempo de llegada$cian:$NC" 
-#EN-8570-
+		read MAX_RANGE_llegada #Rango maximo para la variable tiempo de llegada
 		if [[ $MIN_RANGE_llegada -gt $MAX_RANGE_llegada ]]; then
 			invertirRangos $MIN_RANGE_llegada $MAX_RANGE_llegada
 			MIN_RANGE_llegada=$min
 			MAX_RANGE_llegada=$max
 		fi
-#EN-8580-
+		if [[ $MIN_RANGE_llegada -lt 0 && $MAX_RANGE_llegada -lt 0 ]]; then #Si ambos son negativos se desplazan a positivos 
 			desplazarRangos $MIN_RANGE_llegada $MAX_RANGE_llegada
-#EN-8590-
+			MIN_RANGE_llegada=$(($min - 1)) #Este valor es el único que puede ser 0
 			MAX_RANGE_llegada=$(($max - 1))
 		fi  
 	done
-#EN-8600-
+} #Fin de datos_tiempo_llegada()                       
 				
 #######################################################################
-#EN-8610-
+# Sinopsis: Se piden por pantalla el mínimo y máximo del rango del tiempo de llegada de los procesos (rangos amplios) 
 #######################################################################
 function datos_tiempo_llegada_amplio {
 	datos_amplio_memoria_tabla
 	llegada_minInicial=-1 
 	until [[ $llegada_maxInicial -ge $llegada_minInicial && $(($llegada_minInicial + 1)) -gt 0 ]]; do  
 		echo -e "$cian Por favor, establezca el mínimo del rango para el tiempo de llegada$cian:$NC" 
-#EN-8620-
+		read llegada_minInicial #Rango minimo para la variable tiempo de llegada
 		echo -e "$cian Por favor, establezca el máximo del rango para el tiempo de llegada$cian:$NC" 
-#EN-8630-
+		read llegada_maxInicial #Rango maximo para la variable tiempo de llegada
 		if [[ $llegada_minInicial -gt $llegada_maxInicial ]]; then
 			invertirRangos $llegada_minInicial $llegada_maxInicial
 			llegada_minInicial=$min
 			llegada_maxInicial=$max
 		fi
-#EN-8640-
+		if [[ $llegada_minInicial -lt 0 && $llegada_maxInicial -lt 0 ]]; then #Si ambos son negativos se desplazan a positivos 
 			desplazarRangos $llegada_minInicial $llegada_maxInicial
-#EN-8650-
+			llegada_minInicial=$(($min - 1)) #Este valor es el único que puede ser 0
 			llegada_maxInicial=$(($max - 1))
 		fi  
 		llegada_min=$llegada_minInicial
 		llegada_max=$llegada_maxInicial
 	done
-#EN-8660-
+} #Fin de datos_tiempo_llegada_amplio()                       
 						
 #######################################################################
-#EN-8670-
+# Sinopsis: Se piden por pantalla el mínimo y máximo del rango del tiempo de ejecución de los procesos
 #######################################################################
 function datos_tiempo_ejecucion {
 	datos_memoria_tabla 
 	until [[ $MAX_RANGE_tiempo_ejec -ge $MIN_RANGE_tiempo_ejec && $MIN_RANGE_tiempo_ejec -gt 0 ]]; do
 		echo -e "$cian Por favor, establezca el mínimo del rango para el tiempo de ejecución$cian:$NC" 
-#EN-8680-
+		read MIN_RANGE_tiempo_ejec #Rango minimo para la variable tiempo de ejecución
 		echo -e "$cian Por favor, establezca el máximo del rango para el tiempo de ejecución$cian:$NC"
-#EN-8690-
-#EN-8700-
+		read MAX_RANGE_tiempo_ejec #Rango maximo para la variable tiempo de ejecución
+		if [[ $MIN_RANGE_tiempo_ejec -gt $MAX_RANGE_tiempo_ejec ]]; then #Si el mayor es menor que el menor, se invierten los rangos
 			invertirRangos $MIN_RANGE_tiempo_ejec $MAX_RANGE_tiempo_ejec
 			MIN_RANGE_tiempo_ejec=$min
 			MAX_RANGE_tiempo_ejec=$max
 		fi
-#EN-8710-
+		if [[ $MIN_RANGE_tiempo_ejec -lt 0 && $MAX_RANGE_tiempo_ejec -lt 0 ]]; then #Si ambos son negativos se desplazan a positivos 
 			desplazarRangos $MIN_RANGE_tiempo_ejec $MAX_RANGE_tiempo_ejec
 			MIN_RANGE_tiempo_ejec=$min
 			MAX_RANGE_tiempo_ejec=$max
 		fi  
 	done
-#EN-8720-
+} #Fin de datos_tiempo_ejecucion()                               
 						
 #######################################################################
-#EN-8730-
+# Sinopsis: Se piden por pantalla el mínimo y máximo del rango del tiempo de ejecución de los procesos (rangos amplios) 
 #######################################################################
 function datos_tiempo_ejecucion_amplio {
 	datos_amplio_memoria_tabla
 	until [[ $tiempo_ejec_maxInicial -ge $tiempo_ejec_minInicial && $tiempo_ejec_minInicial -gt 0 ]]; do
 		echo -e "$cian Por favor, establezca el mínimo del rango para el tiempo de ejecución$cian:$NC" 
-#EN-8740-
+		read tiempo_ejec_minInicial #Rango minimo para la variable tiempo de ejecución
 		echo -e "$cian Por favor, establezca el máximo del rango para el tiempo de ejecución$cian:$NC"
-#EN-8750-
-#EN-8760-
+		read tiempo_ejec_maxInicial #Rango maximo para la variable tiempo de ejecución
+		if [[ $tiempo_ejec_minInicial -gt $tiempo_ejec_maxInicial ]]; then #Si el mayor es menor que el menor, se invierten los rangos
 			invertirRangos $tiempo_ejec_minInicial $tiempo_ejec_maxInicial
 			tiempo_ejec_minInicial=$min
 			tiempo_ejec_maxInicial=$max
 		fi
-#EN-8770-
+		if [[ $tiempo_ejec_minInicial -lt 0 && $tiempo_ejec_maxInicial -lt 0 ]]; then #Si ambos son negativos se desplazan a positivos 
 			desplazarRangos $tiempo_ejec_minInicial $tiempo_ejec_maxInicial
 			tiempo_ejec_minInicial=$min
 			tiempo_ejec_maxInicial=$max
@@ -3792,61 +3792,61 @@ function datos_tiempo_ejecucion_amplio {
 		tiempo_ejec_min=$tiempo_ejec_minInicial
 		tiempo_ejec_max=$tiempo_ejec_maxInicial
 	done
-#EN-8780-
+} #Fin de datos_tiempo_ejecucion_amplio()                               
 						
 #######################################################################
-#EN-8790-
+# Sinopsis: Se piden por pantalla el mínimo y máximo del rango de la prioridad de los procesos
 #######################################################################
 function datos_prio_proc {
 	datos_memoria_tabla 
-#EN-8800-
+} #Fin de datos_prio_proc()                               
 						
 #######################################################################
-#EN-8810-
+# Sinopsis: Se piden por pantalla el mínimo y máximo del rango de la prioridad de los procesos (rangos amplios) 
 #######################################################################
 function datos_prio_proc_amplio {
 	datos_amplio_memoria_tabla
-#EN-8820-
+} #Fin de datos_prio_proc_amplio()                               
 
 #######################################################################
-#EN-8830-
+# Sinopsis: Se piden por pantalla el mínimo y máximo del rango del tamaño en memoria de los procesos. Esta función no se va a ejecutar porque elrango desde el que se buscará un subrango estará formado por 1 y $mem_num_marcos (rango máximo calculado desde el rango amplio suministrado por el usuario.
 #######################################################################
 function datos_tamano_marcos_procesos {                
 	datos_memoria_tabla 
 	until [[ $MAX_RANGE_tamano_marcos_proc -ge $MIN_RANGE_tamano_marcos_proc && $MIN_RANGE_tamano_marcos_proc -gt 0 ]]; do
 		echo -e "$cian Por favor, establezca el mínimo del rango para el número de marcos asociados a cada proceso$cian:$NC" 
-#EN-8840-
+		read MIN_RANGE_tamano_marcos_proc #Rango minimo para la variable tamaño del proceso en marcos
 		echo -e "$cian Por favor, establezca el máximo del rango para el número de marcos asociados a cada proceso:$NC" 
-#EN-8850-
-#EN-8860-
+		read MAX_RANGE_tamano_marcos_proc #Rango maximo para la variable tamaño del proceso en marcos
+		if [[ $MIN_RANGE_tamano_marcos_proc -gt $MAX_RANGE_tamano_marcos_proc ]]; then #Si el mayor es menor que el menor, se invierten los rangos
 			invertirRangos $MIN_RANGE_tamano_marcos_proc $MAX_RANGE_tamano_marcos_proc
 			MIN_RANGE_tamano_marcos_proc=$min
 			MAX_RANGE_tamano_marcos_proc=$max
 		fi
-#EN-8870-
+		if [[ $MIN_RANGE_tamano_marcos_proc -lt 0 && $MAX_RANGE_tamano_marcos_proc -lt 0 ]]; then #Si ambos son negativos se desplazan a positivos 
 			desplazarRangos $MIN_RANGE_tamano_marcos_proc $MAX_RANGE_tamano_marcos_proc
 			MIN_RANGE_tamano_marcos_proc=$min
 			MAX_RANGE_tamano_marcos_proc=$max
 		fi  
 	done
-#EN-8880-
+} #Fin de datos_tamano_marcos_procesos()
 
 #######################################################################
-#EN-8890-
+# Sinopsis: Se piden por pantalla el mínimo y máximo del rango del tamaño en memoria de los procesos (rangos amplios) . Esta función no se va a ejecutar porque elrango desde el que se buscará un subrango estará formado por 1 y $mem_num_marcos (rango máximo calculado desde el rango amplio suministrado por el usuario.
 #######################################################################
 function datos_tamano_marcos_procesos_amplio {                
 	datos_amplio_memoria_tabla
 	until [[ $tamano_marcos_proc_maxInicial -ge $tamano_marcos_proc_minInicial && $tamano_marcos_proc_minInicial -gt 0 ]]; do
 		echo -e "$cian Por favor, establezca el mínimo del rango para el número de marcos asociados a cada proceso$cian:$NC" 
-#EN-8900-
+		read tamano_marcos_proc_minInicial #Rango minimo para la variable tamaño del proceso en marcos
 		echo -e "$cian Por favor, establezca el máximo del rango para el número de marcos asociados a cada proceso:$NC" 
-#EN-8910-
-#EN-8920-
+		read tamano_marcos_proc_maxInicial #Rango maximo para la variable tamaño del proceso en marcos
+		if [[ $tamano_marcos_proc_minInicial -gt $tamano_marcos_proc_maxInicial ]]; then #Si el mayor es menor que el menor, se invierten los rangos
 			invertirRangos $tamano_marcos_proc_minInicial $tamano_marcos_proc_maxInicial
 			tamano_marcos_proc_minInicial=$min
 			tamano_marcos_proc_maxInicial=$max
 		fi
-#EN-8930-
+		if [[ $tamano_marcos_proc_minInicial -lt 0 && $tamano_marcos_proc_maxInicial -lt 0 ]]; then #Si ambos son negativos se desplazan a positivos 
 			desplazarRangos $tamano_marcos_proc_minInicial $tamano_marcos_proc_maxInicial
 			tamano_marcos_proc_minInicial=$min
 			tamano_marcos_proc_maxInicial=$max
@@ -3854,47 +3854,47 @@ function datos_tamano_marcos_procesos_amplio {
 		tamano_marcos_proc_min=$tamano_marcos_proc_minInicial
 		tamano_marcos_proc_max=$tamano_marcos_proc_maxInicial
 	done
-#EN-8940-
+} #Fin de datos_tamano_marcos_procesos_amplio()
 
 #######################################################################
-#EN-8950-
+# Sinopsis: Se piden por pantalla el mínimo y máximo del rango del tamaño en memoria de los procesos
 #######################################################################
 function datos_tamano_direcciones_procesos {                
 	datos_memoria_tabla 
 	until [[ $MAX_RANGE_tamano_direcciones_proc -ge $MIN_RANGE_tamano_direcciones_proc && $MIN_RANGE_tamano_direcciones_proc -gt 0 ]]; do
 		echo -e "$cian Por favor, establezca el mínimo del rango para el tamaño del proceso en direcciones$cian:$NC" 
-#EN-8960-
+		read MIN_RANGE_tamano_direcciones_proc #Rango minimo para la variable tamaño del proceso en direcciones
 		echo -e "$cian Por favor, establezca el máximo del rango para el tamaño del proceso en direcciones$cian:$NC" 
-#EN-8970-
-#EN-8980-
+		read MAX_RANGE_tamano_direcciones_proc #Rango maximo para la variable tamaño del proceso en direcciones
+		if [[ $MIN_RANGE_tamano_direcciones_proc -gt $MAX_RANGE_tamano_direcciones_proc ]]; then #Si el mayor es menor que el menor, se invierten los rangos
 			invertirRangos $MIN_RANGE_tamano_direcciones_proc $MAX_RANGE_tamano_direcciones_proc
 			MIN_RANGE_tamano_direcciones_proc=$min
 			MAX_RANGE_tamano_direcciones_proc=$max
 		fi
-#EN-8990-
+		if [[ $MIN_RANGE_tamano_direcciones_proc -lt 0 && $MAX_RANGE_tamano_direcciones_proc -lt 0 ]]; then #Si ambos son negativos se desplazan a positivos 
 			desplazarRangos $MIN_RANGE_tamano_direcciones_proc $MAX_RANGE_tamano_direcciones_proc
 			MIN_RANGE_tamano_direcciones_proc=$min
 			MAX_RANGE_tamano_direcciones_proc=$max
 		fi  
 	done
-#EN-9000-
+} #Fin de datos_tamano_direcciones_procesos()
 
 #######################################################################
-#EN-9010-
+# Sinopsis: Se piden por pantalla el mínimo y máximo del rango del tamaño en memoria de los procesos (rangos amplios) 
 #######################################################################
 function datos_tamano_direcciones_procesos_amplio {                
 	datos_amplio_memoria_tabla
 	until [[ $tamano_direcciones_proc_maxInicial -ge $tamano_direcciones_proc_minInicial && $tamano_direcciones_proc_minInicial -gt 0 ]]; do
 		echo -e "$cian Por favor, establezca el mínimo del rango para el tamaño del proceso en direcciones$cian:$NC" 
-#EN-9020-
+		read tamano_direcciones_proc_minInicial #Rango minimo para la variable tamaño del proceso en direcciones
 		echo -e "$cian Por favor, establezca el máximo del rango para el tamaño del proceso en direcciones$cian:$NC" 
-#EN-9030-
-#EN-9040-
+		read tamano_direcciones_proc_maxInicial #Rango maximo para la variable tamaño del proceso en direcciones
+		if [[ $tamano_direcciones_proc_minInicial -gt $tamano_direcciones_proc_maxInicial ]]; then #Si el mayor es menor que el menor, se invierten los rangos
 			invertirRangos $tamano_direcciones_proc_minInicial $tamano_direcciones_proc_maxInicial
 			tamano_direcciones_proc_minInicial=$min
 			tamano_direcciones_proc_maxInicial=$max
 		fi
-#EN-9050-
+		if [[ $tamano_direcciones_proc_minInicial -lt 0 && $tamano_direcciones_proc_maxInicial -lt 0 ]]; then #Si ambos son negativos se desplazan a positivos 
 			desplazarRangos $tamano_direcciones_proc_minInicial $tamano_direcciones_proc_maxInicial
 			tamano_direcciones_proc_minInicial=$min
 			tamano_direcciones_proc_maxInicial=$max
@@ -3902,47 +3902,47 @@ function datos_tamano_direcciones_procesos_amplio {
 		tamano_direcciones_proc_min=$tamano_direcciones_proc_minInicial
 		tamano_direcciones_proc_max=$tamano_direcciones_proc_maxInicial
 	done
-#EN-9060-
+} #Fin de datos_tamano_direcciones_procesos_amplio()
 
 #######################################################################
-#EN-9070-
+# Sinopsis: Se piden por pantalla el mínimo y máximo del rango del tamaño en memoria de los procesos
 #######################################################################
 function datos_quantum {                
 	datos_memoria_tabla 
 	until [[ $MAX_RANGE_quantum -ge $MIN_RANGE_quantum && $MIN_RANGE_quantum -gt 0 ]]; do
 		echo -e "$cian Por favor, establezca el mínimo del rango para el quantum$cian:$NC" 
-#EN-9080-
+		read MIN_RANGE_quantum #Rango minimo para la variable tamaño del proceso en direcciones
 		echo -e "$cian Por favor, establezca el máximo del rango para el quantum$cian:$NC" 
-#EN-9090-
-#EN-9100-
+		read MAX_RANGE_quantum #Rango maximo para la variable tamaño del proceso en direcciones
+		if [[ $MIN_RANGE_quantum -gt $MAX_RANGE_quantum ]]; then #Si el mayor es menor que el menor, se invierten los rangos
 			invertirRangos $MIN_RANGE_quantum $MAX_RANGE_quantum
 			MIN_RANGE_quantum=$min
 			MAX_RANGE_quantum=$max
 		fi
-#EN-9110-
+		if [[ $MIN_RANGE_quantum -lt 0 && $MAX_RANGE_quantum -lt 0 ]]; then #Si ambos son negativos se desplazan a positivos 
 			desplazarRangos $MIN_RANGE_quantum $MAX_RANGE_quantum
 			MIN_RANGE_quantum=$min
 			MAX_RANGE_quantum=$max 
 		fi  
 	done
-#EN-9120-
+} #Fin de datos_quantum()
 
 #######################################################################
-#EN-9130-
+# Sinopsis: Se piden por pantalla el mínimo y máximo del rango del tamaño en memoria de los procesos (rangos amplios) 
 #######################################################################
 function datos_quantum_amplio {                
 	datos_amplio_memoria_tabla
 	until [[ $quantum_maxInicial -ge $quantum_minInicial && $quantum_minInicial -gt 0 ]]; do
 		echo -e "$cian Por favor, establezca el mínimo del rango para el quantum:$NC" 
-#EN-9140-
+		read quantum_minInicial #Rango minimo para la variable tamaño del proceso en direcciones
 		echo -e "$cian Por favor, establezca el máximo del rango para el quantum$cian:$NC" 
-#EN-9150-
-#EN-9160-
+		read quantum_maxInicial #Rango maximo para la variable tamaño del proceso en direcciones
+		if [[ $quantum_minInicial -gt $quantum_maxInicial ]]; then #Si el mayor es menor que el menor, se invierten los rangos
 			invertirRangos $quantum_minInicial $quantum_maxInicial
 			quantum_minInicial=$min
 			quantum_maxInicial=$max
 		fi
-#EN-9170-
+		if [[ $quantum_minInicial -lt 0 && $quantum_maxInicial -lt 0 ]]; then #Si ambos son negativos se desplazan a positivos 
 			desplazarRangos $quantum_minInicial $quantum_maxInicial
 			quantum_minInicial=$min
 			quantum_maxInicial=$max
@@ -3950,20 +3950,20 @@ function datos_quantum_amplio {
 		quantum_min=$quantum_minInicial
 		quantum_max=$quantum_maxInicial
 	done
-#EN-9180-
+} #Fin de datos_quantum_amplio()
 
 #######################################################################
 #######################################################################
 #   Funciones para el cálculo de los datos desde los rangos   #########
 #######################################################################
-#EN-9190-
+# Sinopsis: Dato calculado de forma aleatoria desde su subrango. Puede usarse para calcular el Mínimo y Máximo del subrango, calculado desde el rango amplio.
 #######################################################################
 function calcDatoAleatorioGeneral {
 	#Llamada: calcDatoAleatorioGeneral $MIN_RANGE_MARCOS $MAX_RANGE_MARCOS #Asignación: mem_num_marcos=$datoAleatorioGeneral  #Variable devuelta: mem=$((RANDOM % ($max - $min + 1) + $min))
-#EN-9200-
-#EN-9210-
-#EN-9220-
-#EN-9230-
+	min=$1 #min=$MIN_RANGE_MARCOS
+	max=$2 #max=$MAX_RANGE_MARCOS
+	datoAleatorioGeneral=$((RANDOM % ($max - $min + 1) + $min)) # Generar un número aleatorio dentro del rango
+} #Fin de calcDatoAleatorioGeneral()
 
 #######################################################################
 # Sinopsis: #Si los mínimos son mayores que los invierten los rangos. 
@@ -3972,117 +3972,117 @@ function invertirRangos {
 	aux=$1
 	min=$2
 	max=$aux
-#EN-9240-
+} #Fin de invertirRangos()
 
 #######################################################################
 # Sinopsis: #Si mínimo y máximo son negativos se desplaza el mínimo hasta ser 0. 
 #######################################################################
 function desplazarRangos {
-#EN-9250-
-#EN-9260-
-#EN-9270-
+	max=$(($2 - $1 + 1)) #La condición es estrictamente mayor para que si sólo hay una unidad de diferencia se quedan iguales.
+	min=1 #Todos los valores mínimos tienen que ser 1 como mínimo, salvo el tiempo de llegada que podría ser 0
+} #Fin de desplazarRangos()
 
 #######################################################################
-#EN-9280-
+# Sinopsis: Establece los colores de cada proceso. Se repetirán cada 6 colores.
 #######################################################################
 function  Establecimiento_colores_proces {
 	col=1
 	aux=0
 	for (( i=0,j=0; i<$nprocesos; i++,j++)); do
-#EN-9290-
+		auxiliar=$[ ${#coloress[@]} - 2 ]
 		indice[$i]=$j
 		while [[ ${indice[$i]} -ge $auxiliar ]]; do
 			indice[$i]=$[ ${indice[$i]} - $auxiliar ]
 		done
 		colores[$i]=${coloress[${indice[$i]}]}
 		colorfondo[$i]=${colorfondos[${indice[$i]}]}
-#EN-9300-
+		if [[ $j -eq 16 ]]; then #Para que se reinicien los colores cada 16 procesos. En realidad, se hace cada 6 colores porque el resto tiene un mal contraste o no coinceden los fodos y el texto.
 			j=$((j-16))
 		fi
 	done
-#EN-9310-
+} #Fin de Establecimiento_colores_proces()
 
 #######################################################################
-#EN-9320-
+# Sinopsis: Dada una unidad de 3 dígitos, se calcula el número de espacios a poner por delante para rellenar.
 #######################################################################
-#EN-9330-
-#EN-9340-
+function imprimirEspaciosEstrechos { #3 - ancho de columnas estrechas en tabla resumen de procesos en los volcados 
+	TamNum=$(($longCampoTablaEstrecho - $1)) #No se restan los espacios laterales izquierdo y derecho porque se pintarán por separado. 
 	espaciosfinal=${varhuecos:1:$TamNum}
 	echo -ne "${varC[$i]}$espaciosfinal$NC"
-#EN-9350-
+} #Fin de imprimirEspaciosEstrechos()
 
-#EN-9360-
-#EN-9370-
+function imprimirEspaciosEstrechosBN { #3 - ancho de columnas estrechas en tabla resumen de procesos en los volcados 
+	TamNum=$(($longCampoTablaEstrecho - $1)) #No se restan los espacios laterales izquierdo y derecho porque se pintarán por separado. 
 	espaciosfinal=${varhuecos:1:$TamNum}
 	echo -ne "$espaciosfinal"
-#EN-9380-
+} #Fin de imprimirEspaciosEstrechosBN()
 
 #######################################################################
-#EN-9390-
+# Sinopsis: Dada una unidad de 4 dígitos, se calcula el número de espacios a poner por delante para rellenar.
 #######################################################################
-#EN-9400-
-#EN-9410-
+function imprimirEspaciosAnchos { #4 - ancho de columnas anchas en tabla resumen de procesos en los volcados
+	TamNum=$(("$longCampoTablaAncho" - "$1")) #No se restan los espacios laterales izquierdo y derecho porque se pintarán por separado. 
 	espaciosfinal=${varhuecos:1:$TamNum}
 	echo -ne "${varC[$i]}$espaciosfinal$NC" 
-#EN-9420-
+} #Fin de imprimirEspaciosAnchos()
 
-#EN-9430-
-#EN-9440-
+function imprimirEspaciosAnchosBN { #4 - ancho de columnas anchas en tabla resumen de procesos en los volcados
+	TamNum=$(("$longCampoTablaAncho" - "$1")) #No se restan los espacios laterales izquierdo y derecho porque se pintarán por separado. 
 	espaciosfinal=${varhuecos:1:$TamNum}
 	echo -ne "$espaciosfinal" 
-#EN-9450-
+} #Fin de imprimirEspaciosAnchosBN()
 
 #######################################################################
-#EN-9460-
+# Sinopsis: Dada una unidad de 5 dígitos, se calcula el número de espacios a poner por delante para rellenar.
 #######################################################################
-#EN-9470-
-#EN-9480-
+function imprimirEspaciosMasAnchos { #5 - ancho de columnas más anchas en tabla resumen de procesos en los volcados
+	TamNum=$(( $longCampoTablaMasAncho - $1 )) #No se restan los espacios laterales izquierdo y derecho porque se pintarán por separado. 
 	espaciosfinal=${varhuecos:1:$TamNum}
 	echo -ne "${varC[$i]}$espaciosfinal$NC"
-#EN-9490-
+} #Fin de imprimirEspaciosMasAnchos()
 
-#EN-9500-
-#EN-9510-
+function imprimirEspaciosMasAnchosBN { #5 - ancho de columnas más anchas en tabla resumen de procesos en los volcados
+	TamNum=$(( $longCampoTablaMasAncho - $1 )) #No se restan los espacios laterales izquierdo y derecho porque se pintarán por separado. 
 	espaciosfinal=${varhuecos:1:$TamNum}
 	echo -ne "$espaciosfinal"
-#EN-9520-
+} #Fin de imprimirEspaciosMasAnchosBN()
 
 #######################################################################
-#EN-9530-
+# Sinopsis: Dada una unidad de 17 dígitos, se calcula el número de espacios a poner por delante para rellenar.
 #######################################################################
-#EN-9540-
-#EN-9550-
+function imprimirEspaciosMuyAnchos { #17 - ancho de columnas muy anchas en tabla resumen de procesos en los volcados 
+	TamNum=$(( $longCampoTablaMuyAncho - $1 )) #No se restan los espacios laterales izquierdo y derecho porque se pintarán por separado. 
 	espaciosfinal=${varhuecos:1:$TamNum}
 	echo -ne "${varC[$i]}$espaciosfinal$NC"
-#EN-9560-
+} #Fin de imprimirEspaciosMuyAnchos()
 
-#EN-9570-
-#EN-9580-
+function imprimirEspaciosMuyAnchosBN { #17 - ancho de columnas muy anchas en tabla resumen de procesos en los volcados 
+	TamNum=$(( $longCampoTablaMuyAncho - $1 )) #No se restan los espacios laterales izquierdo y derecho porque se pintarán por separado. 
 	espaciosfinal=${varhuecos:1:$TamNum}
 	echo -ne "$espaciosfinal"
-#EN-9590-
+} #Fin de imprimirEspaciosMuyAnchosBN()
 
 #######################################################################
-#EN-9600-
+# Sinopsis: Dada una unidad de 9 dígitos, se calcula el número de espacios a poner por delante para rellenar.
 #######################################################################
-#EN-9610-
-#EN-9620-
+function imprimirEspaciosRangosLargos { #9 - ancho de columnas anchas en tabla de rangos 
+	TamNum=$(( $longCampoTablaRangosLargos - $1 )) #No se restan los espacios laterales izquierdo y derecho porque se pintarán por separado. 
 	espaciosfinal=${varhuecos:1:$TamNum}
 	echo -ne "${varC[$i]}$espaciosfinal$NC"
-#EN-9630-
+} #Fin de imprimirEspaciosRangosLargos()
 
-#EN-9640-
-#EN-9650-
+function imprimirEspaciosRangosLargosBN { #9 - ancho de columnas anchas en tabla de rangos 
+	TamNum=$(( $longCampoTablaRangosLargos - $1 )) #No se restan los espacios laterales izquierdo y derecho porque se pintarán por separado. 
 	espaciosfinal=${varhuecos:1:$TamNum}
 	echo -ne "$espaciosfinal"
-#EN-9660-
+} #Fin de imprimirEspaciosRangosLargos()
 
 ####################################################################################
-#EN-9670-
-#EN-9680-
+# Sinopsis: Se eliminan los archivos de última ejecución que había anteriormente creados y 
+# nos direcciona a la entrada de particiones y procesos
 ####################################################################################
 function nuevaEjecucion {
-#EN-9690-
+#    clear
 	if [[ -f $ficheroDatosAnteriorEjecucion ]]; then
 		rm $ficheroDatosAnteriorEjecucion   
 	fi
@@ -4092,10 +4092,10 @@ function nuevaEjecucion {
 	if [[ -f $ficheroRangosAleTotalAnteriorEjecucion && ($seleccionMenuEleccionEntradaDatos -eq 7 || $seleccionMenuEleccionEntradaDatos -eq 9) ]]; then
 		rm $ficheroRangosAleTotalAnteriorEjecucion     
 	fi
-#EN-9700-
+} #Fin de nuevaEjecucion()
 
 #######################################################################
-#EN-9710-
+# Sinopsis: Se calcula el tamaño máximo de la unidad para contener todos los datos que se generen sin modificar el ancho de la columna necesaria
 #######################################################################
 function calcularUnidad {
 	sumatorio=0
@@ -4123,23 +4123,23 @@ function calcularUnidad {
 		digitosUnidad=$espacios
 		digitosUnidad=$(( $digitosUnidad + 1 ))
 	fi
-#EN-9720-
+} #Fin de calcularUnidad()
 
 ####################################################################################
-#EN-9730-
+# Sinopsis: Permite introducir las particiones y datos desde otro fichero (predefinido).
 ####################################################################################
 function entradaMemoriaDatosFichero {
-#EN-9740-
+#    clear
 	echo -e $ROJO"\nFicheros de datos a elegir en './FDatos/': "$NORMAL | tee -a $informeConColorTotal
 	echo -e "\nFicheros de datos a elegir en './FDatos/': " >> $informeSinColorTotal
 	files=($(ls -l ./FDatos/ | awk '{print $9}'))
-#EN-9750-
+	for i in "${!files[@]}"; do #Localiza en qué posición encuentra el dato (da la posición, pero no la variable en el array)
 		echo -e "$i) ${files[$i]}"
 	done
 	echo -ne "$AMARILLO\n\n\nIntroduce el número correspondiente al fichero a analizar: $NORMAL" | tee -a $informeConColorTotal
 	echo -ne "\n\n\nIntroduce el número correspondiente al fichero a analizar: " >> $informeSinColorTotal
 	read -r numeroFichero
-#EN-9760-
+	until [[ "0" -le $numeroFichero && $numeroFichero -lt ${#files[@]} && $numeroFichero -ne "" ]]; do
 		echo -ne "Error en la elección de una opción válida\n\n  --> " | tee -a $informeConColorTotal
 		echo -ne "Error en la elección de una opción válida\n\n  --> " >> $informeSinColorTotal
 		read -r numeroFichero
@@ -4147,23 +4147,23 @@ function entradaMemoriaDatosFichero {
 		echo -e "$numeroFichero\n\n" >> $informeSinColorTotal
 	done
 	ficheroParaLectura="./FDatos/${files[$numeroFichero]}"
-#EN-9770-
+} #Fin de entradaMemoriaDatosFichero()
 
 ####################################################################################
-#EN-9780-
+# Sinopsis: Permite introducir las particiones y datos desde otro fichero (predefinido).
 ####################################################################################
 function entradaMemoriaRangosFichero {
-#EN-9790-
+#    clear
 	echo -e $ROJO"\nFicheros de datos a elegir en './FDatos/': "$NORMAL | tee -a $informeConColorTotal
 	echo -e "\nFicheros de datos a elegir en './FDatos/': " >> $informeSinColorTotal
 	files=($(ls -l ./FDatos/ | awk '{print $9}'))
-#EN-9800-
+	for i in "${!files[@]}"; do #Localiza en qué posición encuentra el dato (da la posición, pero no la variable en el array)
 		echo -e "$i) ${files[$i]}"
 	done
 	echo -ne "$AMARILLO\n\n\nIntroduce el número correspondiente al fichero a analizar: $NORMAL" | tee -a $informeConColorTotal
 	echo -ne "\n\n\nIntroduce el número correspondiente al fichero a analizar: " >> $informeSinColorTotal
 	read -r numeroFichero
-#EN-9810-
+	until [[ "0" -le $numeroFichero && $numeroFichero -lt ${#files[@]} && $numeroFichero -ne "" ]]; do
 		echo -ne "Error en la elección de una opción válida\n\n  --> " | tee -a $informeConColorTotal
 		echo -ne "Error en la elección de una opción válida\n\n  --> " >> $informeSinColorTotal
 		read -r numeroFichero
@@ -4171,39 +4171,39 @@ function entradaMemoriaRangosFichero {
 		echo -e "$numeroFichero\n\n" >> $informeSinColorTotal
 	done
 	ficheroParaLectura="./FDatos/${files[$numeroFichero]}"
-#EN-9820-
+} #Fin de datos_numero_marcos_memoria_amplio()
 
 ####################################################################################
 ####################################################################################
 # Funciones de inicialización ######################################################
 ####################################################################################
-#EN-9830-
+# Sinopsis: Se inicilizan diferentes tablas y variables
 ####################################################################################
 function inicializaVectoresVariables { 
-#EN-9840-
-#EN-9850-
-#EN-9860-
+	# -----------------------------------------------------------------------------
+	# Se inicilizan las tablas indicadoras de la MEMORIA NO CONTINUA
+	#Se crea el array para determinar qué unidades de memoria están ocupadas y se inicializan con _
 	for (( ca=0; ca<(mem_num_marcos); ca++)); do
 		unidMemOcupadas[$ca]="_"
-#EN-9870-
+		unidMemOcupadasAux[$ca]="_" #Se inicializa un array auxiliar para realizar la reubicación
 	done
-#EN-9880-
-#EN-9890-
+	#Se crea variables para determinar si hay que reubicar (en un primer momento no)
+	#En caso de ser memoria no continua, si hay un hueco demasiado pequeño, y se va a usar como parte de la memoria a usar.
 	reubicarReubicabilidad=0 
-#EN-9900-
+	#En caso de ser memoria continua, si no hay un hueco suficientemente grande en el que quepa pero sí en la suma de todos ellos.
 	reubicarContinuidad=0 
-#EN-9910-
-#EN-9920-
-#EN-9930-
+	# -----------------------------------------------------------------------------
+	# Se inicilizan las tablas indicadoras de la situación del proceso
+	for (( i=0; i<$nprocesos; i++)); do #Copia algunas listas para luego ponerlas en orden
 		temp_rej[$i]="-"
-#EN-9940-
+		tejecucion[$i]=${ejecucion[$i]} #Para ser equivalente al nuevo programa
 		encola[$i]=0
 		enmemoria[$i]=0
 		enejecucion[$i]=0
 		bloqueados[$i]=0
 		enpausa[$i]=0 
-#EN-9950-
-#EN-9960-
+		terminados[$i]=0 #Determina qué procesos han terminado.
+		terminadosAux[$i]=0 #Determina qué procesos han terminado cuyo resumen de fallos de página ha sido imprimido.
 		fueraDelSistema[$i]=0
 		estad[$i]=0 
 		estado[$i]=0
@@ -4212,32 +4212,32 @@ function inicializaVectoresVariables {
 		temp_ret[$i]="-"
 		pos_inicio[$i]="-"
 		pos_final[$i]="-"
-#EN-9970-
-#EN-9980-
-#EN-9990-
-#EN-10000-
-#EN-10010-
-#EN-10020-
-#EN-10030-
-#EN-10040-
-#EN-10050-
+		escrito[$i]=0 #Guarda si un proceso está escrito o no EN EL ARRAY.
+		bloques[$i]=0 #Almacena el número de bloques en los que se fragmenta un proceso
+		nomtiempo[$i]=0 #Controla qué procesos están presentes en la banda de tiempo. Se van poniendo a 1 a medida que se van metiendo en las variables de las líneas de la banda de tiempos.
+		numeroMarcosUsados[$i]=0 #Número de Marcos ya usadas de cada Proceso.
+		numeroPaginasUsadasProceso[$i]=0 #Número de Páginas ya usadas de cada Proceso.
+		numMarcosDibujadosPorProceso[$i]=0 #Número de Marcos en Memoria con Páginas ya dibujadas de cada Proceso para el resumen de Banda.
+		numPaginasDibujadas[$i]=0 #Número de Páginas ya dibujadas de cada Proceso para el resumen de Banda.		
+		contadorAlgPagFallosTotalesProcesos[$i]=0 #Fallos de página totales de cada proceso.
+		max_AlgPagFrecRec_FrecRec[$i]=-1 #Mayor "frecuencia/uso de página".
 		max_AlgPagFrecRec_Position[$i]=0
-#EN-10060-
+		min_AlgPagFrecRec_FrecRec[$i]=0 #Menor "frecuencia/uso de página".
 		min_AlgPagFrecRec_Position[$i]=0
 		indiceResuPaginaProceso[$i]="_"
 		indiceResuPaginaAcumulado[$i]="_"
-#EN-10070-
-#EN-10080-
-#EN-10090-
+		contadorAlgPagFallosProcesoAcumulado[$i]=0 #Número de Fallos de Página de cada Proceso.
+		contadorAlgPagExpulsionesForzadasProcesoAcumulado[$i]=0 #Número de expulsiones forzadas en Round-Robin (RR) 
+		for (( indMarco=0; indMarco<${memoria[$i]}; indMarco++ )); do #Controlan el ordinal del tiempo de ejecución que hace que se cambió un valor de las clases y la frecuencia de uso de cada página en cada ordinal de tiempo de ejecución.
 			primerTiempoEntradaPagina[$i,$indMarco]=0 
 			restaFrecUsoRec[$i,$indMarco,0]=0
 			directions_AlgPagFrecUsoRec_marco_pagina_clase[$i,$indMarco,0]=0
 			directions_AlgPagFrecUsoRec_marco_pagina_referenciada[$i,$indMarco]=0
 		done
-#EN-10100-
-#EN-10110-
+		colaTiempoRR[$i]=-1 #Contiene el orden de ejecución de Round-Robin (RR). Será "-" mientras no esté en cola, o cuando haya terminado, y si aún no ha terminado contendrá el número ordinal del siguiente quantum. El proceso a ejecutar será, por tanto, el que tenga el número ordinal más bajo. Y el número de quantums realizados (cambios de contexto, será el número ordinal más alto.
+		contadorAlgPagFallosProcesoAcumulado[$i]=0 #El número de fallos de página totales es la suma de los números de marcos asociados a cada proceso con páginas.
 		contadorAlgPagFallosTotalesProcesos[$i]=0
-#EN-10120-
+		maxpagsNoVirtual[$i]=0 #El número más alto entre todas las páginas en cada proceso.
 	done
 	ResuFrecuenciaAcumulado=();
 	ResuTiempoOptimoAcumulado=();
@@ -4250,206 +4250,206 @@ function inicializaVectoresVariables {
 	max_AlgFrecuencia_frec=();
 	min_AlgFrecuencia_position=();
 	min_AlgFrecuencia_position=();
-#EN-10130-
-#EN-10140-
-#EN-10150-
-#EN-10160-
-#EN-10170-
+	Establecimiento_colores_proces #Establece el color de cada proceso
+	mem_libre=$mem_num_marcos #Para ser equivalente al nuevo programa
+	mem_aux=$mem_num_marcos #Para ser equivalente al nuevo programa
+	maxProcPorUnidadTiempoBT=0 # Se calcula el valor máximo del número de unidades de tiempo. Como mucho, los tiempos de llegada más los tiempos de ejecución. Ese será el número de elementos máximo del array procPorUnidadTiempoBT 
+	for ((j = 0; j < ${#proceso[@]}; j++)); do
 		maxProcPorUnidadTiempoBT=$(expr $maxProcPorUnidadTiempoBT + ${llegada[$j]} + ${ejecucion[$j]})  
 	done  
-#EN-10180-
-#EN-10190-
+	topeProcPorUnidadTiempoBT=$maxProcPorUnidadTiempoBT # Se pone un valor que nunca se probará (tope dinámico). Osea, el mismo que maxProcPorUnidadTiempoBT.
+	procFinalizado=-1  #Variable que se usa para controlar la impresión de entrada a dibujaResumenAlgPagFrecUsoRec(). Se modifica en inicializaVectoresVariables(), gestionAlgoritmoPagAlgPagFrecMFU(), gestionProcesosFCFS(), gestionProcesosSJF(), gestionProcesosSRPT() y en inicioNuevo().
 	ejecutandoinst=-1
-#EN-10200-
-#EN-10210-
-#EN-10220-
-#EN-10230-
-#EN-10240-
-#EN-10250-
+	calcularUnidad #Determina el mayor número que podría ser representado por Tllegada y Tejecucion
+	contadorTiempoRR=0 #Timpo ejecutado de un proceso que se comparará con el quantum para ser sacado de CPU.
+	indiceColaTiempoRRLibre=0 #Índice con el primer ordinal libre a repartir en Round-Robin (RR). Irá creciendo con cada puesto de quantum repartido y marca el futuro orden de ejecución. 
+	indiceColaTiempoRREnEjecucion=0 #Índice con el actual ordinal en ejecución para Round-Robin (RR). Irá creciendo con cada quantum ejecutado y marca el actual número ordinal de uantum en ejecución. 
+#    clear
+} #Fin de inicializaVectoresVariables()
 
 ####################################################################################
-#EN-10260-
+# Sinopsis: Se inicializan las variables con diferentes acumulados en cada instante de reloj. Algunos acumulados sólo serían necesarios cuando se produzcan eventos, pero se podrían generalizar haciendo acumulados en cada instante. 
 ####################################################################################
-#EN-10270-
-#EN-10280-
+function inicializarAcumulados { #Se ejecuta en cada instante mientra que otras funciones sólo si se producen ciertas condiciones. Sería mejor inicializar aquí los acumulados.
+	for (( counter=0 ; counter<$nprocesos ; counter++ )); do #Se arrastran los datos del siguiente fallo de página para cada proceso en cada unidad de tiempo.
 		if [[ $reloj -ne 0 ]]; then
-#EN-10290-
+			ResuPunteroMarcoSiguienteFalloPagAcumulado[$counter,$reloj]=${ResuPunteroMarcoSiguienteFalloPagAcumulado[$counter,$((reloj - 1))]} #Recoge los datos del array de frecuencias de uso de las páginas contenidas en los marcos en el instante anterior.
 		fi
 	done
-#EN-10300-
+} #Fin de inicializarAcumulados()
 
 ####################################################################################
 ####################################################################################
 # Funciones para la gestión de procesos ############################################
 ####################################################################################
-#EN-10310-
+# Sinopsis: Gestión de procesos - FCFS
 ####################################################################################
 function gestionProcesosFCFS {
 	if [[ $cpu_ocupada == "NO" ]]; then
 		if [[ $realizadoAntes -eq 0 ]]; then  
 			indice_aux=-1
-#EN-10320-
+			for (( i=0; i<$nprocesos; i++ )); do  #Establecemos qué proceso es el siguiente que llega a memoria.
 				if [[ ${enmemoria[$i]} -eq 1 && ${terminados[$i]} -ne 1 ]]; then
-#EN-10330-
+					indice_aux=$i #El siguiente proceso que llega a memoria
 					temp_aux=${temp_rej[$i]}
 					break
 				fi
 			done
-#EN-10340-
-#EN-10350-
-#EN-10360-
-#EN-10370-
-#EN-10380-
-#EN-10390-
+			if ! [[ "$indice_aux" -eq -1 ]]; then #Hemos encontrado el siguiente proceso en memoria
+				enejecucion[$indice_aux]=1 #Marco el proceso para ejecutarse
+				enpausa[$indice_aux]=0 #Quitamos el estado pausado si el proceso lo estaba anteriormente
+				enmemoria[$indice_aux]=1 #Marcamos el proceso como en memoria
+				cpu_ocupada=SI #La CPU está ocupada por un proceso
+				avisoEntradaCPU[$indice_aux]=1 #Se activa el aviso de entrada en CPU del volcado
 			fi
 		fi
 	fi
-#EN-10400-
+	if [[ $cpu_ocupada == "SI" ]]; then #Está separado del anterior if porque la CPU podría estar ocupada por un proceso.
 		for (( i=0; i<$nprocesos; i++ )); do
 			if [[ ${enejecucion[$i]} -eq 1 ]]; then
 				ejecutandoinst=$i
 			fi
 		done
-#EN-10410-
-#EN-10420-
+		if [[ $ejecutandoinst -ge 0 ]]; then #Si no hay proceso en ejecución se pone -1, para que pueda ser comparado.  
+			ResuTiempoProceso[$reloj]=$ejecutandoinst #Resumen - Proceso en ejecución en cada instante de tiempo. 
 		else
 			ResuTiempoProceso[$reloj]=-1
 		fi 
 	fi
-#EN-10430-
-#EN-10440-
+	if [[ $seleccionAlgoritmoPaginacion -eq 10 || $seleccionAlgoritmoPaginacion -eq 11 || $seleccionAlgoritmoPaginacion -eq 16 || $seleccionAlgoritmoPaginacion -eq 17 ]]; then #Si se trabaja NFU/NRU con clases.
+		if [[ $reloj -gt 0 ]]; then #Se traspasan todos los datos al siguiente instante para ser modificados, si se produce nmodificaciones al analizar los fallos y usos de las páginas. 
 			for (( numProc=0; numProc<${#ejecucion[@]}; numProc++ )); do # 
-# 
+				for (( numMarco=0; numMarco<${memoria[$numProc]}; numMarco++ )); do # 
 					restaFrecUsoRec[$numProc,$numMarco,$reloj]=${restaFrecUsoRec[$numProc,$numMarco,$(($reloj - 1))]} 
 				done
 			done
 		fi
-#EN-10450-
-#EN-10460-
-#EN-10470-
-#EN-10480-
-#EN-10490-
-#EN-10500-
+	fi #Después de inicializar estos valores, se ejecutan las funciones que actualizarán los valores.
+	if [[ $cpu_ocupada == "SI" ]]; then #Está separado del anterior if porque la CPU podría estar ocupada por un proceso.
+		if [[ $seleccionAlgoritmoPaginacion -eq 0 ]]; then #Se lanza la gestión del algoritmo de paginación para ver qué página del proceso $ejecutandoinst entra en qué marco en cada instante.
+			gestionAlgoritmoPagNoVirtual #Se lanza la gestión sin algoritmo de paginación, dado que en memoria no virtual los procesos entran en memoria de forma completa y no por páginas como en memoria virtual.
+		elif [[ $seleccionAlgoritmoPaginacion -ge 1 && $seleccionAlgoritmoPaginacion -le 4 ]]; then #Se lanza la gestión del algoritmo de paginación para ver qué página del proceso $ejecutandoinst entra en qué marco en cada instante.
+			gestionAlgoritmoPagAlgPagFrecFIFORelojSegOp #Se lanza la gestión del algoritmo de paginación FIFO - FIFO con Segunda Oportunidad - Reloj - Reloj con Segunda Oportunidad.
 		elif [[ $seleccionAlgoritmoPaginacion -eq 5 ]]; then
-#EN-10510-
+			gestionAlgoritmoPagAlgPagRecMRULRUNRU #Se lanza la gestión del algoritmo de paginación More Recently Used (MRU) - Lest Recently Used (LRU) - No Recently Used (NRU) sobre LRU y con clases (sobre MRU y sobre LRU).
 		elif [[ $seleccionAlgoritmoPaginacion -ge 6 && $seleccionAlgoritmoPaginacion -le 11 ]]; then
-#EN-10520-
+			gestionAlgoritmoPagAlgPagFrecMFULFUNFU #Se lanza la gestión del algoritmo de paginación More Frequently Used (MFU) - Lest Frequently Used (LFU) - No Frequently Used (NFU) sobre MFU, sobre LFU y con clases (sobre MFU y sobre LFU).
 		elif [[ $seleccionAlgoritmoPaginacion -ge 12 && $seleccionAlgoritmoPaginacion -le 17 ]]; then
-#EN-10530-
+			gestionAlgoritmoPagAlgPagRecMRULRUNRU #Se lanza la gestión del algoritmo de paginación More Recently Used (MRU) - Lest Recently Used (LRU) - No Recently Used (NRU) sobre LRU y con clases (sobre MRU y sobre LRU).
 		fi
 	fi 
 
-#EN-10540-
-#EN-10550-
-#EN-10560-
+	#ESTADO DE CADA PROCESO
+	#Se modifican los valores de los arrays, restando de lo que quede
+	#ESTADO DE CADA PROCESO EN EL TIEMPO ACTUAL Y HALLAMOS LAS VARIABLES. (Las cuentas se realizaran tras imprimir.)
 	for (( i=0; i<$nprocesos; i++ )); do
 		if [[ ${fueraDelSistema[$i]} -eq 1 ]] ; then
 			estado[$i]="Fuera del Sistema"
 			estad[$i]=0
 		fi 
 		if [[ ${encola[$i]} -eq 1 && ${bloqueados[$i]} -eq 1 && ${temp_wait[$i]} == "-" && ${temp_ret[$i]} == "-" ]] ; then
-#EN-10570-
+			temp_wait[$i]=0 #Se inicializan a 0 para poder operar con el número
 			temp_ret[$i]=0
-#EN-10580-
+			temp_rej[$i]=${ejecucion[$i]} #Aunque no entre en memoria ya tiene datos a considerar.
 		fi
 		if [[ ${encola[$i]} -eq 1 && ${bloqueados[$i]} -eq 1 ]] ; then
 			estado[$i]="En espera"
 			estad[$i]=1
 		fi
 		if [[ ${enmemoria[$i]} -eq 1 && ${temp_wait[$i]} == "-" && ${temp_ret[$i]} == "-" ]] ; then
-#EN-10590-
+			temp_wait[$i]=0 #Se inicializan a 0 para poder operar con el número
 			temp_ret[$i]=0
-#EN-10600-
+			temp_rej[$i]=${ejecucion[$i]} #Cuando entre en memoria, si no se había considerado antes en cola, ya tiene datos a considerar.
 		fi
 		if [[ ${enmemoria[$i]} -eq 1 && ${enejecucion[$i]} -eq 1 ]] ; then
 			estado[$i]="En ejecucion"
 			estad[$i]=3
-#EN-10610-
-#EN-10620-
+			procPorUnidadTiempoBT[$reloj]=$i #Mete el número de orden del proceso que se mantiene en ejecución en la posición reloj de procPorUnidadTiempoBT.
+		elif [[ ${enmemoria[$i]} -eq 1 && ${enpausa[$i]} -eq 1 ]] ; then #No es necesario porque FCFS no es apropiativo.
 			estado[$i]="En pausa"
 		elif [[ ${enmemoria[$i]} -eq 1 ]] ; then
 			estado[$i]="En memoria"
 			estad[$i]=2
 		fi
-#EN-10630-
+		if [[ ${terminados[$i]} -eq 1 && ${terminadosAux[$i]} -ne 1 ]] ; then #Tiene esta doble condición porque una vez que pase a terminado no puede estar en otro estado.
 			estado[$i]="Finalizado"
 			estad[$i]=5
-#EN-10640-
+			procFinalizado=$i #Variable que se usa para controlar la impresión de entrada a dibujaResumenAlgPagFrecUsoRec(). Se modifica en inicializaVectoresVariables(), gestionAlgoritmoPagAlgPagFrecMFU(), gestionProcesosFCFS(), gestionProcesosSJF(), gestionProcesosSRPT() y en inicioNuevo().
 		elif [[ ${terminados[$i]} -eq 1 && ${terminadosAux[$i]} -eq 1 ]] ; then 
 			estado[$i]="Finalizado"
 			estad[$i]=5
 		fi
 	done
 
-#EN-10650-
-#EN-10660-
-#EN-10670-
+	#Se pone el estado del siguiente que se vaya a ejecutar (si algún proceso ha terminado) "En ejecucion"
+	#SUMAR EL SEGUNDO DEL CICLO ANTES DE PONER ESTE ESTADO
+	if [[ "$finalprocesos" -eq 0 ]]; then #En caso de que finalprocesos sea 0, se termina con el programa.
 		parar_proceso=SI
 		evento=1
 	fi
-#EN-10680-
+	if [[ $reloj -eq 0 || $optejecucion = "4" ]]; then #Siempre se imprimie el volcado en T=0. y también cuando se escoja la impresión unidad de tiempo a unidad de tiempo (seleccionMenuModoTiempoEjecucionAlgormitmo = optejecucion = 4).
 		evento=1
 	fi
-#EN-10690-
+	if [[ $optejecucion = "5" ]]; then #Si no se quiere hacer ninguna representación intermedia en pantalla pero sí se quiere ver el resultado final y recogerlo en los ficheros de informes.
 		evento=0
 	fi
-#EN-10700-
+} #Fin de gestionProcesosFCFS()
 
 ####################################################################################
-#EN-10710-
+# Sinopsis: Gestión de procesos - SJF
 ####################################################################################
 function gestionProcesosSJF {
-#EN-10720-
-#EN-10730-
-#EN-10740-
+	#ESTADO DE CADA PROCESO EN EL TIEMPO ACTUAL Y HALLAMOS LAS VARIABLES. (Las cuentas se realizarán tras lanzar el volcado.)
+	for (( i=0; i<$nprocesos; i++ )); do #Se modifican los valores de los arrays.
+		if [[ ${fueraDelSistema[$i]} -eq 1 ]] ; then #No ha llegado por tiempo de llegada.
 			estado[$i]="Fuera del Sistema"
 			estad[$i]=0
 		fi 
-#EN-10750-
-#EN-10760-
+		if [[ ${encola[$i]} -eq 1 && ${temp_wait[$i]} == "-" && ${temp_ret[$i]} == "-" ]] ; then #Se encola pero no ha llegado por tiempo de llegada.
+			temp_wait[$i]=0 #Se inicializan a 0 para poder operar con el número
 			temp_ret[$i]=0
-#EN-10770-
+			temp_rej[$i]=${ejecucion[$i]} #Aunque no entre en memoria ya tiene datos a considerar.
 			estado[$i]="En espera"
 			estad[$i]=1
 		fi
-#EN-10780-
-#EN-10790-
+		if [[ ${enmemoria[$i]} -eq 1 && ${temp_wait[$i]} == "-" && ${temp_ret[$i]} == "-" ]] ; then #Se mete en memoria.
+			temp_wait[$i]=0 #Se inicializan a 0 para poder operar con el número
 			temp_ret[$i]=0
-#EN-10800-
+			temp_rej[$i]=${ejecucion[$i]}  #Cuando entre en memoria, si no se había considerado antes en cola, ya tiene datos a considerar.
 		fi
 	done
  
-#EN-10810-
+	if [[ $cpu_ocupada == "NO" ]]; then #Se establece el proceso con menor tiempo de ejecución de los que están en memoria.
 		if [[ $realizadoAntes -eq 0 ]]; then  
-#EN-10820-
+			indice_aux=0 #Contendrá un tiempo de ejecución de referencia (el primero encontrado) para su comparación con el de otros procesos.
 			temp_aux=0
-#EN-10830-
+			for (( i=0; i<$nprocesos; i++ )); do  #Se busca el primer tiempo de ejecución de todos los que se encuentran en memoria.
 				if [[ ${enmemoria[$i]} -eq 1 && ${escrito[$i]} -eq 1 && ${terminados[$i]} -ne 1 ]]; then
 					if [[ ${temp_rej[$i]} -gt $temp_aux ]]; then
-#EN-10840-
-#EN-10850-
+						indice_aux=$i #Proceso de referencia
+						temp_aux=${temp_rej[$i]} #Tiempo de ejecución de referencia
 					fi
 				fi
-#EN-10860-
+			done #Una vez encontrado el primero, se van a comparar todos los procesos hasta encontrar el de tiempo restante de ejecución más pequeño.
 			min_indice_aux=-1  
-#EN-10870-
-#EN-10880-
+			min_temp_aux=$(($temp_aux + 1)) #Contendrá el menor tiempo de ejecución para su comparación con el de otros procesos.
+			for (( i=0; i<$nprocesos; i++ )); do  #Se establece qué proceso tiene menor tiempo de ejecución de todos los que se encuentran en memoria.
 				if [[ ${enmemoria[$i]} -eq 1 && ${escrito[$i]} -eq 1  && ${terminados[$i]} -ne 1 ]]; then
 					if [[ ${temp_rej[$i]} -lt $min_temp_aux ]]; then
-#EN-10890-
-#EN-10900-
+						min_indice_aux=$i #Proceso de ejecución más corta hasta ahora
+						min_temp_aux=${temp_rej[$i]} #Tiempo de ejecución menor hasta ahora
 					fi
 				fi
 			done
-#EN-10910-
-#EN-10920-
-#EN-10930-
-#EN-10940-
-#EN-10950-
+			if [[ "$min_indice_aux" -ne -1 ]]; then #Una vez encontrado el proceso más corto, se pone en ejecución. Y si había otro en ejecución y no ha terminado, se marca como "En pausa".
+				enejecucion[$min_indice_aux]=1 #Marco el proceso para ejecutarse.
+				enpausa[$min_indice_aux]=0 #Quitamos el estado pausado si el proceso lo estaba anteriormente.
+				cpu_ocupada=SI #La CPU está ocupada por un proceso.
+				avisoEntradaCPU[$min_indice_aux]=1 #Se activa el aviso de entrada en CPU del volcado
 			fi
 		fi
 	fi
-#EN-10960-
+	if [[ $cpu_ocupada == "SI" ]]; then #Está separado del anterior if porque la CPU podría estar ocupada por un proceso.
 		for (( i=0; i<$nprocesos; i++ )); do
 			if [[ ${enejecucion[$i]} -eq 1 ]]; then
 				ejecutandoinst=$i
@@ -4457,126 +4457,126 @@ function gestionProcesosSJF {
 			if [[ ${enmemoria[$i]} -eq 1 && ${escrito[$i]} -eq 1  && ${enejecucion[$i]} -eq 1 ]] ; then 
 				estado[$i]="En ejecucion"
 				estad[$i]=3
-#EN-10970-
-#EN-10980-
+				procPorUnidadTiempoBT[$reloj]=$i #Mete el número de orden del proceso que se mantiene en ejecución en la posición reloj de procPorUnidadTiempoBT.
+			elif [[ ${enmemoria[$i]} -eq 1 && ${escrito[$i]} -eq 1  && ${enpausa[$i]} -eq 1 ]] ; then #No es necesario porque SJF no es apropiativo.
 				estado[$i]="En pausa"
 				estad[$i]=4
 			elif [[ ${enmemoria[$i]} -eq 1 && ${escrito[$i]} -eq 1  ]] ; then
 				estado[$i]="En memoria"
 				estad[$i]=2
 			fi
-#EN-10990-
+			if [[ ${terminados[$i]} -eq 1 && ${terminadosAux[$i]} -ne 1 ]] ; then #Tiene esta doble condición porque una vez que pase a terminado no puede estar en otro estado.
 				estado[$i]="Finalizado"
 				estad[$i]=5
-#EN-11000-
+				procFinalizado=$i #Variable que se usa para controlar la impresión de entrada a dibujaResumenAlgPagFrecUsoRec(). Se modifica en inicializaVectoresVariables(), gestionAlgoritmoPagAlgPagFrecMFU(), gestionProcesosFCFS(), gestionProcesosSJF(), gestionProcesosSRPT() y en inicioNuevo().
 			elif [[ ${terminados[$i]} -eq 1 && ${terminadosAux[$i]} -eq 1 ]] ; then 
 				estado[$i]="Finalizado"
 				estad[$i]=5
 			fi
 		done
 	fi
-#EN-11010-
-#EN-11020-
+	if [[ $ejecutandoinst -ge 0 ]]; then #Si no hay proceso en ejecución se pone -1, para que pueda ser comparado.  
+		ResuTiempoProceso[$reloj]=$ejecutandoinst #Resumen - Proceso en ejecución en cada instante de tiempo. 
 	else
 		ResuTiempoProceso[$reloj]=-1
 	fi 
 
-#EN-11030-
-#EN-11040-
+	if [[ $seleccionAlgoritmoPaginacion -eq 10 || $seleccionAlgoritmoPaginacion -eq 11 || $seleccionAlgoritmoPaginacion -eq 16 || $seleccionAlgoritmoPaginacion -eq 17 ]]; then #Si se trabaja NFU/NRU con clases.
+		if [[ $reloj -gt 0 ]]; then #Se traspasan todos los datos al siguiente instante para ser modificados, si se produce nmodificaciones al analizar los fallos y usos de las páginas. 
 			for (( numProc=0; numProc<${#ejecucion[@]}; numProc++ )); do # 
-# 
+				for (( numMarco=0; numMarco<${memoria[$numProc]}; numMarco++ )); do # 
 					restaFrecUsoRec[$numProc,$numMarco,$reloj]=${restaFrecUsoRec[$numProc,$numMarco,$(($reloj - 1))]} 
 				done
 			done
 		fi
-#EN-11050-
+	fi #Después de inicializar estos valores, se ejecutan las funciones que actualizarán los valores.
 
-#EN-11060-
-#EN-11070-
-#EN-11080-
-#EN-11090-
-#EN-11100-
+	if [[ $cpu_ocupada == "SI" ]]; then #Está separado del anterior if porque la CPU podría estar ocupada por un proceso.
+		if [[ $seleccionAlgoritmoPaginacion -eq 0 ]]; then #Se lanza la gestión del algoritmo de paginación para ver qué página del proceso $ejecutandoinst entra en qué marco en cada instante.
+			gestionAlgoritmoPagNoVirtual #Se lanza la gestión sin algoritmo de paginación, dado que en memoria no virtual los procesos entran en memoria de forma completa y no por páginas como en memoria virtual.
+		elif [[ $seleccionAlgoritmoPaginacion -ge 1 && $seleccionAlgoritmoPaginacion -le 4 ]]; then #Se lanza la gestión del algoritmo de paginación para ver qué página del proceso $ejecutandoinst entra en qué marco en cada instante.
+			gestionAlgoritmoPagAlgPagFrecFIFORelojSegOp #Se lanza la gestión del algoritmo de paginación FIFO - FIFO con Segunda Oportunidad - Reloj - Reloj con Segunda Oportunidad.
 		elif [[ $seleccionAlgoritmoPaginacion -eq 5 ]]; then
-#EN-11110-
+			gestionAlgoritmoPagAlgPagRecMRULRUNRU #Se lanza la gestión del algoritmo de paginación More Recently Used (MRU) - Lest Recently Used (LRU) - No Recently Used (NRU) sobre LRU y con clases (sobre MRU y sobre LRU).
 		elif [[ $seleccionAlgoritmoPaginacion -ge 6 && $seleccionAlgoritmoPaginacion -le 11 ]]; then
-#EN-11120-
+			gestionAlgoritmoPagAlgPagFrecMFULFUNFU #Se lanza la gestión del algoritmo de paginación More Frequently Used (MFU) - Lest Frequently Used (LFU) - No Frequently Used (NFU) sobre MFU, sobre LFU y con clases (sobre MFU y sobre LFU).
 		elif [[ $seleccionAlgoritmoPaginacion -ge 12 && $seleccionAlgoritmoPaginacion -le 17 ]]; then
-#EN-11130-
+			gestionAlgoritmoPagAlgPagRecMRULRUNRU #Se lanza la gestión del algoritmo de paginación More Recently Used (MRU) - Lest Recently Used (LRU) - No Recently Used (NRU) sobre LRU y con clases (sobre MRU y sobre LRU).
 		fi
 	fi
 
-#EN-11140-
-#EN-11150-
-#EN-11160-
+	#Se pone el estado del siguiente que se vaya a ejecutar (si algún proceso ha terminado) "En ejecucion"
+	#SUMAR EL SEGUNDO DEL CICLO ANTES DE PONER ESTE ESTADO
+	if [[ "$finalprocesos" -eq 0 ]]; then #En caso de que finalprocesos sea 0, se termina con el programa.
 		parar_proceso=SI
 		evento=1
 	fi
 	if [[ $reloj -eq 0 || $optejecucion = "4" ]]; then 
 		evento=1
 	fi
-#EN-11170-
+	if [[ $optejecucion = "5" ]]; then #Si no se quiere hacer ninguna representación intermedia en pantalla pero sí se quiere ver el resultado final y recogerlo en los ficheros de informes.
 		evento=0
 	fi
-#EN-11180-
+} #Fin de gestionProcesosSJF()
 
 ####################################################################################
-#EN-11190-
+# Sinopsis: Gestión de procesos - SRPT
 ####################################################################################
 function gestionProcesosSRPT {
-#EN-11200-
-#EN-11210-
-#EN-11220-
+	#ESTADO DE CADA PROCESO EN EL TIEMPO ACTUAL Y HALLAMOS LAS VARIABLES. (Las cuentas se realizarán tras lanzar el volcado.)
+	for (( i=0; i<$nprocesos; i++ )); do #Se modifican los valores de los arrays.
+		if [[ ${fueraDelSistema[$i]} -eq 1 ]] ; then #No ha llegado por tiempo de llegada.
 			estado[$i]="Fuera del Sistema"
 			estad[$i]=0
 		fi 
-#EN-11230-
-#EN-11240-
+		if [[ ${encola[$i]} -eq 1 && ${temp_wait[$i]} == "-" && ${temp_ret[$i]} == "-" ]] ; then #Se encola pero no ha llegado por tiempo de llegada.
+			temp_wait[$i]=0 #Se inicializan a 0 para poder operar con el número
 			temp_ret[$i]=0
-#EN-11250-
+			temp_rej[$i]=${ejecucion[$i]} #Aunque no entre en memoria ya tiene datos a considerar.
 			estado[$i]="En espera"
 			estad[$i]=1
 		fi
-#EN-11260-
-#EN-11270-
+		if [[ ${enmemoria[$i]} -eq 1 && ${temp_wait[$i]} == "-" && ${temp_ret[$i]} == "-" ]] ; then #Se mete en memoria.
+			temp_wait[$i]=0 #Se inicializan a 0 para poder operar con el número
 			temp_ret[$i]=0
-#EN-11280-
+			temp_rej[$i]=${ejecucion[$i]} #Cuando entre en memoria, si no se había considerado antes en cola, ya tiene datos a considerar.
 		fi
 	done
  
-#EN-11290-
+	if [[ $cpu_ocupada == "SI" || $cpu_ocupada == "NO" ]]; then #Se establece el proceso con mayor y menor tiempo de ejecución de los que están en memoria.
 		if [[ $realizadoAntes -eq 0 ]]; then  
-#EN-11300-
+			indice_aux=0 #Contendrá un tiempo de ejecución de referencia (el mayor tiempo de ejecución encontrado) para su comparación con el de otros procesos. Se busca el mayor para poder encontrar el primero de los de tiempo de ejecución más bajo.
 			temp_aux=0
-#EN-11310-
+			for (( i=0; i<$nprocesos; i++ )); do  #Se busca el mayor tiempo de ejecución de todos los que se encuentran en memoria.
 				if [[ ${enmemoria[$i]} -eq 1 && ${escrito[$i]} -eq 1 && ${terminados[$i]} -ne 1 ]]; then
 					if [[ ${temp_rej[$i]} -gt $temp_aux ]]; then
-#EN-11320-
-#EN-11330-
+						indice_aux=$i #Proceso con el mayor tiempo de ejecución.
+						temp_aux=${temp_rej[$i]} #Tiempo de ejecución de referencia.
 					fi
 				fi
-#EN-11340-
+			done #Una vez encontrado el mayor, se van a comparar todos los procesos hasta encontrar el de menor tiempo restante de ejecución.
 			min_indice_aux=-1  
-#EN-11350-
-#EN-11360-
+			min_temp_aux=$(($temp_aux + 1)) #Contendrá el menor tiempo de ejecución para su comparación con el de otros procesos.
+			for (( i=0; i<$nprocesos; i++ )); do  #Se establece qué proceso tiene menor tiempo de ejecución de todos los que se encuentran en memoria.
 				if [[ ${enmemoria[$i]} -eq 1 && ${escrito[$i]} -eq 1  && ${terminados[$i]} -ne 1 ]]; then
 					if [[ ${temp_rej[$i]} -lt $min_temp_aux ]]; then
-#EN-11370-
-#EN-11380-
+						min_indice_aux=$i #Proceso de tiempo de ejecución más bajo hasta ahora.
+						min_temp_aux=${temp_rej[$i]} #Tiempo de ejecución menor hasta ahora.
 					fi
 				fi
 			done
-#EN-11390-
-#EN-11400-
-#EN-11410-
-#EN-11420-
+			if [[ "$min_indice_aux" -ne -1 && $min_indice_aux -ne $anteriorProcesoEjecucion ]]; then #Una vez encontrado el proceso más corto, se pone en ejecución. Y si había otro en ejecución y no ha terminado, se marca como "En pausa".
+				enejecucion[$anteriorProcesoEjecucion]=0 #Marcamos el proceso como no ejecutándose si lo estaba anteriormente.
+				if [[ $anteriorProcesoEjecucion -ne -1 ]]; then #Este bucle evita un problema con el estado "En pausa" del último proceso, cuando en realidad, está "En memoria" porque se produce cuando $anteriorProcesoEjecucion=-1 al principio de la ejecución...
+					enpausa[$anteriorProcesoEjecucion]=1 #Ponemos el estado pausado si el proceso anteriormente en ejecución.
 				fi
-#EN-11430-
-#EN-11440-
-#EN-11450-
-#EN-11460-
+				enejecucion[$min_indice_aux]=1 #Marco el proceso para ejecutarse.
+				enpausa[$min_indice_aux]=0 #Quitamos el estado pausado si el proceso lo estaba anteriormente.
+				cpu_ocupada=SI #La CPU está ocupada por un proceso.
+				if [[ $anteriorProcesoEjecucion -ne -1 ]]; then #Si había otro proceso en ejecución con anterioridad se avisa que se pone en pausa.
 					avisoPausa[$anteriorProcesoEjecucion]=1 
 				fi
-#EN-11470-
+				avisoEntradaCPU[$min_indice_aux]=1 #Se activa el aviso de entrada en CPU del volcado
 				anteriorProcesoEjecucion=$min_indice_aux
 			fi
 		fi
@@ -4589,7 +4589,7 @@ function gestionProcesosSRPT {
 			if [[ ${enmemoria[$i]} -eq 1 && ${escrito[$i]} -eq 1  && ${enejecucion[$i]} -eq 1 ]] ; then 
 				estado[$i]="En ejecucion"
 				estad[$i]=3
-#EN-11480-
+				procPorUnidadTiempoBT[$reloj]=$i #Mete el número de orden del proceso que se mantiene en ejecución en la posición reloj de procPorUnidadTiempoBT.
 			elif [[ ${enmemoria[$i]} -eq 1 && ${escrito[$i]} -eq 1  && ${enpausa[$i]} -eq 1 ]] ; then
 				estado[$i]="En pausa"
 				estad[$i]=4
@@ -4597,178 +4597,178 @@ function gestionProcesosSRPT {
 				estado[$i]="En memoria"
 				estad[$i]=2
 			fi
-#EN-11490-
+			if [[ ${terminados[$i]} -eq 1 && ${terminadosAux[$i]} -ne 1 ]] ; then #Tiene esta doble condición porque una vez que pase a terminado no puede estar en otro estado.
 				estado[$i]="Finalizado"
 				estad[$i]=5
-#EN-11500-
+				procFinalizado=$i #Variable que se usa para controlar la impresión de entrada a dibujaResumenAlgPagFrecUsoRec(). Se modifica en inicializaVectoresVariables(), gestionAlgoritmoPagAlgPagFrecMFU(), gestionProcesosFCFS(), gestionProcesosSJF(), gestionProcesosSRPT() y en inicioNuevo().
 			elif [[ ${terminados[$i]} -eq 1 && ${terminadosAux[$i]} -eq 1 ]] ; then 
 				estado[$i]="Finalizado"
 				estad[$i]=5
 			fi
 		done
 	fi
-#EN-11510-
-#EN-11520-
+	if [[ $ejecutandoinst -ge 0 ]]; then #Si no hay proceso en ejecución se pone -1, para que pueda ser comparado. 
+		ResuTiempoProceso[$reloj]=$ejecutandoinst #Resumen - Proceso en ejecución en cada instante de tiempo. 
 	else
 		ResuTiempoProceso[$reloj]=-1
 	fi 
 
-#EN-11530-
-#EN-11540-
+	if [[ $seleccionAlgoritmoPaginacion -eq 10 || $seleccionAlgoritmoPaginacion -eq 11 || $seleccionAlgoritmoPaginacion -eq 16 || $seleccionAlgoritmoPaginacion -eq 17 ]]; then #Si se trabaja NFU/NRU con clases.
+		if [[ $reloj -gt 0 ]]; then #Se traspasan todos los datos al siguiente instante para ser modificados, si se producen modificaciones al analizar los fallos y usos de las páginas.   
 			for (( numProc=0; numProc<${#ejecucion[@]}; numProc++ )); do # 
-# 
+				for (( numMarco=0; numMarco<${memoria[$numProc]}; numMarco++ )); do # 
 					restaFrecUsoRec[$numProc,$numMarco,$reloj]=${restaFrecUsoRec[$numProc,$numMarco,$(($reloj - 1))]} 
 				done
 			done
 		fi
-#EN-11550-
+	fi #Después de inicializar estos valores, se ejecutan las funciones que actualizarán los valores.
 
 	if [[ $cpu_ocupada == "SI" ]]; then ##Está separado del anterior if porque la CPU podría estar ocupada por un proceso.
-#EN-11560-
-#EN-11570-
-#EN-11580-
-#EN-11590-
+		if [[ $seleccionAlgoritmoPaginacion -eq 0 ]]; then #Se lanza la gestión del algoritmo de paginación para ver qué página del proceso $ejecutandoinst entra en qué marco en cada instante.
+			gestionAlgoritmoPagNoVirtual #Se lanza la gestión sin algoritmo de paginación, dado que en memoria no virtual los procesos entran en memoria de forma completa y no por páginas como en memoria virtual.
+		elif [[ $seleccionAlgoritmoPaginacion -ge 1 && $seleccionAlgoritmoPaginacion -le 4 ]]; then #Se lanza la gestión del algoritmo de paginación para ver qué página del proceso $ejecutandoinst entra en qué marco en cada instante.
+			gestionAlgoritmoPagAlgPagFrecFIFORelojSegOp #Se lanza la gestión del algoritmo de paginación FIFO - FIFO con Segunda Oportunidad - Reloj - Reloj con Segunda Oportunidad.
 		elif [[ $seleccionAlgoritmoPaginacion -eq 5 ]]; then
-#EN-11600-
+			gestionAlgoritmoPagAlgPagRecMRULRUNRU #Se lanza la gestión del algoritmo de paginación More Recently Used (MRU) - Lest Recently Used (LRU) - No Recently Used (NRU) sobre LRU y con clases (sobre MRU y sobre LRU).
 		elif [[ $seleccionAlgoritmoPaginacion -ge 6 && $seleccionAlgoritmoPaginacion -le 11 ]]; then
-#EN-11610-
+			gestionAlgoritmoPagAlgPagFrecMFULFUNFU #Se lanza la gestión del algoritmo de paginación More Frequently Used (MFU) - Lest Frequently Used (LFU) - No Frequently Used (NFU) sobre MFU, sobre LFU y con clases (sobre MFU y sobre LFU).
 		elif [[ $seleccionAlgoritmoPaginacion -ge 12 && $seleccionAlgoritmoPaginacion -le 17 ]]; then
-#EN-11620-
+			gestionAlgoritmoPagAlgPagRecMRULRUNRU #Se lanza la gestión del algoritmo de paginación More Recently Used (MRU) - Lest Recently Used (LRU) - No Recently Used (NRU) sobre LRU y con clases (sobre MRU y sobre LRU).
 		fi
 	fi
 	
-#EN-11630-
-#EN-11640-
-#EN-11650-
+	#Se pone el estado del siguiente que se vaya a ejecutar (si algún proceso ha terminado) "En ejecucion"
+	#SUMAR EL SEGUNDO DEL CICLO ANTES DE PONER ESTE ESTADO
+	if [[ "$finalprocesos" -eq 0 ]]; then #En caso de que finalprocesos sea 0, se termina con el programa.
 		parar_proceso=SI
 		evento=1
 	fi
 	if [[ $reloj -eq 0 || $optejecucion = "4" ]]; then 
 		evento=1
 	fi
-#EN-11660-
+	if [[ $optejecucion = "5" ]]; then #Si no se quiere hacer ninguna representación intermedia en pantalla pero sí se quiere ver el resultado final y recogerlo en los ficheros de informes.
 		evento=0
 	fi
-#EN-11670-
+} #Fin de gestionProcesosSRPT()
 
 ####################################################################################
-#EN-11680-
+# Sinopsis: Gestión de procesos - Prioridades (Mayor/Menor)
 ####################################################################################
 function gestionProcesosPrioridades {
-#EN-11690-
-#EN-11700-
-#EN-11710-
+	#ESTADO DE CADA PROCESO EN EL TIEMPO ACTUAL Y HALLAMOS LAS VARIABLES. (Las cuentas se realizarán tras lanzar el volcado.)
+	for (( i=0; i<$nprocesos; i++ )); do #Se modifican los valores de los arrays.
+		if [[ ${fueraDelSistema[$i]} -eq 1 ]] ; then #No ha llegado por tiempo de llegada.
 			estado[$i]="Fuera del Sistema"
 			estad[$i]=0
 		fi 
-#EN-11720-
-#EN-11730-
+		if [[ ${encola[$i]} -eq 1 && ${temp_wait[$i]} == "-" && ${temp_ret[$i]} == "-" ]] ; then #Se encola pero no ha llegado por tiempo de llegada.
+			temp_wait[$i]=0 #Se inicializan a 0 para poder operar con el número
 			temp_ret[$i]=0
-#EN-11740-
-#EN-11750-
+			temp_rej[$i]=${ejecucion[$i]} #Aunque no entre en memoria ya tiene datos a considerar.
+			temp_prio[$i]=${prioProc[$i]} #Aunque no entre en memoria ya tiene datos a considerar.
 			estado[$i]="En espera"
 			estad[$i]=1
 		fi
-#EN-11760-
-#EN-11770-
+		if [[ ${enmemoria[$i]} -eq 1 && ${temp_wait[$i]} == "-" && ${temp_ret[$i]} == "-" ]] ; then #Se mete en memoria.
+			temp_wait[$i]=0 #Se inicializan a 0 para poder operar con el número
 			temp_ret[$i]=0
-#EN-11780-
-#EN-11790-
+			temp_rej[$i]=${ejecucion[$i]} #Cuando entre en memoria, si no se había considerado antes en cola, ya tiene datos a considerar.
+			temp_prio[$i]=${prioProc[$i]} #Cuando entre en memoria, si no se había considerado antes en cola, ya tiene datos a considerar.
 		fi
 	done
 	if [[ $realizadoAntes -eq 0 ]]; then  
 		cerrojo_aux=0
-#EN-11800-
-#EN-11810-
+		indice_aux=-1 #Variable de cierre
+		for (( i=0; i<$nprocesos; i++ )); do  #Se busca la mayor prioridad de todas las que se encuentran en memoria.
 			if [[ ${enmemoria[$i]} -eq 1 && ${escrito[$i]} -eq 1 && ${terminados[$i]} -ne 1 ]]; then
-#EN-11820-
-#EN-11830-
-#EN-11840-
+				if [[ $cerrojo_aux -eq 0 ]]; then #Se inicializan las variables para determinar el mayor valor de la priridad de los procesos en memoria.
+					indice_aux=$i #Se inicializa la variable con el primer proceso para la menor prioridad.
+					prio_aux=${temp_prio[$i]} #Prioridad de referencia.
 					cerrojo_aux=1
 				fi
 				if [[ ${temp_prio[$i]} -gt $prio_aux && $cerrojo_aux -eq 1 ]]; then
-#EN-11850-
-#EN-11860-
+					indice_aux=$i #Proceso con la menor prioridad.
+					prio_aux=${temp_prio[$i]} #Prioridad de referencia.
 				fi
 			fi
-#EN-11870-
-#EN-11880-
-#EN-11890-
-#EN-11900-
-#EN-11910-
-#EN-11920-
+		done #Una vez encontrada la mayor prioridad, se van a comparar todos los procesos hasta encontrar el de prioridad más baja.
+		max_indice_aux=$indice_aux #Prioridad mayor de los procesos en memoria.
+		max_prio_aux=$prio_aux #Proceso con la mayor prioridad.
+		min_indice_aux=-1 #Variable de cierre  
+		min_prio_aux=$(($prio_aux + 1)) #Contendrá la menor prioridad para su comparación con la de otros procesos. Se le pone un valor superior al máximo porque se busca el primero de los que tengan el menor valor.
+		for (( i=0; i<$nprocesos; i++ )); do  #Se establece qué proceso tiene menor prioridad de todos los que se encuentran en memoria.
 			if [[ ${enmemoria[$i]} -eq 1 && ${escrito[$i]} -eq 1  && ${terminados[$i]} -ne 1 ]]; then
 				if [[ ${temp_prio[$i]} -lt $min_prio_aux ]]; then
-#EN-11930-
-#EN-11940-
+					min_indice_aux=$i #Proceso de prioridad más baja hasta ahora
+					min_prio_aux=${temp_prio[$i]} #Prioridad menor hasta ahora
 				fi
 			fi
 		done
 	fi
-#EN-11950-
+	if [[ $invertirDatoPrioridadesInversa -eq 1 ]]; then #Si es Prioridad Mayor y se invierte el rango, se calcula la Prioridad Menor, y viveversa. 
 		if [[ $seleccionTipoPrioridad -eq 1 ]]; then 
 			seleccionTipoPrioridad_2=2
 		elif [[ $seleccionTipoPrioridad -eq 2 ]]; then 
 			seleccionTipoPrioridad_2=1
 		fi
-#EN-11960-
+	elif [[ $invertirDatoPrioridadesInversa -eq 0 ]]; then #Si el rango de Prioridades no se invierte, se deja sin modificar la elección Mayor/Menor.
 		seleccionTipoPrioridad_2=$seleccionTipoPrioridad
 	fi
-#EN-11970-
+	if [[ $cpu_ocupada == "SI" || $cpu_ocupada == "NO" ]]; then #Se establece el proceso con menor prioridad de los que están en memoria.
 		#seleccionTipoPrioridad_2 - 1-Mayor - 2-Menor #seleccionMenuApropiatividad - 1-No apropiativo - 2-Apropiativo
-#EN-11980-
-#EN-11990-
-#EN-12000-
-#EN-12010-
-#EN-12020-
+		if [[ $seleccionTipoPrioridad_2 -eq 1 && $seleccionMenuApropiatividad -eq 2 ]]; then #Prioridad Mayor/Apropiativo - Se roba la CPU por ser Apropiativo.
+			if [[ $max_indice_aux -ne $anteriorProcesoEjecucion ]]; then #Una vez encontrado el proceso de menor prioridad, se pone en ejecución. Y si había otro en ejecución y no ha terminado, se marca como "En pausa".
+				enejecucion[$anteriorProcesoEjecucion]=0 #Marcamos el proceso como no ejecutándose si lo estaba anteriormente.
+				if [[ $anteriorProcesoEjecucion -ne -1 ]]; then #Este bucle evita un problema con el estado "En pausa" del último proceso, cuando en realidad, está "En memoria" porque se produce cuando $anteriorProcesoEjecucion=-1 al principio de la ejecución...
+					enpausa[$anteriorProcesoEjecucion]=1 #Ponemos el estado pausado si el proceso anteriormente en ejecución.
 				fi
-#EN-12030-
-#EN-12040-
-#EN-12050-
-#EN-12060-
-#EN-12070-
+				enejecucion[$max_indice_aux]=1 #Marco el proceso para ejecutarse.
+				enpausa[$max_indice_aux]=0 #Quitamos el estado pausado si el proceso lo estaba anteriormente.
+				cpu_ocupada=SI #La CPU está ocupada por un proceso.
+				if [[ $anteriorProcesoEjecucion -ne -1 ]]; then #Una vez encontrado el proceso con más baja prioridad, se pone en ejecución. Y si había otro en ejecución y no ha terminado, se marca como "En pausa".
+					avisoPausa[$anteriorProcesoEjecucion]=1 #Se activa el aviso de entrada en CPU del volcado
 				fi
-#EN-12080-
+				avisoEntradaCPU[$max_indice_aux]=1 #Se activa el aviso de entrada en CPU del volcado
 				anteriorProcesoEjecucion=$max_indice_aux
 			fi
-#EN-12090-
-#EN-12100-
-#EN-12110-
-#EN-12120-
-#EN-12130-
+		elif [[ $seleccionTipoPrioridad_2 -eq 2 && $seleccionMenuApropiatividad -eq 2 ]]; then #Prioridad Menor/Apropiativo - Se roba la CPU por ser Apropiativo.
+			if [[ $min_indice_aux -ne $anteriorProcesoEjecucion ]]; then #Una vez encontrado el proceso de menor prioridad, se pone en ejecución. Y si había otro en ejecución y no ha terminado, se marca como "En pausa".
+				enejecucion[$anteriorProcesoEjecucion]=0 #Marcamos el proceso como no ejecutándose si lo estaba anteriormente.
+				if [[ $anteriorProcesoEjecucion -ne -1 ]]; then #Este bucle evita un problema con el estado "En pausa" del último proceso, cuando en realidad, está "En memoria" porque se produce cuando $anteriorProcesoEjecucion=-1 al principio de la ejecución...
+					enpausa[$anteriorProcesoEjecucion]=1 #Ponemos el estado pausado si el proceso anteriormente en ejecución.
 				fi
-#EN-12140-
-#EN-12150-
-#EN-12160-
-#EN-12170-
+				enejecucion[$min_indice_aux]=1 #Marco el proceso para ejecutarse.
+				enpausa[$min_indice_aux]=0 #Quitamos el estado pausado si el proceso lo estaba anteriormente.
+				cpu_ocupada=SI #La CPU está ocupada por un proceso.
+				if [[ $anteriorProcesoEjecucion -ne -1 ]]; then #Si había otro proceso en ejecución con anterioridad se avisa que se pone en pausa.
 					avisoPausa[$anteriorProcesoEjecucion]=1 
 				fi
-#EN-12180-
+				avisoEntradaCPU[$min_indice_aux]=1 #Se activa el aviso de entrada en CPU del volcado
 				anteriorProcesoEjecucion=$min_indice_aux
 			fi
 		fi
 	fi
 
-#EN-12190-
+	if [[ $cpu_ocupada == "NO" ]]; then #Se establece el proceso con menor prioridad de los que están en memoria.
 		#seleccionTipoPrioridad_2 - 1-Mayor - 2-Menor #seleccionMenuApropiatividad - 1-No apropiativo - 2-Apropiativo
-#EN-12200-
-#EN-12210-
-#EN-12220-
-#EN-12230-
-#EN-12240-
-#EN-12250-
+		if [[ $seleccionTipoPrioridad_2 -eq 1 && $seleccionMenuApropiatividad -eq 1 ]]; then #1 Prioridad Mayor/No Apropiativo - No se roba la CPU por ser NO Apropiativo.
+			if [[ "$max_indice_aux" -ne -1 ]]; then #Una vez encontrado el proceso más corto, se pone en ejecución. Y si había otro en ejecución y no ha terminado, se marca como "En pausa".
+				enejecucion[$max_indice_aux]=1 #Marco el proceso para ejecutarse.
+				enpausa[$max_indice_aux]=0 #Quitamos el estado pausado si el proceso lo estaba anteriormente.
+				cpu_ocupada=SI #La CPU está ocupada por un proceso.
+				avisoEntradaCPU[$max_indice_aux]=1 #Se activa el aviso de entrada en CPU del volcado
 			fi
-#EN-12260-
-#EN-12270-
-#EN-12280-
-#EN-12290-
-#EN-12300-
-#EN-12310-
+		elif [[ $seleccionTipoPrioridad_2 -eq 2 && $seleccionMenuApropiatividad -eq 1 ]]; then #2 Prioridad Menor/No Apropiativo - No se roba la CPU por ser NO Apropiativo.
+			if [[ "$min_indice_aux" -ne -1 ]]; then #Una vez encontrado el proceso más corto, se pone en ejecución. Y si había otro en ejecución y no ha terminado, se marca como "En pausa".
+				enejecucion[$min_indice_aux]=1 #Marco el proceso para ejecutarse.
+				enpausa[$min_indice_aux]=0 #Quitamos el estado pausado si el proceso lo estaba anteriormente.
+				cpu_ocupada=SI #La CPU está ocupada por un proceso.
+				avisoEntradaCPU[$min_indice_aux]=1 #Se activa el aviso de entrada en CPU del volcado
 			fi
 		fi
 	fi
 
-#EN-12320-
+	if [[ $cpu_ocupada == "SI" ]]; then #Está separado del anterior if porque la CPU podría estar ocupada por un proceso.
 		for (( i=0; i<$nprocesos; i++ )); do
 			if [[ ${enejecucion[$i]} -eq 1 ]]; then
 				ejecutandoinst=$i
@@ -4776,7 +4776,7 @@ function gestionProcesosPrioridades {
 			if [[ ${enmemoria[$i]} -eq 1 && ${escrito[$i]} -eq 1  && ${enejecucion[$i]} -eq 1 ]] ; then 
 				estado[$i]="En ejecucion"
 				estad[$i]=3
-#EN-12330-
+				procPorUnidadTiempoBT[$reloj]=$i #Mete el número de orden del proceso que se mantiene en ejecución en la posición reloj de procPorUnidadTiempoBT.
 			elif [[ ${enmemoria[$i]} -eq 1 && ${escrito[$i]} -eq 1  && ${enpausa[$i]} -eq 1 ]] ; then
 				estado[$i]="En pausa"
 				estad[$i]=4
@@ -4784,127 +4784,127 @@ function gestionProcesosPrioridades {
 				estado[$i]="En memoria"
 				estad[$i]=2
 			fi
-#EN-12340-
+			if [[ ${terminados[$i]} -eq 1 && ${terminadosAux[$i]} -ne 1 ]] ; then #Tiene esta doble condición porque una vez que pase a terminado no puede estar en otro estado.
 				estado[$i]="Finalizado"
 				estad[$i]=5
-#EN-12350-
+				procFinalizado=$i #Variable que se usa para controlar la impresión de entrada a dibujaResumenAlgPagFrecUsoRec(). Se modifica en inicializaVectoresVariables(), gestionAlgoritmoPagAlgPagFrecMFU(), gestionProcesosFCFS(), gestionProcesosSJF(), gestionProcesosSRPT() y en inicioNuevo().
 			elif [[ ${terminados[$i]} -eq 1 && ${terminadosAux[$i]} -eq 1 ]] ; then 
 				estado[$i]="Finalizado"
 				estad[$i]=5
 			fi
 		done
 	fi
-#EN-12360-
-#EN-12370-
+	if [[ $ejecutandoinst -ge 0 ]]; then #Si no hay proceso en ejecución se pone -1, para que pueda ser comparado. 
+		ResuTiempoProceso[$reloj]=$ejecutandoinst #Resumen - Proceso en ejecución en cada instante de tiempo. 
 	else
 		ResuTiempoProceso[$reloj]=-1
 	fi 
 
-#EN-12380-
-#EN-12390-
+	if [[ $seleccionAlgoritmoPaginacion -eq 10 || $seleccionAlgoritmoPaginacion -eq 11 || $seleccionAlgoritmoPaginacion -eq 16 || $seleccionAlgoritmoPaginacion -eq 17 ]]; then #Si se trabaja NFU/NRU con clases.
+		if [[ $reloj -gt 0 ]]; then #Se traspasan todos los datos al siguiente instante para ser modificados, si se producen modificaciones al analizar los fallos y usos de las páginas.   
 			for (( numProc=0; numProc<${#ejecucion[@]}; numProc++ )); do # 
-# 
+				for (( numMarco=0; numMarco<${memoria[$numProc]}; numMarco++ )); do # 
 					restaFrecUsoRec[$numProc,$numMarco,$reloj]=${restaFrecUsoRec[$numProc,$numMarco,$(($reloj - 1))]} 
 				done
 			done
 		fi
-#EN-12400-
+	fi #Después de inicializar estos valores, se ejecutan las funciones que actualizarán los valores.
 
 	if [[ $cpu_ocupada == "SI" ]]; then ##Está separado del anterior if porque la CPU podría estar ocupada por un proceso.
-#EN-12410-
-#EN-12420-
-#EN-12430-
-#EN-12440-
+		if [[ $seleccionAlgoritmoPaginacion -eq 0 ]]; then #Se lanza la gestión del algoritmo de paginación para ver qué página del proceso $ejecutandoinst entra en qué marco en cada instante.
+			gestionAlgoritmoPagNoVirtual #Se lanza la gestión sin algoritmo de paginación, dado que en memoria no virtual los procesos entran en memoria de forma completa y no por páginas como en memoria virtual.
+		elif [[ $seleccionAlgoritmoPaginacion -ge 1 && $seleccionAlgoritmoPaginacion -le 4 ]]; then #Se lanza la gestión del algoritmo de paginación para ver qué página del proceso $ejecutandoinst entra en qué marco en cada instante.
+			gestionAlgoritmoPagAlgPagFrecFIFORelojSegOp #Se lanza la gestión del algoritmo de paginación FIFO - FIFO con Segunda Oportunidad - Reloj - Reloj con Segunda Oportunidad.
 		elif [[ $seleccionAlgoritmoPaginacion -eq 5 ]]; then
-#EN-12450-
+			gestionAlgoritmoPagAlgPagRecMRULRUNRU #Se lanza la gestión del algoritmo de paginación More Recently Used (MRU) - Lest Recently Used (LRU) - No Recently Used (NRU) sobre LRU y con clases (sobre MRU y sobre LRU).
 		elif [[ $seleccionAlgoritmoPaginacion -ge 6 && $seleccionAlgoritmoPaginacion -le 11 ]]; then
-#EN-12460-
+			gestionAlgoritmoPagAlgPagFrecMFULFUNFU #Se lanza la gestión del algoritmo de paginación More Frequently Used (MFU) - Lest Frequently Used (LFU) - No Frequently Used (NFU) sobre MFU, sobre LFU y con clases (sobre MFU y sobre LFU).
 		elif [[ $seleccionAlgoritmoPaginacion -ge 12 && $seleccionAlgoritmoPaginacion -le 17 ]]; then
-#EN-12470-
+			gestionAlgoritmoPagAlgPagRecMRULRUNRU #Se lanza la gestión del algoritmo de paginación More Recently Used (MRU) - Lest Recently Used (LRU) - No Recently Used (NRU) sobre LRU y con clases (sobre MRU y sobre LRU).
 		fi
 	fi
 	
-#EN-12480-
-#EN-12490-
-#EN-12500-
+	#Se pone el estado del siguiente que se vaya a ejecutar (si algún proceso ha terminado) "En ejecucion"
+	#SUMAR EL SEGUNDO DEL CICLO ANTES DE PONER ESTE ESTADO
+	if [[ "$finalprocesos" -eq 0 ]]; then #En caso de que finalprocesos sea 0, se termina con el programa.
 		parar_proceso=SI
 		evento=1
 	fi
 	if [[ $reloj -eq 0 || $optejecucion = "4" ]]; then 
 		evento=1
 	fi
-#EN-12510-
+	if [[ $optejecucion = "5" ]]; then #Si no se quiere hacer ninguna representación intermedia en pantalla pero sí se quiere ver el resultado final y recogerlo en los ficheros de informes.
 		evento=0
 	fi
-#EN-12520-
+} #Fin de gestionProcesosPrioridades()
 
 ####################################################################################
-#EN-12530-
+# Sinopsis: Gestión de procesos - Round Robin
 ####################################################################################
 function gestionProcesosRoundRobin {
-#EN-12540-
-#EN-12550-
-#EN-12560-
+	#ESTADO DE CADA PROCESO EN EL TIEMPO ACTUAL Y HALLAMOS LAS VARIABLES. (Las cuentas se realizarán tras lanzar el volcado.)
+   for (( i=0; i<$nprocesos; i++ )); do #Se modifican los valores de los arrays. Primero se trabaja con los estados y tiempos de las estadísticas.
+		if [[ ${fueraDelSistema[$i]} -eq 1 ]] ; then #No ha llegado por tiempo de llegada.
 			estado[$i]="Fuera del Sistema"
 			estad[$i]=0
 		fi 
-#EN-12570-
-#EN-12580-
+		if [[ ${encola[$i]} -eq 1 && ${temp_wait[$i]} == "-" && ${temp_ret[$i]} == "-" ]] ; then #Se encola pero no ha llegado por tiempo de llegada.
+			temp_wait[$i]=0 #Se inicializan a 0 para poder operar con el número
 			temp_ret[$i]=0
-#EN-12590-
+			temp_rej[$i]=${ejecucion[$i]} #Aunque no entre en memoria ya tiene datos a considerar.
 			estado[$i]="En espera"
 			estad[$i]=1
 		fi
-#EN-12600-
-#EN-12610-
+		if [[ ${enmemoria[$i]} -eq 1 && ${temp_wait[$i]} == "-" && ${temp_ret[$i]} == "-" ]] ; then #Se mete en memoria.
+			temp_wait[$i]=0 #Se inicializan a 0 para poder operar con el número
 			temp_ret[$i]=0
-#EN-12620-
+			temp_rej[$i]=${ejecucion[$i]} #Cuando entre en memoria, si no se había considerado antes en cola, ya tiene datos a considerar.
 		fi
 	done
-#EN-12630-
-#EN-12640-
+	for (( i=0; i<$nprocesos; i++ )); do #Se modifican los valores de los arrays, pero ahora se trabaja con el proceso que pueda haber terminado.
+		if [[ ${colaTiempoRR[$i]} -eq $indiceColaTiempoRREnEjecucion && ${temp_rej[$i]} -eq 0 ]] ; then #Si termina el proceso, su referencias en la cola RR se actualiza a "_", y el contador $contadorTiempoRR a 0.
 			colaTiempoRR[$i]=-1 
-#EN-12650-
-#EN-12660-
+			enejecucion[$i]=0 #Marcamos el proceso como no ejecutándose si lo estaba anteriormente.
+			indiceColaTiempoRREnEjecucion=$(($indiceColaTiempoRREnEjecucion + 1)) #Índice con el actual ordinal en ejecución para Round-Robin (RR).
 			anteriorProcesoEjecucion=$i
-#EN-12670-
+			contadorTiempoRR=0 #Para que el proceso que se vaya a ejecutar empiece a usar su quantum desde 0.
 		fi 
 	done
-#EN-12680-
-#EN-12690-
-#EN-12700-
-#EN-12710-
-#EN-12720-
+	for (( i=0; i<$nprocesos; i++ )); do #Se modifican los valores de los arrays. Y ahora se trabaja con el resto de variables para trabajar sobre los tiempos ya establecidos ya que dependen de ellos en algunos casos.
+		if [[ ${colaTiempoRR[$i]} -eq $indiceColaTiempoRREnEjecucion && $contadorTiempoRR -ge $quantum ]] ; then #Si termina el quantum de un proceso, su referencias en la cola RR se actualiza al último valor del $contadorTiempoRR.
+			enejecucion[$i]=0 #Se marca el proceso par no ser ejecutado ya que comenzará a ejecutarse otro proceso.
+			enpausa[$i]=1 #Se marca el proceso como "en pausa".
+			contadorAlgPagExpulsionesForzadasProcesoAcumulado[$i]=$((${contadorAlgPagExpulsionesForzadasProcesoAcumulado[$i]} + 1)) #Número de expulsiones forzadas en Round-Robin (RR) 
 			anteriorProcesoEjecucion=$i
 			contadorTiempoRR=0
 			colaTiempoRR[$i]=$indiceColaTiempoRRLibre  
-#EN-12730-
-#EN-12740-
-#EN-12750-
-#EN-12760-
+			indiceColaTiempoRRLibre=$(($indiceColaTiempoRRLibre + 1)) #Índice con el primer ordinal libre a repartir en Round-Robin (RR).
+			indiceColaTiempoRREnEjecucion=$(($indiceColaTiempoRREnEjecucion + 1)) #Índice con el actual ordinal en ejecución para Round-Robin (RR).
+			evento=1 #Provoca un volcado en cada final de quantum
+			cpu_ocupada=NO #Se marca que la CPU no está ocupada por un proceso.
 		fi 
 	done
-#EN-12770-
+	if [[ $cpu_ocupada == "SI" || $cpu_ocupada == "NO" ]]; then #En primer lugar se establece el primer proceso que haya entrado en memoria por tiempo de llegada, o por estricto orden de llegada en memoria.
 		if [[ $realizadoAntes -eq 0 ]]; then  
-#EN-12780-
+			for (( i=0; i<$nprocesos; i++ )); do  #Se busca el primer proceso de entre todos los que se encuentran en memoria.
 				if [[ ${enmemoria[$i]} -eq 1 && ${escrito[$i]} -eq 1 && ${terminados[$i]} -ne 1 ]]; then
-#EN-12790-
+					if [[ ${colaTiempoRR[$i]} -eq -1 && ${temp_rej[$i]} -gt 0 ]] ; then #Si hay nuevos procesos en memoria se les encola.
 						colaTiempoRR[$i]=$indiceColaTiempoRRLibre  
 						indiceColaTiempoRRLibre=$(($indiceColaTiempoRRLibre + 1))
 					fi 
 				fi
-#EN-12800-
-#EN-12810-
+			done #Una vez encolados, se determina si se sigue ejecutando el mismo que ya lo estaba en el instante anterior, o se determina cuál se ejecutará en el instante actual, si el proceso anterior o su quantum han terminado.
+			for (( i=0; i<$nprocesos; i++ )); do  #Se busca el primer proceso de entre todos los que se encuentran en memoria.
 				if [[ ${enmemoria[$i]} -eq 1 && ${escrito[$i]} -eq 1 && ${terminados[$i]} -ne 1 ]]; then
-#EN-12820-
+					if [[ ${colaTiempoRR[$i]} -eq $indiceColaTiempoRREnEjecucion && $contadorTiempoRR -lt $quantum && ${temp_rej[$i]} -ne 0 ]] ; then #Si es nuevo, empieza a ejecutarse. Si el proceso está marcado como en ejecución, el contador $contadorTiempoRR aumenta en una unidad.
 						contadorTiempoRR=$(($contadorTiempoRR + 1))
-#EN-12830-
-#EN-12840-
-#EN-12850-
-#EN-12860-
+						enejecucion[$i]=1 #Se marca el proceso para ejecutarse o se refuerza si ya lo estaba.
+						enpausa[$i]=0 #Se quita el estado pausado si el proceso lo estaba anteriormente.
+						cpu_ocupada=SI #Se marca que la CPU está ocupada por un proceso o se refuerza si ya lo estaba.
+						if [[ $anteriorProcesoEjecucion -ne -1 ]]; then #Si había otro proceso en ejecución con anterioridad se avisa que se pone en pausa.
 							avisoPausa[$anteriorProcesoEjecucion]=1 
 						fi
-#EN-12870-
+						avisoEntradaCPU[$i]=1 #Se activa el aviso de entrada en CPU del volcado
 					fi 
 				fi
 			done 
@@ -4918,7 +4918,7 @@ function gestionProcesosRoundRobin {
 			if [[ ${enmemoria[$i]} -eq 1 && ${escrito[$i]} -eq 1  && ${enejecucion[$i]} -eq 1 ]] ; then 
 				estado[$i]="En ejecucion"
 				estad[$i]=3
-#EN-12880-
+				procPorUnidadTiempoBT[$reloj]=$i #Mete el número de orden del proceso que se mantiene en ejecución en la posición reloj de procPorUnidadTiempoBT.
 			elif [[ ${enmemoria[$i]} -eq 1 && ${escrito[$i]} -eq 1  && ${enpausa[$i]} -eq 1 ]] ; then
 				estado[$i]="En pausa"
 				estad[$i]=4
@@ -4926,158 +4926,158 @@ function gestionProcesosRoundRobin {
 				estado[$i]="En memoria"
 				estad[$i]=2
 			fi
-#EN-12890-
+			if [[ ${terminados[$i]} -eq 1 && ${terminadosAux[$i]} -ne 1 ]] ; then #Tiene esta doble condición porque una vez que pase a terminado no puede estar en otro estado.
 				estado[$i]="Finalizado"
 				estad[$i]=5
-#EN-12900-
+				procFinalizado=$i #Variable que se usa para controlar la impresión de entrada a dibujaResumenAlgPagFrecUsoRec(). Se modifica en inicializaVectoresVariables(), gestionAlgoritmoPagAlgPagFrecMFU(), gestionProcesosFCFS(), gestionProcesosSJF(), gestionProcesosSRPT() y en inicioNuevo().
 			elif [[ ${terminados[$i]} -eq 1 && ${terminadosAux[$i]} -eq 1 ]] ; then 
 				estado[$i]="Finalizado"
 				estad[$i]=5
 			fi
 		done
 	fi
-#EN-12910-
-#EN-12920-
+	if [[ $ejecutandoinst -ge 0 ]]; then #Si no hay proceso en ejecución se pone -1, para que pueda ser comparado. 
+		ResuTiempoProceso[$reloj]=$ejecutandoinst #Resumen - Proceso en ejecución en cada instante de tiempo. 
 	else
 		ResuTiempoProceso[$reloj]=-1
 	fi 
 
-#EN-12930-
-#EN-12940-
+	if [[ $seleccionAlgoritmoPaginacion -eq 10 || $seleccionAlgoritmoPaginacion -eq 11 || $seleccionAlgoritmoPaginacion -eq 16 || $seleccionAlgoritmoPaginacion -eq 17 ]]; then #Si se trabaja NFU/NRU con clases.
+		if [[ $reloj -gt 0 ]]; then #Se traspasan todos los datos al siguiente instante para ser modificados, si se producen modificaciones al analizar los fallos y usos de las páginas.   
 			for (( numProc=0; numProc<${#ejecucion[@]}; numProc++ )); do # 
-# 
+				for (( numMarco=0; numMarco<${memoria[$numProc]}; numMarco++ )); do # 
 					restaFrecUsoRec[$numProc,$numMarco,$reloj]=${restaFrecUsoRec[$numProc,$numMarco,$(($reloj - 1))]} 
 				done
 			done
 		fi
-#EN-12950-
+	fi #Después de inicializar estos valores, se ejecutan las funciones que actualizarán los valores.
 
 	if [[ $cpu_ocupada == "SI" ]]; then ##Está separado del anterior if porque la CPU podría estar ocupada por un proceso.
-#EN-12960-
-#EN-12970-
-#EN-12980-
-#EN-12990-
+		if [[ $seleccionAlgoritmoPaginacion -eq 0 ]]; then #Se lanza la gestión del algoritmo de paginación para ver qué página del proceso $ejecutandoinst entra en qué marco en cada instante.
+			gestionAlgoritmoPagNoVirtual #Se lanza la gestión sin algoritmo de paginación, dado que en memoria no virtual los procesos entran en memoria de forma completa y no por páginas como en memoria virtual.
+		elif [[ $seleccionAlgoritmoPaginacion -ge 1 && $seleccionAlgoritmoPaginacion -le 4 ]]; then #Se lanza la gestión del algoritmo de paginación para ver qué página del proceso $ejecutandoinst entra en qué marco en cada instante.
+			gestionAlgoritmoPagAlgPagFrecFIFORelojSegOp #Se lanza la gestión del algoritmo de paginación FIFO - FIFO con Segunda Oportunidad - Reloj - Reloj con Segunda Oportunidad.
 		elif [[ $seleccionAlgoritmoPaginacion -eq 5 ]]; then
-#EN-13000-
+			gestionAlgoritmoPagAlgPagRecMRULRUNRU #Se lanza la gestión del algoritmo de paginación More Recently Used (MRU) - Lest Recently Used (LRU) - No Recently Used (NRU) sobre LRU y con clases (sobre MRU y sobre LRU).
 		elif [[ $seleccionAlgoritmoPaginacion -ge 6 && $seleccionAlgoritmoPaginacion -le 11 ]]; then
-#EN-13010-
+			gestionAlgoritmoPagAlgPagFrecMFULFUNFU #Se lanza la gestión del algoritmo de paginación More Frequently Used (MFU) - Lest Frequently Used (LFU) - No Frequently Used (NFU) sobre MFU, sobre LFU y con clases (sobre MFU y sobre LFU).
 		elif [[ $seleccionAlgoritmoPaginacion -ge 12 && $seleccionAlgoritmoPaginacion -le 17 ]]; then
-#EN-13020-
+			gestionAlgoritmoPagAlgPagRecMRULRUNRU #Se lanza la gestión del algoritmo de paginación More Recently Used (MRU) - Lest Recently Used (LRU) - No Recently Used (NRU) sobre LRU y con clases (sobre MRU y sobre LRU).
 		fi
 	fi
 	
-#EN-13030-
-#EN-13040-
-#EN-13050-
+	#Se pone el estado del siguiente que se vaya a ejecutar (si algún proceso ha terminado) "En ejecucion"
+	#SUMAR EL SEGUNDO DEL CICLO ANTES DE PONER ESTE ESTADO
+	if [[ "$finalprocesos" -eq 0 ]]; then #En caso de que finalprocesos sea 0, se termina con el programa.
 		parar_proceso=SI
 		evento=1
 	fi
 	if [[ $reloj -eq 0 || $optejecucion = "4" ]]; then 
 		evento=1
 	fi
-#EN-13060-
+	if [[ $optejecucion = "5" ]]; then #Si no se quiere hacer ninguna representación intermedia en pantalla pero sí se quiere ver el resultado final y recogerlo en los ficheros de informes.
 		evento=0
 	fi
-#EN-13070-
+} #Fin de gestionProcesosRoundRobin()
 
 ####################################################################################
-#EN-13080-
+# Sinopsis: Algoritmo PagNoVirtual
 ####################################################################################
 function gestionAlgoritmoPagNoVirtual { 
-#EN-13090-
-#EN-13100-
+	if [[ $ejecutandoinst -ge 0 ]]; then #Si no hay proceso en ejecución se pone -1, para que pueda ser comparado. 
+		ResuTiempoProceso[$reloj]=$ejecutandoinst #Resumen - Proceso en ejecución en cada instante de tiempo. 
 	else
 		ResuTiempoProceso[$reloj]=-1
 	fi
-#EN-13110-
-#EN-13120-
-#EN-13130-
+	paginasEnMemoriaProceso=(); #Se inicializan los arrays que se van a usar temporalmente para cada proceso en ejecución.
+	ordinal=(); #Contiene el ordinal del número de marco de cada proceso.
+	for (( counter=0 ; counter<$nprocesos ; counter++ )); do #Se van a determinar los marcos reales que usa cada proceso.
 		ordinal[$counter]=0
 	done
 	for ((ii=0;ii<${#unidMemOcupadas[@]};ii++)); do #El array relacionMarcosUsados[] no necesita acumulado porque ya contiene todos los datos necesarios y se mantienen hasta que se modifican en las reubicaciones, caso en el que también recoge el cambio.
-#EN-13140-
+		if [[ ${unidMemOcupadas[$ii]} != "_" ]]; then # Se buscan los marcos ocupados por cada proceso
 			relacionMarcosUsados[${unidMemOcupadas[$ii]},$reloj,${ordinal[${unidMemOcupadas[$ii]}]}]=$ii
 			ordinal[${unidMemOcupadas[$ii]}]=$((${ordinal[${unidMemOcupadas[$ii]}]} + 1))
 		fi
 	done
-#EN-13150-
-#EN-13160-
+	for ((v=0; v<${memoria[$ejecutandoinst]}; v++)); do #Se crea la secuencia de páginas en memoria de cada proceso.
+		if [[ ${paginasEnMemoriaTotal[$ejecutandoinst,$v]} != "" ]]; then #Evita un problema con la indefinición de la página en caso de no existir, ya que la lee como valor 0, y la página 0 también existe. 
 			paginasEnMemoriaProceso[$v]=${paginasEnMemoriaTotal[$ejecutandoinst,$v]}
 		else
 			paginasEnMemoriaProceso[$v]=-1
 		fi
 	done 
-#EN-13170-
-#EN-13180-
+	unset paginasPendientesUsarTotal[$ejecutandoinst] #Se borra la variable para volver a crearla con las páginas aún pendientes de ejecutar.
+	for ((v=${numeroPaginasUsadasProceso[$ejecutandoinst]}; v<${tiempoEjecucion[$ejecutandoinst]}; v++)); do #Se crea la secuencia de páginas de cada proceso pendientes de ejecutar.
 		pagina=${paginasDefinidasTotal[$ejecutandoinst,$v]}
 		paginasPendientesUsarTotal[$ejecutandoinst,$v]=$pagina
 	done
-#EN-13190-
-#EN-13200-
+	unset paginasUsadasTotal[$ejecutandoinst] #Se borra la variable para volver a crearla con las páginas aún pendientes de ejecutar.
+	for ((v=0; v<${numeroPaginasUsadasProceso[$ejecutandoinst]}; v++)); do #Se crea la secuencia de páginas de cada proceso ya ejecutadas.
 		pagina=${paginasDefinidasTotal[$ejecutandoinst,$v]}
 		paginasUsadasTotal[$ejecutandoinst,$v]=$pagina
-#EN-13210-
+		paginasUsadasProceso[$v]=$pagina #No es necesario ya que paginasUsadasTotal[] se genera en cada ejecución de la función.
 	done 
 
-#EN-13220-
+	if [[ ${numeroPaginasUsadasProceso[$counter]} -eq 0 ]]; then #Si no es el primer instante de ejecución de este proceso. Primero se copian y luego se modifican si es necesario.
 		for ((v=0; v<${tiempoEjecucion[$ejecutandoinst]}; v++)); do
 			if (( ${paginasDefinidasTotal[$ejecutandoinst,$v]} > ${maxpagsNoVirtual[$ejecutandoinst]} )); then
-#EN-13230-
+				maxpagsNoVirtual[$ejecutandoinst]=${paginasDefinidasTotal[$ejecutandoinst,$v]} #Se calcula la página más grande, lo que da el número de marcos usados.
 			fi
 		done
-#EN-13240-
-#EN-13250-
+	contadorAlgPagFallosProcesoAcumulado[$ejecutandoinst]=${maxpagsNoVirtual[$ejecutandoinst]} #El número de fallos de página del proceso es el número de marcos asociados a cada proceso con páginas.
+	contadorAlgPagFallosTotalesProcesos[$ejecutandoinst]=${maxpagsNoVirtual[$ejecutandoinst]} #El número de fallos de página totales es la suma de los números de marcos asociados a cada proceso con páginas.
 	fi
 
-#EN-13260-
-#EN-13270-
+	for (( counter=0 ; counter<$nprocesos ; counter++ )); do #Se actualizan los datos de frecuencia o antigüedad de uso de cada marco de memoria ocupado por una página de un proceso.
+		if [[ ${numeroPaginasUsadasProceso[$counter]} -eq 0 ]]; then #Si no es el primer instante de ejecución de este proceso. Primero se copian y luego se modifican si es necesario.
 			for (( jj=0; jj<${maxpagsNoVirtual[$counter]}; jj++ )); do
-#EN-13280-
+				ResuFrecuenciaAcumulado[$counter,$jj,$reloj]=0 #Como no cambian las páginas de memoria en el modelo paginado y no virtual, se inicializan a 0 para que se imprima este valor desde el principio-
 			done
 		fi
 	done
-#EN-13290-
-#EN-13300-
-#EN-13310-
+	numeroMarcosUsados[$ejecutandoinst]=${maxpagsNoVirtual[$ejecutandoinst]} #En No Virtual se usan todos los marcos asociados al proceso desde el primer momento porque se cargan en memoria todas las páginas del proceso.
+	for (( counter=0 ; counter<$nprocesos ; counter++ )); do #Se actualizan los datos de frecuencia o antigüedad de uso de cada marco de memoria ocupado por una página de un proceso.
+		if [[ ${numeroPaginasUsadasProceso[$counter]} -gt 0 ]]; then #Si no es el primer instante de ejecución de este proceso. Primero se copian y luego se modifican si es necesario.
 			for (( jj=0; jj<${maxpagsNoVirtual[$counter]}; jj++ )); do
-#EN-13320-
-#EN-13330-
-#EN-13340-
+				ResuPaginaAcumulado[$counter,$jj,$reloj]=${ResuPaginaAcumulado[$counter,$jj,$(($reloj - 1))]} #Recoge los datos del array con las páginbas en ls diferentes marcos en el instante anterior.
+				ResuFrecuenciaAcumulado[$counter,$jj,$reloj]=${ResuFrecuenciaAcumulado[$counter,$jj,$(($reloj - 1))]} #Recoge los datos del array de frecuencias de uso de las páginas contenidas en los marcos en el instante anterior.
+				ResuPaginaOrdinalAcumulado[$counter,$jj,$reloj]=${ResuPaginaOrdinalAcumulado[$counter,$jj,$(($reloj - 1))]} #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso.
 			done
 		fi
 	done
 		
-#EN-13350-
-#EN-13360-
+	if [[ ${numeroPaginasUsadasProceso[$ejecutandoinst]} -eq 0 ]]; then #Se inicializan las variables si no ha sido considerado el proceso con anterioridad.
+		for (( counterMarco=0 ; counterMarco<${maxpagsNoVirtual[$ejecutandoinst]} ; counterMarco++ )); do #Se meten las páginas del proceso en ejecución en los marcos de memoria.
 			paginasEnMemoriaProceso[$counterMarco]="$counterMarco"
 			paginasEnMemoriaTotal[$ejecutandoinst,$counterMarco]="$counterMarco"
-#EN-13370-
+			ResuPaginaAcumulado[$ejecutandoinst,$counterMarco,$reloj]="$counterMarco" #Índices: (proceso, marco, tiempo reloj). Dato de la página contenida en el marco
 		done
 	fi  
 	suma_contadorAlgPagFallosProcesoAcumulado=0
 	suma_contadorAlgPagFallosProcesoAcumulado2=0
-#EN-13380-
+	for (( counter=0 ; counter<$nprocesos ; counter++ )); do #Se actualizan los datos de frecuencia o antigüedad de uso de cada marco de memoria ocupado por una página de un proceso.
 		suma_contadorAlgPagFallosProcesoAcumulado=$(($suma_contadorAlgPagFallosProcesoAcumulado + ${contadorAlgPagFallosTotalesProcesos[$counter]}))
 		suma_contadorAlgPagFallosProcesoAcumulado2=$(($suma_contadorAlgPagFallosProcesoAcumulado2 + ${contadorAlgPagFallosProcesoAcumulado[$counter]}))
 	done
 
-#EN-13390-
-#EN-13400-
-#EN-13410-
-#EN-13420-
-#EN-13430-
+	if [[ ${numeroPaginasUsadasProceso[$ejecutandoinst]} -lt ${tiempoEjecucion[$ejecutandoinst]} ]]; then #Si aún quedan páginas por ejecutar de ese proceso
+		primera_pagina=${paginasDefinidasTotal[$ejecutandoinst,${numeroPaginasUsadasProceso[$ejecutandoinst]}]} #Se determina la primera página de la secuencia de páginas pendientes
+		numeroPaginasUsadasProceso[$ejecutandoinst]=$((${numeroPaginasUsadasProceso[$ejecutandoinst]} + 1)) #Número de páginas usadas en el proceso en ejecución. Aumenta en todas las unidades de ejecución del proceso. 
+		paginaAUsar[$ejecutandoinst]=${paginasDefinidasTotal[$ejecutandoinst,${numeroPaginasUsadasProceso[$ejecutandoinst]}]} #Siguiente página, pendiente de ejecutar.
+		for buscar_primera_pagina in "${!paginasEnMemoriaProceso[@]}"; do #Localiza en qué posición encuentra la página (da la posición pero no la variable en el array)
 #		for buscar_primera_pagina in "${paginasEnMemoriaProceso[@]}"; do #Localiza la página, no la posición de la página
-#EN-13440-
+			if [[ ${paginasEnMemoriaProceso[$buscar_primera_pagina]} -eq $primera_pagina ]]; then #Si la página está en memoria define x=1
 #			if [[ $buscar_primera_pagina -eq $primera_pagina ]]; then #Si la página está en memoria define x=1
-#EN-13450-
-#EN-13460-
+				usoMismaPagina=0 #Se usa una página que ya estaba en memoria (0) y, por tanto, no es el resultado de un fallo de página (1).
+				for indMarcoMem in "${!paginasEnMemoriaProceso[@]}"; do #Localiza en qué posición encuentra la página (da la posición pero no la variable en el array)
 #				for indMarcoMem in "${paginasEnMemoriaProceso[@]}"; do #Localiza la página, no la posición de la página
 					if [[ ${paginasEnMemoriaProceso[$indMarcoMem]} -eq $primera_pagina ]]; then
-#EN-13470-
-#EN-13480-
-#EN-13490-
-#EN-13500-
-#EN-13510-
+						ResuFrecuenciaAcumulado[$ejecutandoinst,$indMarcoMem,$reloj]=$((${ResuFrecuenciaAcumulado[$ejecutandoinst,$indMarcoMem,${indiceResuPaginaAcumulado[$ejecutandoinst]}]} + 1)) #Se lee el dato la frecuencia de la página que estaba en un marco en el instante anterior en el que se ha ejecutado este proceso y se suma 1.
+						ResuPunteroMarcoUsado[$ejecutandoinst,$reloj]=$indMarcoMem #Índice que apunta al marco con la página que acaba de ser usada (ya exitente anteriormente). 
+						ResuPaginaOrdinalAcumulado[$ejecutandoinst,$indMarcoMem,$reloj]=$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso.
+						ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]=${ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$(($reloj - 1))]} #Se mantiene el mismo mientras no se produzca un fallo de página. 
+						indiceResuPaginaAcumulado[$ejecutandoinst]=$reloj #Guarda el índice de la última modificación de datos por no usar el reloj en todos sus instantes sino sólo en los que se usa este proceso. También se usa para las frecuencias.
 					fi
 				done
 			fi 
@@ -5085,25 +5085,25 @@ function gestionAlgoritmoPagNoVirtual {
 	else #[[ ${temp_rej[$ejecutandoinst]} -eq 0 ]]; then #Y si no quedan más páginas pendientes de ejecutar. No es tiempoEjecucion sino temp_rej.
 		for (( counter=0; counter<$nprocesos; counter++ )); do
 			if [[ " ${llegados[*]} " == *" $ejecutandoinst "* ]]; then 
-#EN-13520-
-#EN-13530-
+				retorno[$ejecutandoinst]=$((reloj - llegada[$ejecutandoinst])) #Como temp_ret()
+				retorno+=("${retorno[$ejecutandoinst]}") #Como temp_ret()
 				if [[ ! " ${ejecutando[*]} " == *" $ejecutandoinst "* ]]; then
-#EN-13540-
+					espera[$ejecutandoinst]=$((reloj - llegada[$ejecutandoinst])) #Como temp_wait()
 					if [[ " ${haestadopausado[*]} " == *" $ejecutandoinst "* ]]; then
 						resta[$ejecutandoinst]=$((tiempo[$ejecutandoinst] - tiempoEjecucion[$ejecutandoinst])) #Como temp_rej(). Se aconseja quitar la variable $espera y estandarizar las variables a usar ??????????. #tiempo o ejecucion[$counter] ???????????? #Esa resta debería ser alrevés, el de ejecución menos lo ya ejecutado...
 						espera[$ejecutandoinst]=$((reloj - llegada[$ejecutandoinst] - resta[$ejecutandoinst])) #Como temp_wait() #Tampoco es (reloj - llegada[$ejecutandoinst])
 					fi
-#EN-13550-
+					espera+=("${espera[${numeroproceso[$ejecutandoinst]}]}") #Como temp_wait(). Se aconseja quitar la variable $espera y estandarizar las variables a usar ??????????. Y se aconseja cambiar $ord.
 				fi
 			fi
 		done
-#EN-13560-
+		finalizado=$ejecutandoinst #Actualización de variables y cambios de estado. Algunos ya se hacen en ajusteFinalTiemposEsperaEjecucionRestante().
 		ejecutando="" 
 		finalizados+=("$finalizado")
 		finalizadonuevo+=("$finalizado")
 		hanestadomem=$paginasEnMemoriaProceso
 		if [[ ${#finalizados[@]} -ge ${#llegada[@]} ]]; then #De momento se cambia ordenados por llegada.
-#EN-13570-
+			for i in "${!enmemoria[@]}"; do #Localiza en qué posición encuentra el dato (da la posición, pero no la variable en el array)
 #			for i in "${enmemoria[@]}"; do #Define el dato, pero no en qué posición se encuentra.
 				if [[ "${enmemoria[$i]}" == "$finalizado" ]]; then
 					posicion_finalizado=$i
@@ -5116,61 +5116,61 @@ function gestionAlgoritmoPagNoVirtual {
 			done
 		fi
 	fi
-#EN-13580-
+} #Fin de gestionAlgoritmoPagNoVirtual()
 
 ####################################################################################
 ####################################################################################
 # Funciones para la gestión de fallos de paginación ################################
 ####################################################################################
-#EN-13590-
+# Sinopsis: Algoritmo AlgPagFrecFIFORelojSegOp
 ####################################################################################
 function gestionAlgoritmoPagAlgPagFrecFIFORelojSegOp { 
-#EN-13600-
-#EN-13610-
+	if [[ $ejecutandoinst -ge 0 ]]; then #Si no hay proceso en ejecución se pone -1, para que pueda ser comparado. 
+		ResuTiempoProceso[$reloj]=$ejecutandoinst #Resumen - Proceso en ejecución en cada instante de tiempo. 
 	else
 		ResuTiempoProceso[$reloj]=-1
 	fi
-#EN-13620-
-#EN-13630-
-#EN-13640-
+	paginasEnMemoriaProceso=(); #Se inicializan los arrays que se van a usar temporalmente para cada proceso en ejecución.
+	ordinal=(); #Contiene el ordinal del número de marco de cada proceso.
+	for (( counter=0 ; counter<$nprocesos ; counter++ )); do #Se van a determinar los marcos reales que usa cada proceso.
 		ordinal[$counter]=0
 	done
 	for ((ii=0;ii<${#unidMemOcupadas[@]};ii++)); do #El array relacionMarcosUsados[] no necesita acumulado porque ya contiene todos los datos necesarios y se mantienen hasta que se modifican en las reubicaciones, caso en el que también recoge el cambio.
-#EN-13650-
+		if [[ ${unidMemOcupadas[$ii]} != "_" ]]; then # Se buscan los marcos ocupados por cada proceso
 			relacionMarcosUsados[${unidMemOcupadas[$ii]},$reloj,${ordinal[${unidMemOcupadas[$ii]}]}]=$ii
 			ordinal[${unidMemOcupadas[$ii]}]=$((${ordinal[${unidMemOcupadas[$ii]}]} + 1))
 		fi
 	done
-#EN-13660-
-#EN-13670-
+	for ((v=0; v<${memoria[$ejecutandoinst]}; v++)); do #Se crea la secuencia de páginas en memoria de cada proceso.
+		if [[ ${paginasEnMemoriaTotal[$ejecutandoinst,$v]} != "" ]]; then #Evita un problema con la indefinición de la página en caso de no existir, ya que la lee como valor 0, y la página 0 también existe. 
 			paginasEnMemoriaProceso[$v]=${paginasEnMemoriaTotal[$ejecutandoinst,$v]}
 		else
 			paginasEnMemoriaProceso[$v]=-1
 		fi
 	done 
-#EN-13680-
-#EN-13690-
+	unset paginasPendientesUsarTotal[$ejecutandoinst] #Se borra la variable para volver a crearla con las páginas aún pendientes de ejecutar.
+	for ((v=${numeroPaginasUsadasProceso[$ejecutandoinst]}; v<${tiempoEjecucion[$ejecutandoinst]}; v++)); do #Se crea la secuencia de páginas de cada proceso pendientes de ejecutar.
 		pagina=${paginasDefinidasTotal[$ejecutandoinst,$v]}
 		paginasPendientesUsarTotal[$ejecutandoinst,$v]=$pagina
 	done
-#EN-13700-
-#EN-13710-
+	unset paginasUsadasTotal[$ejecutandoinst] #Se borra la variable para volver a crearla con las páginas aún pendientes de ejecutar.
+	for ((v=0; v<=${numeroPaginasUsadasProceso[$ejecutandoinst]}; v++)); do #Se crea la secuencia de páginas de cada proceso ya ejecutadas.
 		pagina=${paginasDefinidasTotal[$ejecutandoinst,$v]}
 		paginasUsadasTotal[$ejecutandoinst,$v]=$pagina
-#EN-13720-
+		paginasUsadasProceso[$v]=$pagina #No es necesario ya que paginasUsadasTotal[] se genera en cada ejecución de la función.
 	done 
-#EN-13730-
-#EN-13740-
+	for (( counter=0 ; counter<$nprocesos ; counter++ )); do #Se actualizan los datos de frecuencia o antigüedad de uso de cada marco de memoria ocupado por una página de un proceso.
+		if [[ ${numeroMarcosUsados[$counter]} -ne 0 ]]; then #Si no es el primer instante de ejecución de este proceso. Primero se copian y luego se modifican si es necesario.
 			for (( jj=0; jj<${memoria[$counter]}; jj++ )); do
-#EN-13750-
-#EN-13760-
-#EN-13770-
+				ResuPaginaAcumulado[$counter,$jj,$reloj]=${ResuPaginaAcumulado[$counter,$jj,$(($reloj - 1))]} #Recoge los datos del array con las páginbas en ls diferentes marcos en el instante anterior.
+				ResuFrecuenciaAcumulado[$counter,$jj,$reloj]=${ResuFrecuenciaAcumulado[$counter,$jj,$(($reloj - 1))]} #Recoge los datos del array de frecuencias de uso de las páginas contenidas en los marcos en el instante anterior.
+				ResuPaginaOrdinalAcumulado[$counter,$jj,$reloj]=${ResuPaginaOrdinalAcumulado[$counter,$jj,$(($reloj - 1))]} #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso.
 			done
 		fi
 	done
 
-#EN-13780-
-#EN-13790-
+	if [[ $seleccionAlgoritmoPaginacion -eq 2 || $seleccionAlgoritmoPaginacion -eq 4 ]]; then #Con Segunda Oportunidad. Se determina el primer marco con coeficiente M=0. Y si encuentra marcos con M=1, les define M=0 y busca el siguiente. El coeficiente de la página intercambiada también se define a 0 por lo que se deja tal y como estaba, a 0.
+		for (( counterProc=0 ; counterProc<$nprocesos ; counterProc++ )); do #Se arrastran los datos de los coeficientes en anteriores tiempos ordinales de ejecución para cada proceso en cada unidad de tiempo.
 			if ([[ ${estad[$counterProc]} -eq 2 || ${estad[$counterProc]} -eq 3 || ${estad[$counterProc]} -eq 4 ]]) && [[ ${numeroPaginasUsadasProceso[$counterProc]} -gt 0 ]]; then
 				for (( jj=0; jj<${numeroMarcosUsados[$counterProc]}; jj++ )); do 
 					coeficienteSegOp[$counterProc,$jj,$((${numeroPaginasUsadasProceso[$counterProc]}))]=${coeficienteSegOp[$counterProc,$jj,$((${numeroPaginasUsadasProceso[$counterProc]} - 1))]}
@@ -5183,163 +5183,163 @@ function gestionAlgoritmoPagAlgPagFrecFIFORelojSegOp {
 		done
 	fi
 		
-#EN-13800-
-#EN-13810-
-#EN-13820-
-#EN-13830-
+	if [[ ${numeroPaginasUsadasProceso[$ejecutandoinst]} -lt ${tiempoEjecucion[$ejecutandoinst]} ]]; then #Si aún quedan páginas por ejecutar de ese proceso
+		primera_pagina=${paginasDefinidasTotal[$ejecutandoinst,${numeroPaginasUsadasProceso[$ejecutandoinst]}]} #Se determina la primera página de la secuencia de páginas pendientes
+		numeroPaginasUsadasProceso[$ejecutandoinst]=$((${numeroPaginasUsadasProceso[$ejecutandoinst]} + 1)) #Número de páginas usadas en el proceso en ejecución. Aumenta en todas las unidades de ejecución del proceso. 
+		paginaAUsar[$ejecutandoinst]=${paginasDefinidasTotal[$ejecutandoinst,${numeroPaginasUsadasProceso[$ejecutandoinst]}]} #Siguiente página, pendiente de ejecutar.
 
-#EN-13840-
+		if [[ ${numeroMarcosUsados[$ejecutandoinst]} -lt ${memoria[$ejecutandoinst]} ]]; then #Si el número de marcos usados es menor que el tamaño de la memoria asociada al proceso.
 
-#EN-13850-
-#EN-13860-
+			x=0 #Define si encuentra o no la página en paginasEnMemoriaProceso
+			for buscar_primera_pagina in "${!paginasEnMemoriaProceso[@]}"; do #Localiza en qué posición encuentra la página en paginasEnMemoriaProceso (da la posición, pero no la variable en el array)
 #			for buscar_primera_pagina in "${paginasEnMemoriaProceso[@]}"; do #Busca la página en paginasEnMemoriaProceso, pero no la posición.
 #				if [[ $buscar_primera_pagina -eq $primera_pagina ]]; then #Esta línea es para cuando usamos el valor del dato y no su posición. Si la página está en memoria define x=1
-#EN-13870-
+				if [[ ${paginasEnMemoriaProceso[$buscar_primera_pagina]} -eq $primera_pagina ]]; then #Esta línea es para cuando usamos la posición del dato y no su valor. Si la página está en memoria define x=1
 					x=1
-#EN-13880-
+					indMarcoMem=$buscar_primera_pagina # Se guarda el marco en el que se encuentra la página.
 				fi 
 			done
-#EN-13890-
-#EN-13900-
+			if [[ $x -eq 1 && $((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) -ne 0 ]]; then #USO DE PÁGINA - Si la página está en memoria, y si no es la primera página a usar para evitar la inicialización de la variable paginasEnMemoriaTotal[$ejecutandoinst,ordinal}] a 0.
+				for indMarcoMem in "${!paginasEnMemoriaProceso[@]}"; do #Localiza en qué posición encuentra el dato (da la posición, pero no la variable en el array)
 #				for indMarcoMem in "${paginasEnMemoriaProceso[@]}"; do #Define el dato, pero no en qué posición se encuentra.
-#EN-13910-
-#EN-13920-
-#EN-13930-
+					if [[ ${paginasEnMemoriaProceso[$indMarcoMem]} -eq $primera_pagina ]]; then #Localiza en qué posición encuentra la página (j). 
+						ResuPunteroMarcoUsado[$ejecutandoinst,$reloj]=$indMarcoMem #Índice que apunta al marco con la página que acaba de ser usada (ya exitente anteriormente). 
+						ResuPaginaOrdinalAcumulado[$ejecutandoinst,$indMarcoMem,$reloj]=$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso.
 						for (( jj=0; jj<${memoria[$ejecutandoinst]}; jj++ )); do
-#EN-13940-
-#EN-13950-
+							ResuPaginaAcumulado[$ejecutandoinst,$jj,$reloj]=${ResuPaginaAcumulado[$ejecutandoinst,$jj,${indiceResuPaginaAcumulado[$ejecutandoinst]}]} #Recoge los datos del array con las páginbas en ls diferentes marcos en el instante anterior.
+							ResuFrecuenciaAcumulado[$ejecutandoinst,$jj,$reloj]=${ResuFrecuenciaAcumulado[$ejecutandoinst,$jj,${indiceResuPaginaAcumulado[$ejecutandoinst]}]} #Recoge los datos del array de frecuencias de uso de las páginas contenidas en los marcos en el instante anterior.
 						done 
-#EN-13960-
-#EN-13970-
-#EN-13980-
+						ResuFrecuenciaAcumulado[$ejecutandoinst,$indMarcoMem,$reloj]=$((${ResuFrecuenciaAcumulado[$ejecutandoinst,$indMarcoMem,$reloj]} + 1)) #Se lee el dato la frecuencia de la página que estaba en un marco en el instante anterior en el que se ha ejecutado este proceso y se suma 1.  
+						if [[ $seleccionAlgoritmoPaginacion -eq 2 || $seleccionAlgoritmoPaginacion -eq 4 ]]; then #Con Segunda Oportunidad
+							coeficienteSegOp[$ejecutandoinst,${ResuPunteroMarcoUsado[$ejecutandoinst,$reloj]},$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1))]=1 #En caso de reusar una página se pone a 1 aunque pueda ser redundante si ya era 1.
 						fi
 					fi
 				done
-#EN-13990-
-#EN-14000-
-#EN-14010-
+				indiceResuPaginaAcumulado[$ejecutandoinst]=$reloj #Guarda el índice de la última modificación de datos por no usar el reloj en todos sus instantes sino sólo en los que se ejecuta este proceso. También se usa para las frecuencias.
+				if [[ ${numeroMarcosUsados[$ejecutandoinst]} -lt ${memoria[$ejecutandoinst]} ]]; then #Si el número de páginas en memoria del proceso es menor que el tamaño de la memoria del proceso. 
+					ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]=${numeroMarcosUsados[$ejecutandoinst]} #Sumaría 1 al número de marco sobre el que se hará el fallo de página porque aún hay marcos libres, pero no lo suma porque el número de marcos usados no empezará en 0 sino en 1, mientras que las variables suelene empezar en 0. 
 				else
-#EN-14020-
+					ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]=0 #Sumaría 1 al número de marco sobre el que se hará el fallo de página porque aún hay marcos libres, pero no lo suma porque el número de marcos usados no empezará en 0 sino en 1, mientras que las variables suelene empezar en 0. 
 				fi
-#EN-14030-
-#EN-14040-
-#EN-14050-
-#EN-14060-
-#EN-14070-
-#EN-14080-
-#EN-14090-
-#EN-14100-
-#EN-14110-
+			else #Si NO está en memoria... FALLO DE PÁGINA
+				paginasEnMemoriaProceso[${numeroMarcosUsados[$ejecutandoinst]}]=$primera_pagina #... la página se añade a la secuencia de páginas del proceso en ejecución en memoria.
+				paginasEnMemoriaTotal[$ejecutandoinst,${numeroMarcosUsados[$ejecutandoinst]}]=$primera_pagina #... y la página se añade a la secuencia de páginas de ese proceso junto con el resto de páginas del resto de procesos residentes en memoria (Índices:Proceso, Páginas). Sale de forma calculada de paginasDefinidasTotal y su orden es el establecido tras los fallos de paginación.
+				contadorAlgPagFallosTotalesProcesos[$ejecutandoinst]=$((contadorAlgPagFallosTotalesProcesos[$ejecutandoinst] + 1)) #Contador de fallos de página totales de cada proceso
+				((contadorAlgPagFallosProcesoAcumulado[$ejecutandoinst]++)) #Contador de fallos totales de cada proceso
+				if [[ ${numeroMarcosUsados[$ejecutandoinst]} -ne 0 ]]; then #Si no es el primer instante de ejecución de este proceso.  Primero se copian y luego se modifican si es necesario.
+					for (( jj=0; jj<${memoria[$ejecutandoinst]}; jj++ )); do #Se recuperan los datos de las páginas que ocupan todos los marcos en el instante anterior en el que se ejecutó este proceso.
+						ResuPaginaAcumulado[$ejecutandoinst,$jj,$reloj]=${ResuPaginaAcumulado[$ejecutandoinst,$jj,${indiceResuPaginaAcumulado[$ejecutandoinst]}]} #Recoge los datos del array con las páginbas en ls diferentes marcos en el instante anterior.
+						ResuFrecuenciaAcumulado[$ejecutandoinst,$jj,$reloj]=${ResuFrecuenciaAcumulado[$ejecutandoinst,$jj,${indiceResuPaginaAcumulado[$ejecutandoinst]}]} #Recoge los datos del array de frecuencias de uso de las páginas contenidas en los marcos en el instante anterior.
 					done
 				fi 
-#EN-14120-
-#EN-14130-
-#EN-14140-
-#EN-14150-
-#EN-14160-
-#EN-14170-
-#EN-14180-
-#EN-14190-
-#EN-14200-
-#EN-14210-
+				ResuPaginaAcumulado[$ejecutandoinst,${numeroMarcosUsados[$ejecutandoinst]},$reloj]=$primera_pagina #Se añade el dato de la página que acaba de ser incluida en un marco.
+				ResuFrecuenciaAcumulado[$ejecutandoinst,${numeroMarcosUsados[$ejecutandoinst]},$reloj]=1 # Se añade el dato de la frecuencia de la página que acaba de ser incluida en un marco.
+				indiceResuPaginaAcumulado[$ejecutandoinst]=$reloj #Guarda el índice de la última modificación de datos por no usar el reloj en todos sus instantes sino sólo en los que se usa este proceso. También se usa para las frecuencias.
+				ResuFallosPaginaProceso[$ejecutandoinst,$reloj]=$primera_pagina #Y se añade la página a la secuencia de fallos. 
+				ResuFallosMarcoProceso[$ejecutandoinst,$reloj]=${numeroMarcosUsados[$ejecutandoinst]} #Y se añade el marco a la secuencia de fallos. 
+				numeroMarcosUsados[$ejecutandoinst]=$((${numeroMarcosUsados[$ejecutandoinst]} + 1)) #Aumenta en 1 el número de marcos usados. Sólo aumenta cuando se usa un nuevo marco y no en todas las unidades de ejecución del proceso. Debe ser la última línea dentro del if paradejarlo preparado para su siguiente uso como variable.
+				ResuPaginaOrdinalAcumulado[$ejecutandoinst,$((${numeroMarcosUsados[$ejecutandoinst]} - 1)),$reloj]=$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso.
+				ResuPunteroMarcoUsado[$ejecutandoinst,$reloj]=$((${numeroMarcosUsados[$ejecutandoinst]} - 1)) #Índice que apunta al marco con la página que acaba de ser incluida (ocupa un espacio ya utilizado anteriormente por otra página). Sería -1 porque numeroMarcosUsados empieza a contar en 1.
+				if [[ ${numeroMarcosUsados[$ejecutandoinst]} -lt ${memoria[$ejecutandoinst]} ]]; then #Si el número de páginas en memoria del proceso es menor que el tamaño de la memoria del proceso. 
+					ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]=${numeroMarcosUsados[$ejecutandoinst]} #Sumaría 1 al número de marco sobre el que se hará el fallo de página porque aún hay marcos libres, pero no lo suma porque el número de marcos usados ya ha aumentado 1. 
 				else
 					ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]=0
 				fi
-#EN-14220-
+				if [[ $seleccionAlgoritmoPaginacion -eq 2 || $seleccionAlgoritmoPaginacion -eq 4 ]]; then #Con Segunda Oportunidad. Redundante porque ya se inicializa a 0...
 					coeficienteSegOp[$ejecutandoinst,${ResuPunteroMarcoUsado[$ejecutandoinst,$reloj]},$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1))]=0
 				fi
 			fi
-#EN-14230-
-#EN-14240-
-#EN-14250-
+		else #Si el número de marcos usados es mayor o igual que el tamaño de la memoria asociada al proceso.
+			x=0 #Define si encuentra o no la página en paginasEnMemoriaProceso
+			for buscar_primera_pagina in "${!paginasEnMemoriaProceso[@]}"; do #Localiza en qué posición encuentra la página (da la posición pero no la variable en el array)
 #			for buscar_primera_pagina in "${paginasEnMemoriaProceso[@]}"; do #Localiza la página, no la posición de la página
-#EN-14260-
+				if [[ ${paginasEnMemoriaProceso[$buscar_primera_pagina]} -eq $primera_pagina ]]; then #Si la página está en memoria define x=1
 #				if [[ $buscar_primera_pagina -eq $primera_pagina ]]; then #Si la página está en memoria define x=1
 					x=1
 				fi 
 			done
-#EN-14270-
-#EN-14280-
+			if [[ $x -eq 1 ]]; then #Si la página está en memoria...USO DE PÁGINA
+				for indMarcoMem in "${!paginasEnMemoriaProceso[@]}"; do #Localiza en qué posición encuentra la página (da la posición pero no la variable en el array)
 #				for indMarcoMem in "${paginasEnMemoriaProceso[@]}"; do #Localiza la página, no la posición de la página
 					if [[ ${paginasEnMemoriaProceso[$indMarcoMem]} -eq $primera_pagina ]]; then
 						for (( jj=0; jj<${memoria[$ejecutandoinst]}; jj++ )); do
-#EN-14290-
-#EN-14300-
+							ResuPaginaAcumulado[$ejecutandoinst,$jj,$reloj]=${ResuPaginaAcumulado[$ejecutandoinst,$jj,${indiceResuPaginaAcumulado[$ejecutandoinst]}]} #Recoge los datos del array con las páginbas en ls diferentes marcos en el instante anterior.							
+							ResuFrecuenciaAcumulado[$ejecutandoinst,$jj,$reloj]=${ResuFrecuenciaAcumulado[$ejecutandoinst,$jj,${indiceResuPaginaAcumulado[$ejecutandoinst]}]} #Recoge los datos del array de frecuencias de uso de las páginas contenidas en los marcos en el instante anterior.
 						done
-#EN-14310-
-#EN-14320-
-#EN-14330-
-#EN-14340-
-#EN-14350-
+						ResuFrecuenciaAcumulado[$ejecutandoinst,$indMarcoMem,$reloj]=$((${ResuFrecuenciaAcumulado[$ejecutandoinst,$indMarcoMem,${indiceResuPaginaAcumulado[$ejecutandoinst]}]} + 1)) #Se lee el dato la frecuencia de la página que estaba en un marco en el instante anterior en el que se ha ejecutado este proceso y se suma 1.
+						ResuPunteroMarcoUsado[$ejecutandoinst,$reloj]=$indMarcoMem #Índice que apunta al marco con la página que acaba de ser usada (ya exitente anteriormente). 
+						ResuPaginaOrdinalAcumulado[$ejecutandoinst,$indMarcoMem,$reloj]=$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso.
+						if [[ $seleccionAlgoritmoPaginacion -eq 2 || $seleccionAlgoritmoPaginacion -eq 4 ]]; then #Con Segunda Oportunidad
+							coeficienteSegOp[$ejecutandoinst,$indMarcoMem,$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1))]=1 #En caso de reusar una página se pone a 1 aunque pueda ser redundante si ya era 1.
 						fi
-#EN-14360-
-#EN-14370-
+						ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]=${ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$(($reloj - 1))]} #Se mantiene el mismo mientras no se produzca un fallo de página. 
+						indiceResuPaginaAcumulado[$ejecutandoinst]=$reloj #Guarda el índice de la última modificación de datos por no usar el reloj en todos sus instantes sino sólo en los que se usa este proceso. También se usa para las frecuencias.
 					fi
 				done
-#EN-14380-
-#EN-14390-
+			else #Y si NO está en la memoria...FALLO DE PÁGINA. se localiza el que tenga el primer valor del mayor contador de frecuencia por ser AlgPagFrecMFU.
+				if [[ $seleccionAlgoritmoPaginacion -eq 2 || $seleccionAlgoritmoPaginacion -eq 4 ]]; then #Con Segunda Oportunidad. Se determina el primer marco con coeficiente M=0. Y si encuentra marcos con M=1, les define M=0 y busca el siguiente. El coeficiente de la página intercambiada también se define a 0 por lo que se deja tal y como estaba, a 0.
 					varCoeficienteSegOp=0
 					varCoefMarco=""
-#EN-14400-
+					varCoefOrdinal=$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) #Se usa el mismo tiempo ordinal de ejecución del proceso para todos los marcos porque es el siguiente tiempo ordinal el que interesa. La variable ResuPaginaOrdinalAcumulado[] se cambiará después, pero ya se tiene en cuenta ahora.
 					until [[ $varCoeficienteSegOp -eq 1 ]]; do 
 						varCoefMarco=${ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]}
-#EN-14410-
-#EN-14420-
-#EN-14430-
-#EN-14440-
+						if [[ ${coeficienteSegOp[$ejecutandoinst,$varCoefMarco,$varCoefOrdinal]} -eq 1 ]]; then #Si M de Segunda Oportunidad vale 0, se pone a 1. Y si ya vale 1, se deja como está. 
+							coeficienteSegOp[$ejecutandoinst,$varCoefMarco,$varCoefOrdinal]=0 #Se define a 0 para que en la segunda vuelta se pueda producir el fallo sobre el primer M=0 que encuentre.
+							if [[ ${ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]} -lt $((${memoria[$ejecutandoinst]} - 1)) ]]; then #Si el número de páginas en memoria del proceso es menor que el tamaño de la memoria del proceso. 
+								ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]=$((${ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]} + 1)) #Sumaría 1 al número de marco sobre el que se hará el fallo de página porque aún hay marcos libres, pero no lo suma porque el número de marcos usados no empezará en 0 sino en 1, mientras que las variables suelene empezar en 0. 
 							else
 								ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]=0
 							fi
 						else 
-#EN-14450-
+							coeficienteSegOp[$ejecutandoinst,$varCoefMarco,$varCoefOrdinal]=0 #Se define a 0 para que en la segunda vuelta se pueda producir el fallo sobre el primer M=0 que encuentre.
 							varCoeficienteSegOp=1
 						fi
 					done
 				fi
-#EN-14460-
-#EN-14470-
-#EN-14480-
-#EN-14490-
+				paginasEnMemoriaProceso[${ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]}]="$primera_pagina" #Se hace el fallo de página sobre el primer marco con la mayor frecuencia, sustituyendo la página.
+				paginasEnMemoriaTotal[$ejecutandoinst,${ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]}]=$primera_pagina #Páginas residentes en memoria de todos los Procesos (Índices:Proceso, Páginas). Sale de forma calculada de paginasDefinidasTotal y su orden es el establecido tras los fallos de paginación.
+				contadorAlgPagFallosTotalesProcesos[$ejecutandoinst]=$((contadorAlgPagFallosTotalesProcesos[$ejecutandoinst] + 1)) #Aumenta en una unidad el número de fallos de página del proceso.
+				((contadorAlgPagFallosProcesoAcumulado[$ejecutandoinst]++)) #Contador de fallos totales de cada proceso
 				for (( jj=0; jj<${memoria[$ejecutandoinst]}; jj++ )); do
-#EN-14500-
-#EN-14510-
+					ResuPaginaAcumulado[$ejecutandoinst,$jj,$reloj]=${ResuPaginaAcumulado[$ejecutandoinst,$jj,${indiceResuPaginaAcumulado[$ejecutandoinst]}]} #Recoge los datos del array con las páginbas en ls diferentes marcos en el instante anterior.								
+					ResuFrecuenciaAcumulado[$ejecutandoinst,$jj,$reloj]=${ResuFrecuenciaAcumulado[$ejecutandoinst,$jj,${indiceResuPaginaAcumulado[$ejecutandoinst]}]} #Recoge los datos del array de frecuencias de uso de las páginas contenidas en los marcos en el instante anterior.
 				done
-#EN-14520-
-#EN-14530-
-#EN-14540-
-#EN-14550-
-#EN-14560-
-#EN-14570-
-#EN-14580-
-#EN-14590-
+				ResuPaginaAcumulado[$ejecutandoinst,${ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]},$reloj]=$primera_pagina # Se añade el dato de la página que acaba de ser incluida en un marco.
+				ResuPaginaOrdinalAcumulado[$ejecutandoinst,${ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]},$reloj]=$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso.
+				ResuFrecuenciaAcumulado[$ejecutandoinst,${ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]},$reloj]=1 #Como la página acaba de ser metida en el marco, se suma 1 a la frecuencia de la página. 
+				ResuFallosPaginaProceso[$ejecutandoinst,$reloj]=$primera_pagina #Y se añade la página a la secuencia de fallos. 
+				ResuFallosMarcoProceso[$ejecutandoinst,$reloj]=${ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]} #Y se añade el marco a la secuencia de fallos. 
+				ResuPunteroMarcoUsado[$ejecutandoinst,$reloj]=${ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]} #Índice que apunta al marco con la página que acaba de ser incluida (ocupa un espacio ya utilizado anteriormente por otra página). 
+				if [[ ${ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]} -lt $((${memoria[$ejecutandoinst]} - 1)) ]]; then #Si el número de páginas en memoria del proceso es menor que el tamaño de la memoria del proceso. 
+					ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]=$((${ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]} + 1)) #Sumaría 1 al número de marco sobre el que se hará el fallo de página porque aún hay marcos libres, pero no lo suma porque el número de marcos usados no empezará en 0 sino en 1, mientras que las variables suelene empezar en 0. 
 				else
 					ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]=0
 				fi
-#EN-14600-
+				indiceResuPaginaAcumulado[$ejecutandoinst]=$reloj #Guarda el índice de la última modificación de datos por no usar el reloj en todos sus instantes sino sólo en los que se usa este proceso. También se usa para las frecuencias.
 			fi
 		fi          
 	else #[[ ${temp_rej[$ejecutandoinst]} -eq 0 ]]; then #Y si no quedan más páginas pendientes de ejecutar. No es tiempoEjecucion sino temp_rej.
 		for (( counter=0; counter<$nprocesos; counter++ )); do
 			if [[ " ${llegados[*]} " == *" $ejecutandoinst "* ]]; then 
-#EN-14610-
-#EN-14620-
+				retorno[$ejecutandoinst]=$((reloj - llegada[$ejecutandoinst])) #Como temp_ret()
+				retorno+=("${retorno[$ejecutandoinst]}") #Como temp_ret()
 				if [[ ! " ${ejecutando[*]} " == *" $ejecutandoinst "* ]]; then
-#EN-14630-
+					espera[$ejecutandoinst]=$((reloj - llegada[$ejecutandoinst])) #Como temp_wait()
 					if [[ " ${haestadopausado[*]} " == *" $ejecutandoinst "* ]]; then
 						resta[$ejecutandoinst]=$((tiempo[$ejecutandoinst] - tiempoEjecucion[$ejecutandoinst])) #Como temp_rej(). Se aconseja quitar la variable $espera y estandarizar las variables a usar ??????????. #tiempo o ejecucion[$counter] ???????????? #Esa resta debería ser alrevés, el de ejecución menos lo ya ejecutado...
 						espera[$ejecutandoinst]=$((reloj - llegada[$ejecutandoinst] - resta[$ejecutandoinst])) #Como temp_wait(). Se aconseja quitar la variable $espera y estandarizar las variables a usar ??????????. #Tampoco es (reloj - llegada[$ejecutandoinst])
 					fi
-#EN-14640-
+					espera+=("${espera[${numeroproceso[$ejecutandoinst]}]}") #Como temp_wait(). Se aconseja quitar la variable $espera y estandarizar las variables a usar ??????????.
 				fi
 			fi
 		done
-#EN-14650-
+		finalizado=$ejecutandoinst #Actualización de variables y cambios de estado. Algunos ya se hacen en ajusteFinalTiemposEsperaEjecucionRestante().
 		ejecutando="" 
 		finalizados+=("$finalizado")
 		finalizadonuevo+=("$finalizado")
 		hanestadomem=$paginasEnMemoriaProceso
 		if [[ ${#finalizados[@]} -ge ${#llegada[@]} ]]; then #De momento se cambia ordenados por llegada.
-#EN-14660-
+			for i in "${!enmemoria[@]}"; do #Localiza en qué posición encuentra el dato (da la posición, pero no la variable en el array)
 #			for i in "${enmemoria[@]}"; do #Define el dato, pero no en qué posición se encuentra.
 				if [[ "${enmemoria[$i]}" == "$finalizado" ]]; then
 					posicion_finalizado=$i
@@ -5352,381 +5352,381 @@ function gestionAlgoritmoPagAlgPagFrecFIFORelojSegOp {
 			done
 		fi
 	fi
-#EN-14670-
+} #Fin de gestionAlgoritmoPagAlgPagFrecFIFORelojSegOp()
 
 ####################################################################################
-#EN-14680-
+# Sinopsis: Algoritmo AlgPagFrecMFULFUNFU - NFU usará un límite máximo de la frecuencia de uso de las páginas (seleccionAlgoritmoPaginacion_clases_frecuencia_valor) y el límite de tiempo de permanencia en las clases 2 y 3 (seleccionAlgoritmoPaginacion_clases_valor) en un intervalo de tiempo (seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado)
 ####################################################################################
-#EN-14690-
+function gestionAlgoritmoPagAlgPagFrecMFULFUNFU { #ResuFrecuenciaAcumulado
 	paginasEnMemoriaProceso=(); #Páginas residentes en memoria del Proceso en ejecución. #Se inicializan los arrays que se van a usar temporalmente para cada proceso en ejecución.
-#EN-14700-
-#EN-14710-
+	ordinal=(); #Contiene el ordinal del número de marco de cada proceso.
+	for (( counter=0 ; counter<$nprocesos ; counter++ )); do #Se van a determinar los marcos reales que usa cada proceso.
 		ordinal[$counter]=0
 	done
 	for ((ii=0;ii<${#unidMemOcupadas[@]};ii++)); do #El array relacionMarcosUsados[] no necesita acumulado porque ya contiene todos los datos necesarios y se mantienen hasta que se modifican en las reubicaciones, caso en el que también recoge el cambio.
-#EN-14720-
+		if [[ ${unidMemOcupadas[$ii]} != "_" ]]; then # Se buscan los marcos ocupados por cada proceso
 			relacionMarcosUsados[${unidMemOcupadas[$ii]},$reloj,${ordinal[${unidMemOcupadas[$ii]}]}]=$ii
 			ordinal[${unidMemOcupadas[$ii]}]=$((${ordinal[${unidMemOcupadas[$ii]}]} + 1))
 		fi
 	done
-#EN-14730-
-#EN-14740-
+	for ((v=0; v<${memoria[$ejecutandoinst]}; v++)); do #Se crea la secuencia de páginas en memoria de cada proceso.
+		if [[ ${paginasEnMemoriaTotal[$ejecutandoinst,$v]} != "" ]]; then #Evita un problema con la indefinición de la página en caso de no existir, ya que la lee como valor 0, y la página 0 también existe. 
 			paginasEnMemoriaProceso[$v]=${paginasEnMemoriaTotal[$ejecutandoinst,$v]}
 		else
 			paginasEnMemoriaProceso[$v]=-1
 		fi
 	done 
-#EN-14750-
-#EN-14760-
+	unset paginasPendientesUsarTotal[$ejecutandoinst] #Se borra la variable para volver a crearla con las páginas aún pendientes de ejecutar.
+	for ((v=${numeroPaginasUsadasProceso[$ejecutandoinst]}; v<${tiempoEjecucion[$ejecutandoinst]}; v++)); do #Se crea la secuencia de páginas de cada proceso pendientes de ejecutar.
 		pagina=${paginasDefinidasTotal[$ejecutandoinst,$v]}
 		paginasPendientesUsarTotal[$ejecutandoinst,$v]=$pagina
 	done
-#EN-14770-
-#EN-14780-
+	unset paginasUsadasTotal[$ejecutandoinst] #Se borra la variable para volver a crearla con las páginas aún pendientes de ejecutar.
+	for ((v=0; v<=${numeroPaginasUsadasProceso[$ejecutandoinst]}; v++)); do #Se crea la secuencia de páginas de cada proceso ya ejecutadas.
 		pagina=${paginasDefinidasTotal[$ejecutandoinst,$v]}
 		paginasUsadasTotal[$ejecutandoinst,$v]=$pagina
-#EN-14790-
+		paginasUsadasProceso[$v]=$pagina #No es necesario ya que paginasUsadasTotal[] se genera en cada ejecución de la función.
 	done 
-#EN-14800-
-#EN-14810-
+	for (( counter=0 ; counter<$nprocesos ; counter++ )); do #Se actualizan los datos de frecuencia o antigüedad de uso de cada marco de memoria ocupado por una página de un proceso.
+		if [[ ${numeroMarcosUsados[$counter]} -ne 0 ]]; then #Si no es el primer instante de ejecución de este proceso. Primero se copian y luego se modifican si es necesario.
 			for (( jj=0; jj<${memoria[$counter]}; jj++ )); do
-#EN-14820-
-#EN-14830-
-#EN-14840-
-#EN-14850-
-#EN-14860-
+				ResuPaginaAcumulado[$counter,$jj,$reloj]=${ResuPaginaAcumulado[$counter,$jj,$(($reloj - 1))]} #Recoge los datos del array con las páginbas en ls diferentes marcos en el instante anterior.
+				ResuFrecuenciaAcumulado[$counter,$jj,$reloj]=${ResuFrecuenciaAcumulado[$counter,$jj,$(($reloj - 1))]} #Recoge los datos del array de frecuencias de uso de las páginas contenidas en los marcos en el instante anterior.
+				ResuPaginaOrdinalAcumulado[$counter,$jj,$reloj]=${ResuPaginaOrdinalAcumulado[$counter,$jj,$(($reloj - 1))]} #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso.
+				if [[ $seleccionAlgoritmoPaginacion -eq 10 || $seleccionAlgoritmoPaginacion -eq 11 ]]; then #NFU con clases sobre MFU/LFU
+					ResuClaseAcumulado[$counter,$jj,$reloj]=${ResuClaseAcumulado[$counter,$jj,$(($reloj - 1))]} #Recoge los datos del array de clases de uso de las páginas contenidas en los marcos en el instante anterior.
 				fi
 			done
 		fi
 	done
 	
-#EN-14870-
+	for ((indMemIni=0; indMemIni<${memoria[$ejecutandoinst]}; indMemIni++)); do #Se crea la secuencia de páginas en memoria de cada proceso.
 		indPagIni=$((${numeroPaginasUsadasProceso[$ejecutandoinst]}))
 		if [[ $indPagIni -eq 0 ]]; then
-#EN-14880-
-#EN-14890-
-#EN-14900-
+			ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMemIni]=0 #Resumen - Índices: (proceso, marco). Dato: Valor de la "frecuencia/tiempo desde su último uso" para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación
+			ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMemIni]=0 #Resumen - Índices: (proceso, marco). Dato: Valor de la "frecuencia/tiempo desde su último uso" para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación
+			directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$indMemIni,0]=0 #Resumen - Índices: (proceso, marco, ordinal del tiempo de ejecución (página)). Dato: Se usará para determinar si una página ha sido o no referenciada y modificada en un tiempo anterior inferior a seleccionAlgoritmoPaginacion_frecuencia_valor unidades de tiempo en los algoritmos NFU y NRU. Se inicia a 0 por no haber sido aún referenciada (vista o modificada) y se cambia sólo cuando ya estuviera en memoria.
 		else
-#EN-14910-
+			directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$indMemIni,$indPagIni]=${directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$indMemIni,$(($indPagIni - 1))]} #Resumen - Índices: (proceso, marco, ordinal del tiempo de ejecución (página)). Dato: Se usará para determinar si una página ha sido o no referenciada y modificada en un tiempo anterior inferior a seleccionAlgoritmoPaginacion_frecuencia_valor unidades de tiempo en los algoritmos NFU y NRU. Se inicia a 0 por no haber sido aún referenciada (vista o modificada) y se cambia sólo cuando ya estuviera en memoria.
 		fi
 	done 
-#EN-14920-
-#EN-14930-
+	for ((indMarco=0; indMarco<${numeroMarcosUsados[$ejecutandoinst]}; indMarco++)); do #Se crea la secuencia de páginas en memoria de cada proceso.
+		primerTiempoEntradaPagina[$ejecutandoinst,$indMarco]=$((${primerTiempoEntradaPagina[$ejecutandoinst,$indMarco]} + 1)) #Se inicializa a 0 el número de unidades de tiempo que hace que se cambió la clase por llegar al máximo de tiempo en una clase 2 o 3, o al máximo de frecuencia de uso.
 	done 
 
-#EN-14940-
-#EN-14950-
-#EN-14960-
-#EN-14970-
-#EN-14980-
-#EN-14990-
-#EN-15000-
-#EN-15010-
+	if [[ ${numeroPaginasUsadasProceso[$ejecutandoinst]} -lt ${tiempoEjecucion[$ejecutandoinst]} ]]; then #Si aún quedan páginas por ejecutar de ese proceso.
+		primera_pagina=${paginasDefinidasTotal[$ejecutandoinst,${numeroPaginasUsadasProceso[$ejecutandoinst]}]} #Se determina la primera página de la secuencia de páginas pendientes.
+		numeroPaginasUsadasProceso[$ejecutandoinst]=$((${numeroPaginasUsadasProceso[$ejecutandoinst]} + 1)) #Número de páginas usadas en el proceso en ejecución. Aumenta en todas las unidades de ejecución del proceso. 
+		paginaAUsar[$ejecutandoinst]=${paginasDefinidasTotal[$ejecutandoinst,$((${numeroPaginasUsadasProceso[$ejecutandoinst]}))]} #Siguiente página, pendiente de ejecutar.
+		if [[ ${numeroMarcosUsados[$ejecutandoinst]} -lt ${memoria[$ejecutandoinst]} ]]; then #Si el número de marcos usados es menor que el tamaño de la memoria asociada al proceso.
+			x=0 #Define si encuentra o no la página en paginasEnMemoriaProceso
+			for buscar_primera_pagina in "${!paginasEnMemoriaProceso[@]}"; do #Localiza en qué posición encuentra la página en paginasEnMemoriaProceso (da la posición, pero no la variable en el array).
+				if [[ ${paginasEnMemoriaProceso[$buscar_primera_pagina]} -eq $primera_pagina ]]; then #Esta línea es para cuando usamos la posición del dato y no su valor. Si la página está en memoria define x=1.
 					x=1
 				fi 
 			done
-#EN-15020-
-#EN-15030-
-#EN-15040-
-#EN-15050-
-#EN-15060-
-#EN-15070-
+			if [[ $x -eq 1 && $((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) -ne 0 ]]; then #USO DE PÁGINA - Si la página está en memoria, y si no es la primera página a usar para evitar la inicialización de la variable paginasEnMemoriaTotal[$ejecutandoinst,ordinal}] a 0.
+				for indMarcoMem in "${!paginasEnMemoriaProceso[@]}"; do #Localiza en qué posición encuentra el dato (da la posición, pero no la variable en el array).
+					if [[ ${paginasEnMemoriaProceso[$indMarcoMem]} -eq $primera_pagina ]]; then #Localiza en qué posición encuentra la página (j). 
+						ResuPunteroMarcoUsado[$ejecutandoinst,$reloj]=$indMarcoMem #Índice que apunta al marco con la página que acaba de ser usada (ya exitente anteriormente). 
+						ResuPaginaOrdinalAcumulado[$ejecutandoinst,$indMarcoMem,$reloj]=$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso.
+						if [[ $seleccionAlgoritmoPaginacion -eq 8 || $seleccionAlgoritmoPaginacion -eq 9 ]]; then #NFU-MFU/NFU-LFU
 							if [[ ${ResuFrecuenciaAcumulado[$ejecutandoinst,$indMarcoMem,${indiceResuPaginaAcumulado[$ejecutandoinst]}]} -lt $seleccionAlgoritmoPaginacion_frecuencia_valor ]]; then 
-#EN-15080-
+								ResuFrecuenciaAcumulado[$ejecutandoinst,$indMarcoMem,$reloj]=$((${ResuFrecuenciaAcumulado[$ejecutandoinst,$indMarcoMem,${indiceResuPaginaAcumulado[$ejecutandoinst]}]} + 1)) #Se lee el dato la frecuencia de la página que estaba en un marco en el instante anterior en el que se ha ejecutado este proceso y se suma 1.  
 							else
-#EN-15090-
+								ResuFrecuenciaAcumulado[$ejecutandoinst,$indMarcoMem,$reloj]=$((${ResuFrecuenciaAcumulado[$ejecutandoinst,$indMarcoMem,${indiceResuPaginaAcumulado[$ejecutandoinst]}]})) #Se lee el dato la frecuencia de la página que estaba en un marco en el instante anterior en el que se ha ejecutado este proceso y se suma 1.
 							fi
-#EN-15100-
-#EN-15110-
-#EN-15120-
-#EN-15130-
+						elif [[ $seleccionAlgoritmoPaginacion -eq 6 || $seleccionAlgoritmoPaginacion -eq 7 ]]; then #MFU/LFU
+							ResuFrecuenciaAcumulado[$ejecutandoinst,$indMarcoMem,$reloj]=$((${ResuFrecuenciaAcumulado[$ejecutandoinst,$indMarcoMem,${indiceResuPaginaAcumulado[$ejecutandoinst]}]} + 1)) #Se lee el dato la frecuencia de la página que estaba en un marco en el instante anterior en el que se ha ejecutado este proceso y se suma 1.  
+						elif [[ $seleccionAlgoritmoPaginacion -eq 10 || $seleccionAlgoritmoPaginacion -eq 11 ]]; then #NFU-MFU/NFU-LFU con clases
+							ResuFrecuenciaAcumulado[$ejecutandoinst,$indMarcoMem,$reloj]=$((${ResuFrecuenciaAcumulado[$ejecutandoinst,$indMarcoMem,${indiceResuPaginaAcumulado[$ejecutandoinst]}]} + 1)) #Se lee el dato la frecuencia de la página que estaba en un marco en el instante anterior en el que se ha ejecutado este proceso y se suma 1.  
 							directions_AlgPagFrecUsoRec_marco_pagina_referenciada[$ejecutandoinst,$indMarcoMem]=1
-#EN-15140-
-#EN-15150-
-#EN-15160-
-#EN-15170-
+							ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoMem]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoMem]} + 1)) #Resumen - Índices: (proceso, marco, ordinal del tiempo de ejecución (página)). Dato: Valor de la "frecuencia/tiempo desde su último uso" para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación
+							usoMismaPagina=0 #Se usa una página que ya estaba en memoria (0) y, por tanto, no es el resultado de un fallo de página (1).
+							#Si las páginas tienen una frecuencia de uso mayor que la frecuencia máxima $seleccionAlgoritmoPaginacion_clases_frecuencia_valor
+							if [[ ${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoMem]} -gt $seleccionAlgoritmoPaginacion_clases_frecuencia_valor ]]; then # se comprueba que no lleve más de un tiempo $seleccionAlgoritmoPaginacion_clases_valor. Si lo supera se comprueba que no sea en la misma clase 2 o 3.
 								ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoMem]=$seleccionAlgoritmoPaginacion_clases_frecuencia_valor
 							fi
 						fi
-#EN-15180-
-#EN-15190-
-#EN-15200-
+						indiceResuPaginaAcumulado[$ejecutandoinst]=$reloj #Guarda el índice de la última modificación de datos por no usar el reloj en todos sus instantes sino sólo en los que se ejecuta este proceso. También se usa para las frecuencias.
+						if [[ ${numeroMarcosUsados[$ejecutandoinst]} -lt ${memoria[$ejecutandoinst]} ]]; then #Si el número de páginas en memoria del proceso es menor que el tamaño de la memoria del proceso. 
+							ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]=${numeroMarcosUsados[$ejecutandoinst]} #Sumaría 1 al número de marco sobre el que se hará el fallo de página porque aún hay marcos libres, pero no lo suma porque el número de marcos usados no empezará en 0 sino en 1, mientras que las variables suelene empezar en 0. 
 						fi
-#EN-15210-
-#EN-15220-
+						if [[ $seleccionAlgoritmoPaginacion -eq 10 || $seleccionAlgoritmoPaginacion -eq 11 ]]; then #NFU con clases sobre MFU/LFU
+							gestionAlgoritmoPagAlgPagRecNRU_Referenciado_Modificado $indMarcoMem $((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) #Se recalculan las clases NRU de las páginas de cada proceso, dependiendo de si han sido referenciadas y/o modificadas. Se envía: marco + ordinal_página
 						fi
 					fi
 				done
-#EN-15230-
-#EN-15240-
-#EN-15250-
-#EN-15260-
-#EN-15270-
-#EN-15280-
-#EN-15290-
-#EN-15300-
-#EN-15310-
-#EN-15320-
-#EN-15330-
-#EN-15340-
-#EN-15350-
-#EN-15360-
+			else #Si NO está en memoria... FALLO DE PÁGINA
+				numeroMarcosUsados[$ejecutandoinst]=$((${numeroMarcosUsados[$ejecutandoinst]} + 1)) #Aumenta en 1 el número de marcos usados. Sólo aumenta cuando se usa un nuevo marco y no en todas las unidades de ejecución del proceso. Debe ser la última línea dentro del if paradejarlo preparado para su siguiente uso como variable.
+				ResuPunteroMarcoUsado[$ejecutandoinst,$reloj]=$(($((${numeroMarcosUsados[$ejecutandoinst]} - 1)))) #Índice que apunta al marco con la página que acaba de ser incluida (ocupa un espacio ya utilizado anteriormente por otra página). Sería -1 porque numeroMarcosUsados empieza a contar en 1.
+				paginasEnMemoriaProceso[$((${numeroMarcosUsados[$ejecutandoinst]} - 1))]=$primera_pagina #... la página se añade a la secuencia de páginas del proceso en ejecución en memoria.
+				paginasEnMemoriaTotal[$ejecutandoinst,$((${numeroMarcosUsados[$ejecutandoinst]} - 1))]=$primera_pagina #... y la página se añade a la secuencia de páginas de ese proceso junto con el resto de páginas del resto de procesos residentes en memoria (Índices:Proceso, Páginas). Sale de forma calculada de paginasDefinidasTotal y su orden es el establecido tras los fallos de paginación.
+				contadorAlgPagFallosTotalesProcesos[$ejecutandoinst]=$((contadorAlgPagFallosTotalesProcesos[$ejecutandoinst] + 1)) #Contador de fallos de página totales de cada proceso.
+				((contadorAlgPagFallosProcesoAcumulado[$ejecutandoinst]++)) #Contador de fallos totales de cada proceso
+				ResuPaginaAcumulado[$ejecutandoinst,$((${numeroMarcosUsados[$ejecutandoinst]} - 1)),$reloj]=$primera_pagina #Se añade el dato de la página que acaba de ser incluida en un marco.
+				ResuPaginaOrdinalAcumulado[$ejecutandoinst,$((${numeroMarcosUsados[$ejecutandoinst]} - 1)),$reloj]=$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso.
+				ResuFrecuenciaAcumulado[$ejecutandoinst,$((${numeroMarcosUsados[$ejecutandoinst]} - 1)),$reloj]=1 # Se añade el dato de la frecuencia de la página que acaba de ser incluida en un marco.
+				ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$((${numeroMarcosUsados[$ejecutandoinst]} - 1))]=1 #Resumen - Índices: (proceso, marco). Dato: Valor de la "frecuencia/tiempo desde su último uso" para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación
+				ResuFallosPaginaProceso[$ejecutandoinst,$reloj]=$primera_pagina #Y se añade la página a la secuencia de fallos. 
+				ResuFallosMarcoProceso[$ejecutandoinst,$reloj]=$((${numeroMarcosUsados[$ejecutandoinst]} - 1)) #Y se añade el marco a la secuencia de fallos. 
+				indiceResuPaginaAcumulado[$ejecutandoinst]=$reloj #Guarda el índice de la última modificación de datos por no usar el reloj en todos sus instantes sino sólo en los que se usa este proceso. También se usa para las frecuencias.
 				directions_AlgPagFrecUsoRec_marco_pagina_referenciada[$ejecutandoinst,$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1))]=0
 				if [[ $seleccionAlgoritmoPaginacion -eq 10 || $seleccionAlgoritmoPaginacion -eq 11 ]]; then
-#EN-15370-
-#EN-15380-
-#EN-15390-
+					primerTiempoEntradaPagina[$ejecutandoinst,${ResuPunteroMarcoUsado[$ejecutandoinst,$reloj]}]=0 #Se inicializa a 0 el número de unidades de tiempo que hace que se cambió la clase por llegar al máximo de tiempo en una clase 2 o 3 o al máximo de frecuencia de uso.
+					usoMismaPagina=1 #Resultado de un fallo de página (1) y no por usar una página ya existente en memoria (0).
+					gestionAlgoritmoPagAlgPagRecNRU_Referenciado_Modificado $((${numeroMarcosUsados[$ejecutandoinst]} - 1)) $((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) #Se recalculan las clases NRU de las páginas de cada proceso, dependiendo de si han sido referenciadas y/o modificadas. Se envía: marco + ordinal_página
 				fi
-#EN-15400-
-#EN-15410-
-#EN-15420-
+				if [[ ${numeroMarcosUsados[$ejecutandoinst]} -ge ${memoria[$ejecutandoinst]} ]]; then #Sólo es necesario si se llenan todos los marcos asociados al proceso. 
+					if [[ $seleccionAlgoritmoPaginacion -eq 6 || $seleccionAlgoritmoPaginacion -eq 8 ]]; then #MFU
+						max_AlgPagFrecRec_FrecRec[$ejecutandoinst]=-1 #Se recalcula la mayor frecuencia, aunque parezca no necesario hacerlo, por si es necesario para su impresión.
 						max_AlgPagFrecRec_Position[$ejecutandoinst]=0
 						for (( indMaxAlgPag=0; indMaxAlgPag<${memoria[$ejecutandoinst]}; indMaxAlgPag++ )); do
-#EN-15430-
-#EN-15440-
-#EN-15450-
+							if [[ ${ResuFrecuenciaAcumulado[$ejecutandoinst,$indMaxAlgPag,$reloj]} -gt ${max_AlgPagFrecRec_FrecRec[$ejecutandoinst]} ]]; then #Localiza en qué posición encuentra la página. 
+								max_AlgPagFrecRec_FrecRec[$ejecutandoinst]=${ResuFrecuenciaAcumulado[$ejecutandoinst,$indMaxAlgPag,$reloj]} #Mayor frecuencia encontrada.
+								max_AlgPagFrecRec_Position[$ejecutandoinst]=$indMaxAlgPag #Posición del marco con la mayor frecuencia.
 							fi
-#EN-15460-
-#EN-15470-
-#EN-15480-
+						done #Y sobre esa localización se hace el fallo de página
+					elif [[ $seleccionAlgoritmoPaginacion -eq 10 ]]; then #NFU con clases sobre MFU
+						max_AlgPagFrecRec_FrecRec[$ejecutandoinst]=-1 #Se recalcula la mayor frecuencia, aunque parezca no necesario hacerlo, por si es necesario para su impresión.
 						max_AlgPagFrecRec_Position[$ejecutandoinst]=0
 						ultimasPaginasAConsiderar=$(($((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) - $seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado))
 						paginasPendientesEjecutar=$((${ejecucion[$ejecutandoinst]}-$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1))))
-#EN-15490-
-#EN-15500-
+						if [[ $ultimasPaginasAConsiderar -ge 0 ]]; then #Sin se han usado muchas páginas. sólo se consideran las últimas definidas mediante seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado.
+							limite_j=$ultimasPaginasAConsiderar #QUEDA PENDIENTE USARLO PARA RESTAR LA FRECUENCIA ACTUAL DE LA QUE TENÍA EN AQUEL MOMENTO.
 						else
 							limite_j=0
 						fi
-#EN-15510-
-#EN-15520-
-#EN-15530-
+						gestionAlgoritmoPagAlgPagRecNRU_Paginas_Clases_Max $limite_j #Se calcula el máximo de las frecuencias de las páginas de cada proceso en NFU (max_AlgPagFrecRec_FrecRec y max_AlgPagFrecRec_Position), por clases empezando por 0.
+					elif [[ $seleccionAlgoritmoPaginacion -eq 7 || $seleccionAlgoritmoPaginacion -eq 9 ]]; then #LFU
+						min_AlgPagFrecRec_FrecRec[$ejecutandoinst]=${ResuFrecuenciaAcumulado[$ejecutandoinst,0,$reloj]} #Se recalcula la menor frecuencia, aunque parezca no necesario hacerlo, por si es necesario para su impresión. Y se comienza con la frecuencia de la primera página en el primer marco asociado al proceso.
 						min_AlgPagFrecRec_Position[$ejecutandoinst]=0
 						for (( indMinAlgPag=0; indMinAlgPag<${memoria[$ejecutandoinst]}; indMinAlgPag++ )); do
-#EN-15540-
-#EN-15550-
-#EN-15560-
+							if [[ ${ResuFrecuenciaAcumulado[$ejecutandoinst,$indMinAlgPag,$reloj]} -lt ${min_AlgPagFrecRec_FrecRec[$ejecutandoinst]} ]]; then #Localiza en qué posición encuentra la página. 
+								min_AlgPagFrecRec_FrecRec[$ejecutandoinst]=${ResuFrecuenciaAcumulado[$ejecutandoinst,$indMinAlgPag,$reloj]} #Menor frecuencia encontrada.
+								min_AlgPagFrecRec_Position[$ejecutandoinst]=$indMinAlgPag #Posición del marco con la menor frecuencia.
 							fi
-#EN-15570-
+						done #Y sobre esa localización se hace el fallo de página
 					
-#EN-15580-
-#EN-15590-
+					elif [[ $seleccionAlgoritmoPaginacion -eq 11 ]]; then #NFU con clases sobre MFU
+						min_AlgPagFrecRec_FrecRec[$ejecutandoinst]=${ResuFrecuenciaAcumulado[$ejecutandoinst,0,$reloj]} #Se recalcula la menor frecuencia, aunque parezca no necesario hacerlo, por si es necesario para su impresión. Y se comienza con la frecuencia de la primera página en el primer marco asociado al proceso.
 						min_AlgPagFrecRec_Position[$ejecutandoinst]=0
 						ultimasPaginasAConsiderar=$(($((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) - $seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado))
 						paginasPendientesEjecutar=$((${ejecucion[$ejecutandoinst]}-$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1))))
-#EN-15600-
+						if [[ $ultimasPaginasAConsiderar -ge 0 ]]; then #Sin se han usado muchas páginas. sólo se consideran las últimas definidas mediante seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado.
 							limite_j=$ultimasPaginasAConsiderar
 						else
 							limite_j=0
 						fi
-#EN-15610-
+						gestionAlgoritmoPagAlgPagRecNRU_Paginas_Clases_Min $limite_j #Se calcula el máximo de las frecuencias de las páginas de cada proceso en NFU (max_AlgPagFrecRec_FrecRec y max_AlgPagFrecRec_Position), por clases empezando por 0.
 					fi
 				fi
-#EN-15620-
-#EN-15630-
+				if [[ ${numeroMarcosUsados[$ejecutandoinst]} -lt ${memoria[$ejecutandoinst]} ]]; then #Si el número de páginas en memoria del proceso es menor que el tamaño de la memoria del proceso. 
+					ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]=${numeroMarcosUsados[$ejecutandoinst]} #Suma 1 al número de marco sobre el que se hará el fallo de página porque aún hay marcos libres. 
 				else
-#EN-15640-
-#EN-15650-
-#EN-15660-
-#EN-15670-
+					if [[ $seleccionAlgoritmoPaginacion -eq 6 || $seleccionAlgoritmoPaginacion -eq 8 || $seleccionAlgoritmoPaginacion -eq 10 ]]; then #MFU
+						ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]=${max_AlgPagFrecRec_Position[$ejecutandoinst]} #El marco siguiente para el fallo de página será el que tiene la máxima frecuencia.  
+					elif [[ $seleccionAlgoritmoPaginacion -eq 7 || $seleccionAlgoritmoPaginacion -eq 9 || $seleccionAlgoritmoPaginacion -eq 11 ]]; then #LFU
+						ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]=${min_AlgPagFrecRec_Position[$ejecutandoinst]} #El marco siguiente para el fallo de página será el que tiene la mínima frecuencia.  
 					fi
 				fi
 			fi
-#EN-15680-
-#EN-15690-
-#EN-15700-
-#EN-15710-
+		else #Si el número de marcos usados es mayor o igual que el tamaño de la memoria asociada al proceso.
+			x=0 #Define si encuentra o no la página en paginasEnMemoriaProceso.
+			for buscar_primera_pagina in "${!paginasEnMemoriaProceso[@]}"; do #Localiza en qué posición encuentra la página (da la posición pero no la variable en el array).
+				if [[ ${paginasEnMemoriaProceso[$buscar_primera_pagina]} -eq $primera_pagina ]]; then #Si la página está en memoria define x=1.
 					x=1
 				fi 
 			done
-#EN-15720-
-#EN-15730-
+			if [[ $x -eq 1 ]]; then #Si la página está en memoria...USO DE PÁGINA
+				for indMarcoMem in "${!paginasEnMemoriaProceso[@]}"; do #Localiza en qué posición encuentra la página (da la posición pero no la variable en el array).
 					if [[ ${paginasEnMemoriaProceso[$indMarcoMem]} -eq $primera_pagina ]]; then
-#EN-15740-
-#EN-15750-
-#EN-15760-
+						ResuPunteroMarcoUsado[$ejecutandoinst,$reloj]=$indMarcoMem #Índice que apunta al marco con la página que acaba de ser usada (ya exitente anteriormente). 
+						ResuPaginaOrdinalAcumulado[$ejecutandoinst,$indMarcoMem,$reloj]=$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso.
+						if [[ $seleccionAlgoritmoPaginacion -eq 8 || $seleccionAlgoritmoPaginacion -eq 9 ]]; then #NFU-MFU/NFU-LFU
 							if [[ ${ResuFrecuenciaAcumulado[$ejecutandoinst,$indMarcoMem,${indiceResuPaginaAcumulado[$ejecutandoinst]}]} -lt $seleccionAlgoritmoPaginacion_frecuencia_valor ]]; then 
-#EN-15770-
+								ResuFrecuenciaAcumulado[$ejecutandoinst,$indMarcoMem,$reloj]=$((${ResuFrecuenciaAcumulado[$ejecutandoinst,$indMarcoMem,${indiceResuPaginaAcumulado[$ejecutandoinst]}]} + 1)) #Se lee el dato la frecuencia de la página que estaba en un marco en el instante anterior en el que se ha ejecutado este proceso y se suma 1.
 							else
-#EN-15780-
+								ResuFrecuenciaAcumulado[$ejecutandoinst,$indMarcoMem,$reloj]=$((${ResuFrecuenciaAcumulado[$ejecutandoinst,$indMarcoMem,${indiceResuPaginaAcumulado[$ejecutandoinst]}]})) #Se lee el dato la frecuencia de la página que estaba en un marco en el instante anterior en el que se ha ejecutado este proceso y se suma 1.
 							fi
-#EN-15790-
-#EN-15800-
-#EN-15810-
-#EN-15820-
+						elif [[ $seleccionAlgoritmoPaginacion -eq 6 || $seleccionAlgoritmoPaginacion -eq 7 ]]; then #MFU/LFU
+							ResuFrecuenciaAcumulado[$ejecutandoinst,$indMarcoMem,$reloj]=$((${ResuFrecuenciaAcumulado[$ejecutandoinst,$indMarcoMem,${indiceResuPaginaAcumulado[$ejecutandoinst]}]} + 1)) #Se lee el dato la frecuencia de la página que estaba en un marco en el instante anterior en el que se ha ejecutado este proceso y se suma 1.
+						elif [[ $seleccionAlgoritmoPaginacion -eq 10 || $seleccionAlgoritmoPaginacion -eq 11 ]]; then #NFU-MFU/NFU-LFU con clases
+							ResuFrecuenciaAcumulado[$ejecutandoinst,$indMarcoMem,$reloj]=$((${ResuFrecuenciaAcumulado[$ejecutandoinst,$indMarcoMem,${indiceResuPaginaAcumulado[$ejecutandoinst]}]} + 1)) #Se lee el dato la frecuencia de la página que estaba en un marco en el instante anterior en el que se ha ejecutado este proceso y se suma 1.  
 							directions_AlgPagFrecUsoRec_marco_pagina_referenciada[$ejecutandoinst,$indMarcoMem]=1
-#EN-15830-
-#EN-15840-
-#EN-15850-
-#EN-15860-
+							ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoMem]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoMem]} + 1)) #Resumen - Índices: (proceso, marco). Dato: Valor de la "frecuencia/tiempo desde su último uso" para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación
+							usoMismaPagina=0 #Se usa una página que ya estaba en memoria (0) y, por tanto, no es el resultado de un fallo de página (1).
+							#Si las páginas tienen una frecuencia de uso mayor que la frecuencia máxima $seleccionAlgoritmoPaginacion_clases_frecuencia_valor
+							if [[ ${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoMem]} -gt $seleccionAlgoritmoPaginacion_clases_frecuencia_valor ]]; then # se comprueba que no lleve más de un tiempo $seleccionAlgoritmoPaginacion_clases_valor. Si lo supera se comprueba que no sea en la misma clase 2 o 3.
 								ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoMem]=$seleccionAlgoritmoPaginacion_clases_frecuencia_valor
 							fi
-#EN-15870-
+							gestionAlgoritmoPagAlgPagRecNRU_Referenciado_Modificado $indMarcoMem $((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) #Se recalculan las clases NRU de las páginas de cada proceso, dependiendo de si han sido referenciadas y/o modificadas. Se envía: marco + ordinal_página
 						fi
-#EN-15880-
-#EN-15890-
+						if [[ $seleccionAlgoritmoPaginacion -eq 6 || $seleccionAlgoritmoPaginacion -eq 8 ]]; then #MFU
+							max_AlgPagFrecRec_FrecRec[$ejecutandoinst]=-1 #Se recalcula la mayor frecuencia, aunque parezca no necesario hacerlo, por si es necesario para su impresión.
 							max_AlgPagFrecRec_Position[$ejecutandoinst]=0
 							for (( indMaxAlgPag=0; indMaxAlgPag<${memoria[$ejecutandoinst]}; indMaxAlgPag++ )); do
-#EN-15900-
-#EN-15910-
-#EN-15920-
+								if [[ ${ResuFrecuenciaAcumulado[$ejecutandoinst,$indMaxAlgPag,$reloj]} -gt ${max_AlgPagFrecRec_FrecRec[$ejecutandoinst]} ]]; then #Localiza en qué posición encuentra la página.
+									max_AlgPagFrecRec_FrecRec[$ejecutandoinst]=${ResuFrecuenciaAcumulado[$ejecutandoinst,$indMaxAlgPag,$reloj]} #Mayor frecuencia encontrada.
+									max_AlgPagFrecRec_Position[$ejecutandoinst]=$indMaxAlgPag #Posición del marco con la mayor frecuencia.
 								fi
-#EN-15930-
-#EN-15940-
+							done #Y sobre esa localización se hace el fallo de página
+							ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]=${max_AlgPagFrecRec_Position[$ejecutandoinst]} #El marco siguiente para el fallo de página será el que tiene la máxima frecuencia.  
 				
-#EN-15950-
-#EN-15960-
+						elif [[ $seleccionAlgoritmoPaginacion -eq 10 ]]; then #NFU con clases sobre MFU
+							max_AlgPagFrecRec_FrecRec[$ejecutandoinst]=-1 #Se recalcula la mayor frecuencia, aunque parezca no necesario hacerlo, por si es necesario para su impresión.
 							max_AlgPagFrecRec_Position[$ejecutandoinst]=0
 							ultimasPaginasAConsiderar=$(($((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) - $seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado))
 							paginasPendientesEjecutar=$((${ejecucion[$ejecutandoinst]}-$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1))))
-#EN-15970-
+							if [[ $ultimasPaginasAConsiderar -ge 0 ]]; then #Sin se han usado muchas páginas. sólo se consideran las últimas definidas mediante seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado.
 								limite_j=$ultimasPaginasAConsiderar
 							else
 								limite_j=0
 							fi
-#EN-15980-
-#EN-15990-
-#EN-16000-
-#EN-16010-
+							gestionAlgoritmoPagAlgPagRecNRU_Paginas_Clases_Max $limite_j #Se calcula el máximo de las frecuencias de las páginas de cada proceso en NFU (max_AlgPagFrecRec_FrecRec y max_AlgPagFrecRec_Position), por clases empezando por 0.
+							ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]=${max_AlgPagFrecRec_Position[$ejecutandoinst]} #El marco siguiente para el fallo de página será el que tiene la máxima frecuencia.  
+						elif [[ $seleccionAlgoritmoPaginacion -eq 7 || $seleccionAlgoritmoPaginacion -eq 9 ]]; then #LFU
+							min_AlgPagFrecRec_FrecRec[$ejecutandoinst]=${ResuFrecuenciaAcumulado[$ejecutandoinst,0,$reloj]} #Se recalcula la menor frecuencia, aunque parezca no necesario hacerlo, por si es necesario para su impresión. Y se comienza con la frecuencia de la primera página en el primer marco asociado al proceso.
 							min_AlgPagFrecRec_Position[$ejecutandoinst]=0
 							for (( indMinAlgPag=0; indMinAlgPag<${memoria[$ejecutandoinst]}; indMinAlgPag++ )); do
-#EN-16020-
-#EN-16030-
-#EN-16040-
+								if [[ ${ResuFrecuenciaAcumulado[$ejecutandoinst,$indMinAlgPag,$reloj]} -lt ${min_AlgPagFrecRec_FrecRec[$ejecutandoinst]} ]]; then #Localiza en qué posición encuentra la página.
+									min_AlgPagFrecRec_FrecRec[$ejecutandoinst]=${ResuFrecuenciaAcumulado[$ejecutandoinst,$indMinAlgPag,$reloj]} #Menor frecuencia encontrada.
+									min_AlgPagFrecRec_Position[$ejecutandoinst]=$indMinAlgPag #Posición del marco con la menor frecuencia.
 								fi
-#EN-16050-
-#EN-16060-
+							done #Y sobre esa localización se hace el fallo de página
+							ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]=${min_AlgPagFrecRec_Position[$ejecutandoinst]} #El marco siguiente para el fallo de página será el que tiene la mínima frecuencia.  
 				
-#EN-16070-
-#EN-16080-
+						elif [[ $seleccionAlgoritmoPaginacion -eq 11 ]]; then #NFU con clases sobre MFU
+							min_AlgPagFrecRec_FrecRec[$ejecutandoinst]=${ResuFrecuenciaAcumulado[$ejecutandoinst,0,$reloj]} #Se recalcula la menor frecuencia, aunque parezca no necesario hacerlo, por si es necesario para su impresión. Y se comienza con la frecuencia de la primera página en el primer marco asociado al proceso.
 							min_AlgPagFrecRec_Position[$ejecutandoinst]=0
 							ultimasPaginasAConsiderar=$(($((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) - $seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado))
 							paginasPendientesEjecutar=$((${ejecucion[$ejecutandoinst]}-$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1))))
-#EN-16090-
+							if [[ $ultimasPaginasAConsiderar -ge 0 ]]; then #Sin se han usado muchas páginas. sólo se consideran las últimas definidas mediante seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado.
 								limite_j=$ultimasPaginasAConsiderar
 							else
 								limite_j=0
 							fi
-#EN-16100-
-#EN-16110-
+							gestionAlgoritmoPagAlgPagRecNRU_Paginas_Clases_Min $limite_j #Se calcula el máximo de las frecuencias de las páginas de cada proceso en NFU (max_AlgPagFrecRec_FrecRec y max_AlgPagFrecRec_Position), por clases empezando por 0.
+							ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]=${min_AlgPagFrecRec_Position[$ejecutandoinst]} #El marco siguiente para el fallo de página será el que tiene la mínima frecuencia.  
 						fi
-#EN-16120-
+						indiceResuPaginaAcumulado[$ejecutandoinst]=$reloj #Guarda el índice de la última modificación de datos por no usar el reloj en todos sus instantes sino sólo en los que se usa este proceso. También se usa para las frecuencias.
 					fi
 				done
-#EN-16130-
-#EN-16140-
-#EN-16150-
-#EN-16160-
-#EN-16170-
+			else #Y si NO está en la memoria...FALLO DE PÁGINA. Se localiza el que tenga el primer valor del mayor contador de frecuencia por ser AlgPagFrecMFU.
+				if [[ $seleccionAlgoritmoPaginacion -eq 6 || $seleccionAlgoritmoPaginacion -eq 8 ]]; then #MFU
+					ResuPunteroMarcoUsado[$ejecutandoinst,$reloj]=${max_AlgPagFrecRec_Position[$ejecutandoinst]} #Índice que apunta al marco con la página que acaba de ser incluida (ocupa un espacio ya utilizado anteriormente por otra página). 
+					paginasEnMemoriaProceso[${max_AlgPagFrecRec_Position[$ejecutandoinst]}]="$primera_pagina" #Se hace el fallo de página sobre el primer marco con la mayor frecuencia, sustituyendo la página.
+					paginasEnMemoriaTotal[$ejecutandoinst,${max_AlgPagFrecRec_Position[$ejecutandoinst]}]=$primera_pagina #Páginas residentes en memoria de todos los Procesos (Índices:Proceso, Páginas). Sale de forma calculada de paginasDefinidasTotal y su orden es el establecido tras los fallos de paginación.
 
-#EN-16180-
-#EN-16190-
-#EN-16200-
-#EN-16210-
+				elif [[ $seleccionAlgoritmoPaginacion -eq 10 ]]; then #NFU con clases sobre MFU
+					ResuPunteroMarcoUsado[$ejecutandoinst,$reloj]=${max_AlgPagFrecRec_Position[$ejecutandoinst]} #Índice que apunta al marco con la página que acaba de ser incluida (ocupa un espacio ya utilizado anteriormente por otra página). 
+					paginasEnMemoriaProceso[${max_AlgPagFrecRec_Position[$ejecutandoinst]}]="$primera_pagina" #Se hace el fallo de página sobre el primer marco con la mayor frecuencia, sustituyendo la página.
+					paginasEnMemoriaTotal[$ejecutandoinst,${max_AlgPagFrecRec_Position[$ejecutandoinst]}]=$primera_pagina #Páginas residentes en memoria de todos los Procesos (Índices:Proceso, Páginas). Sale de forma calculada de paginasDefinidasTotal y su orden es el establecido tras los fallos de paginación.
 					directions_AlgPagFrecUsoRec_marco_pagina_referenciada[$ejecutandoinst,${max_AlgPagFrecRec_Position[$ejecutandoinst]}]=0
-#EN-16220-
-#EN-16230-
-#EN-16240-
-#EN-16250-
+				elif [[ $seleccionAlgoritmoPaginacion -eq 7 || $seleccionAlgoritmoPaginacion -eq 9 ]]; then #LFU
+					ResuPunteroMarcoUsado[$ejecutandoinst,$reloj]=${min_AlgPagFrecRec_Position[$ejecutandoinst]} #Índice que apunta al marco con la página que acaba de ser incluida (ocupa un espacio ya utilizado anteriormente por otra página). 
+					paginasEnMemoriaProceso[${min_AlgPagFrecRec_Position[$ejecutandoinst]}]="$primera_pagina" #Se hace el fallo de página sobre el primer marco con la menor frecuencia, sustituyendo la página.
+					paginasEnMemoriaTotal[$ejecutandoinst,${min_AlgPagFrecRec_Position[$ejecutandoinst]}]=$primera_pagina #Páginas residentes en memoria de todos los Procesos (Índices:Proceso, Páginas). Sale de forma calculada de paginasDefinidasTotal y su orden es el establecido tras los fallos de paginación.
 				
-#EN-16260-
-#EN-16270-
-#EN-16280-
-#EN-16290-
+				elif [[ $seleccionAlgoritmoPaginacion -eq 11 ]]; then #NFU con clases sobre MFU
+					ResuPunteroMarcoUsado[$ejecutandoinst,$reloj]=${min_AlgPagFrecRec_Position[$ejecutandoinst]} #Índice que apunta al marco con la página que acaba de ser incluida (ocupa un espacio ya utilizado anteriormente por otra página). 
+					paginasEnMemoriaProceso[${min_AlgPagFrecRec_Position[$ejecutandoinst]}]="$primera_pagina" #Se hace el fallo de página sobre el primer marco con la menor frecuencia, sustituyendo la página.
+					paginasEnMemoriaTotal[$ejecutandoinst,${min_AlgPagFrecRec_Position[$ejecutandoinst]}]=$primera_pagina #Páginas residentes en memoria de todos los Procesos (Índices:Proceso, Páginas). Sale de forma calculada de paginasDefinidasTotal y su orden es el establecido tras los fallos de paginación.
 					directions_AlgPagFrecUsoRec_marco_pagina_referenciada[$ejecutandoinst,${min_AlgPagFrecRec_Position[$ejecutandoinst]}]=0
 				fi
-#EN-16300-
-#EN-16310-
-#EN-16320-
-#EN-16330-
-#EN-16340-
-#EN-16350-
-#EN-16360-
-#EN-16370-
-#EN-16380-
-#EN-16390-
-#EN-16400-
-#EN-16410-
-#EN-16420-
-#EN-16430-
+				contadorAlgPagFallosTotalesProcesos[$ejecutandoinst]=$((contadorAlgPagFallosTotalesProcesos[$ejecutandoinst] + 1)) #Aumenta en una unidad el número de fallos de página del proceso.
+				((contadorAlgPagFallosProcesoAcumulado[$ejecutandoinst]++)) #Contador de fallos totales de cada proceso
+				if [[ $seleccionAlgoritmoPaginacion -eq 6 || $seleccionAlgoritmoPaginacion -eq 8 || $seleccionAlgoritmoPaginacion -eq 10 ]]; then #MFU
+					ResuPaginaAcumulado[$ejecutandoinst,${max_AlgPagFrecRec_Position[$ejecutandoinst]},$reloj]=$primera_pagina # Se añade el dato de la página que acaba de ser incluida en un marco.
+					ResuPaginaOrdinalAcumulado[$ejecutandoinst,${max_AlgPagFrecRec_Position[$ejecutandoinst]},$reloj]=$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso.
+					ResuFrecuenciaAcumulado[$ejecutandoinst,${max_AlgPagFrecRec_Position[$ejecutandoinst]},$reloj]=1 #Como la página acaba de ser metida en el marco, se suma 1 a la frecuencia de la página. 
+					ResuFallosPaginaProceso[$ejecutandoinst,$reloj]=$primera_pagina #Y se añade la página a la secuencia de fallos. 
+					ResuFallosMarcoProceso[$ejecutandoinst,$reloj]=${max_AlgPagFrecRec_Position[$ejecutandoinst]} #Y se añade el marco a la secuencia de fallos. 
+					if [[ $seleccionAlgoritmoPaginacion -eq 10 ]]; then #NFU-MFU con clases					
+						ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,${max_AlgPagFrecRec_Position[$ejecutandoinst]}]=1 #Resumen - Índices: (proceso, marco). Dato: Valor de la "frecuencia/tiempo desde su último uso" para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación
+						primerTiempoEntradaPagina[$ejecutandoinst,${ResuPunteroMarcoUsado[$ejecutandoinst,$reloj]}]=0 #Se inicializa a 0 el número de unidades de tiempo que hace que se cambió la clase por llegar al máximo de tiempo en una clase 2 o 3 o al máximo de frecuencia de uso.
+						usoMismaPagina=1 #Resultado de un fallo de página (1) y no por usar una página ya existente en memoria (0).
+						gestionAlgoritmoPagAlgPagRecNRU_Referenciado_Modificado ${max_AlgPagFrecRec_Position[$ejecutandoinst]} $((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) #Se recalculan las clases NRU de las páginas de cada proceso, dependiendo de si han sido referenciadas y/o modificadas. Se envía: marco + ordinal_página
+						max_AlgPagFrecRec_FrecRec[$ejecutandoinst]=-1 #Se recalcula la mayor frecuencia, aunque parezca no necesario hacerlo, por si es necesario para su impresión.
 						max_AlgPagFrecRec_Position[$ejecutandoinst]=0
 						ultimasPaginasAConsiderar=$(($((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) - $seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado))
 						paginasPendientesEjecutar=$((${ejecucion[$ejecutandoinst]}-$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1))))
-#EN-16440-
+						if [[ $ultimasPaginasAConsiderar -ge 0 ]]; then #Sin se han usado muchas páginas. sólo se consideran las últimas definidas mediante seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado.
 							limite_j=$ultimasPaginasAConsiderar
 						else
 							limite_j=0
 						fi
-#EN-16450-
+						gestionAlgoritmoPagAlgPagRecNRU_Paginas_Clases_Max $limite_j #Se calcula el máximo de las frecuencias de las páginas de cada proceso en NFU (max_AlgPagFrecRec_FrecRec y max_AlgPagFrecRec_Position), por clases empezando por 0.
 					else
-#EN-16460-
+						max_AlgPagFrecRec_FrecRec[$ejecutandoinst]=-1 #Se recalcula la mayor frecuencia, aunque parezca no necesario hacerlo, por si es necesario para su impresión.
 						max_AlgPagFrecRec_Position[$ejecutandoinst]=0
 						for (( indMaxAlgPag=0; indMaxAlgPag<${memoria[$ejecutandoinst]}; indMaxAlgPag++ )); do
-#EN-16470-
-#EN-16480-
-#EN-16490-
+							if [[ ${ResuFrecuenciaAcumulado[$ejecutandoinst,$indMaxAlgPag,$reloj]} -gt ${max_AlgPagFrecRec_FrecRec[$ejecutandoinst]} ]]; then #Localiza en qué posición encuentra la página.
+								max_AlgPagFrecRec_FrecRec[$ejecutandoinst]=${ResuFrecuenciaAcumulado[$ejecutandoinst,$indMaxAlgPag,$reloj]} #Mayor frecuencia encontrada.
+								max_AlgPagFrecRec_Position[$ejecutandoinst]=$indMaxAlgPag #Posición del marco con la mayor frecuencia.
 							fi
-#EN-16500-
+						done #Y sobre esa localización se hace el fallo de página.
 					fi
-#EN-16510-
-#EN-16520-
-#EN-16530-
-#EN-16540-
-#EN-16550-
-#EN-16560-
-#EN-16570-
-#EN-16580-
-#EN-16590-
-#EN-16600-
-#EN-16610-
-#EN-16620-
-#EN-16630-
+					ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]=${max_AlgPagFrecRec_Position[$ejecutandoinst]} #El marco siguiente para el fallo de página será el que tiene la máxima frecuencia.  
+				elif [[ $seleccionAlgoritmoPaginacion -eq 7 || $seleccionAlgoritmoPaginacion -eq 9 || $seleccionAlgoritmoPaginacion -eq 11 ]]; then #LFU
+					ResuPaginaAcumulado[$ejecutandoinst,${min_AlgPagFrecRec_Position[$ejecutandoinst]},$reloj]=$primera_pagina # Se añade el dato de la página que acaba de ser incluida en un marco.
+					ResuPaginaOrdinalAcumulado[$ejecutandoinst,${min_AlgPagFrecRec_Position[$ejecutandoinst]},$reloj]=$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso.
+					ResuFrecuenciaAcumulado[$ejecutandoinst,${min_AlgPagFrecRec_Position[$ejecutandoinst]},$reloj]=1 #Como la página acaba de ser metida en el marco, se suma 1 a la frecuencia de la página. 
+					ResuFallosPaginaProceso[$ejecutandoinst,$reloj]=$primera_pagina #Y se añade la página a la secuencia de fallos. 
+					ResuFallosMarcoProceso[$ejecutandoinst,$reloj]=${min_AlgPagFrecRec_Position[$ejecutandoinst]} #Y se añade el marco a la secuencia de fallos. 
+					if [[ $seleccionAlgoritmoPaginacion -eq 11 ]]; then #NFU-LFU con clases
+						ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,${max_AlgPagFrecRec_Position[$ejecutandoinst]}]=1 #Resumen - Índices: (proceso, marco). Dato: Valor de la "frecuencia/tiempo desde su último uso" para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación
+						primerTiempoEntradaPagina[$ejecutandoinst,${ResuPunteroMarcoUsado[$ejecutandoinst,$reloj]}]=0 #Se inicializa a 0 el número de unidades de tiempo que hace que se cambió la clase por llegar al máximo de tiempo en una clase 2 o 3 o al máximo de frecuencia de uso.
+						usoMismaPagina=1 #Resultado de un fallo de página (1) y no por usar una página ya existente en memoria (0).
+						gestionAlgoritmoPagAlgPagRecNRU_Referenciado_Modificado ${min_AlgPagFrecRec_Position[$ejecutandoinst]} $((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) #Se recalculan las clases NRU de las páginas de cada proceso, dependiendo de si han sido referenciadas y/o modificadas. Se envía: marco + ordinal_página
+						min_AlgPagFrecRec_FrecRec[$ejecutandoinst]=${ResuFrecuenciaAcumulado[$ejecutandoinst,0,$reloj]} #Se recalcula la menor frecuencia, aunque parezca no necesario hacerlo, por si es necesario para su impresión. Y se comienza con la frecuencia de la primera página en el primer marco asociado al proceso.
 						min_AlgPagFrecRec_Position[$ejecutandoinst]=0
 						ultimasPaginasAConsiderar=$(($((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) - $seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado))
 						paginasPendientesEjecutar=$((${ejecucion[$ejecutandoinst]}-$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1))))
-#EN-16640-
+						if [[ $ultimasPaginasAConsiderar -ge 0 ]]; then #Sin se han usado muchas páginas. sólo se consideran las últimas definidas mediante seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado.
 							limite_j=$ultimasPaginasAConsiderar
 						else
 							limite_j=0
 						fi
-#EN-16650-
+						gestionAlgoritmoPagAlgPagRecNRU_Paginas_Clases_Min $limite_j #Se calcula el máximo de las frecuencias de las páginas de cada proceso en NFU (max_AlgPagFrecRec_FrecRec y max_AlgPagFrecRec_Position), por clases empezando por 0.
 					else
-#EN-16660-
+						min_AlgPagFrecRec_FrecRec[$ejecutandoinst]=${ResuFrecuenciaAcumulado[$ejecutandoinst,0,$reloj]} #Se recalcula la menor frecuencia, aunque parezca no necesario hacerlo, por si es necesario para su impresión. Y se comienza con la frecuencia de la primera página en el primer marco asociado al proceso.
 						min_AlgPagFrecRec_Position[$ejecutandoinst]=0
 						for (( indMinAlgPag=0; indMinAlgPag<${memoria[$ejecutandoinst]}; indMinAlgPag++ )); do
-#EN-16670-
-#EN-16680-
-#EN-16690-
+							if [[ ${ResuFrecuenciaAcumulado[$ejecutandoinst,$indMinAlgPag,$reloj]} -lt ${min_AlgPagFrecRec_FrecRec[$ejecutandoinst]} ]]; then #Localiza en qué posición encuentra la página.
+								min_AlgPagFrecRec_FrecRec[$ejecutandoinst]=${ResuFrecuenciaAcumulado[$ejecutandoinst,$indMinAlgPag,$reloj]} #Mayor frecuencia encontrada.
+								min_AlgPagFrecRec_Position[$ejecutandoinst]=$indMinAlgPag #Posición del marco con la menor frecuencia.
 							fi
-#EN-16700-
+						done #Y sobre esa localización se hace el fallo de página.
 					fi
-#EN-16710-
+					ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]=${min_AlgPagFrecRec_Position[$ejecutandoinst]} #El marco siguiente para el fallo de página será el que tiene la mínima frecuencia.  
 				fi
-#EN-16720-
+				indiceResuPaginaAcumulado[$ejecutandoinst]=$reloj #Guarda el índice de la última modificación de datos por no usar el reloj en todos sus instantes sino sólo en los que se usa este proceso. También se usa para las frecuencias.
 			fi
 		fi          
 	
 	else #[[ ${temp_rej[$ejecutandoinst]} -eq 0 ]]; then #Y si no quedan más páginas pendientes de ejecutar. No es tiempoEjecucion sino temp_rej.
 		for (( counter=0; counter<$nprocesos; counter++ )); do
 			if [[ " ${llegados[*]} " == *" $ejecutandoinst "* ]]; then 
-#EN-16730-
-#EN-16740-
+				retorno[$ejecutandoinst]=$((reloj - llegada[$ejecutandoinst])) #Como temp_ret(). Se aconseja quitar la variable $retorno y estandarizar las variables a usar ??????????.
+				retorno+=("${retorno[$ejecutandoinst]}") #Como temp_ret(). Se aconseja quitar la variable $retorno y estandarizar las variables a usar ??????????.
 				if [[ ! " ${ejecutando[*]} " == *" $ejecutandoinst "* ]]; then
-#EN-16750-
+					espera[$ejecutandoinst]=$((reloj - llegada[$ejecutandoinst])) #Como temp_wait(). Se aconseja quitar la variable $espera y estandarizar las variables a usar ??????????.
 					if [[ " ${haestadopausado[*]} " == *" $ejecutandoinst "* ]]; then
 						resta[$ejecutandoinst]=$((tiempo[$ejecutandoinst] - tiempoEjecucion[$ejecutandoinst])) #Como temp_rej() #tiempo o ejecucion[$counter] ???????????? #Esa resta debería ser alrevés, el de ejecución menos lo ya ejecutado...
 						espera[$ejecutandoinst]=$((reloj - llegada[$ejecutandoinst] - resta[$ejecutandoinst])) #Como temp_wait() #Tampoco es (reloj - llegada[$ejecutandoinst]).
 					fi
-#EN-16760-
+					espera+=("${espera[${numeroproceso[$ejecutandoinst]}]}") #Como temp_wait(). Se aconseja quitar la variable $espera y estandarizar las variables a usar ??????????.
 				fi
 			fi
 		done
-#EN-16770-
+		finalizado=$ejecutandoinst #Actualización de variables y cambios de estado. Algunos ya se hacen en ajusteFinalTiemposEsperaEjecucionRestante().
 		ejecutando="" 
 		finalizados+=("$finalizado")
 		finalizadonuevo+=("$finalizado")
 		hanestadomem=$paginasEnMemoriaProceso
 		if [[ ${#finalizados[@]} -ge ${#llegada[@]} ]]; then #De momento se cambia ordenados por llegada.
-#EN-16780-
+			for i in "${!enmemoria[@]}"; do #Localiza en qué posición encuentra el dato (da la posición, pero no la variable en el array).
 				if [[ "${enmemoria[$i]}" == "$finalizado" ]]; then
 					posicion_finalizado=$i
 					unset 'enmemoria[$posicion_finalizado]'
@@ -5738,109 +5738,109 @@ function gestionAlgoritmoPagAlgPagFrecFIFORelojSegOp {
 			done
 		fi
 	fi
-#EN-16790-
+} #Fin de gestionAlgoritmoPagAlgPagFrecMFULFUNFU()
 
 ####################################################################################
-#EN-16800-
+# Sinopsis: Algoritmo AlgPagFrecMRULRUNRU - NRU usará un límite máximo del tiempo que hace que se usaron las páginas por última vez (seleccionAlgoritmoPaginacion_uso_rec_valor)
 ####################################################################################
-#EN-16810-
+function gestionAlgoritmoPagAlgPagRecMRULRUNRU { #ResuUsoRecienteAcumulado 
 	paginasEnMemoriaProceso=(); #Páginas residentes en memoria del Proceso en ejecución. #Se inicializan los arrays que se van a usar temporalmente para cada proceso en ejecución.
-#EN-16820-
-#EN-16830-
+	ordinal=(); #Contiene el ordinal del número de marco de cada proceso.
+	for (( counter=0 ; counter<$nprocesos ; counter++ )); do #Se van a determinar los marcos reales que usa cada proceso.
 		ordinal[$counter]=0
 	done
 	for ((ii=0;ii<${#unidMemOcupadas[@]};ii++)); do #El array relacionMarcosUsados[] no necesita acumulado porque ya contiene todos los datos necesarios y se mantienen hasta que se modifican en las reubicaciones, caso en el que también recoge el cambio.
-#EN-16840-
+		if [[ ${unidMemOcupadas[$ii]} != "_" ]]; then # Se buscan los marcos ocupados por cada proceso
 			relacionMarcosUsados[${unidMemOcupadas[$ii]},$reloj,${ordinal[${unidMemOcupadas[$ii]}]}]=$ii
 			ordinal[${unidMemOcupadas[$ii]}]=$((${ordinal[${unidMemOcupadas[$ii]}]} + 1))
 		fi
 	done
-#EN-16850-
-#EN-16860-
+	for ((v=0; v<${memoria[$ejecutandoinst]}; v++)); do #Se crea la secuencia de páginas en memoria de cada proceso.
+		if [[ ${paginasEnMemoriaTotal[$ejecutandoinst,$v]} != "" ]]; then #Evita un problema con la indefinición de la página en caso de no existir, ya que la lee como valor 0, y la página 0 también existe. 
 			paginasEnMemoriaProceso[$v]=${paginasEnMemoriaTotal[$ejecutandoinst,$v]}
 		else
 			paginasEnMemoriaProceso[$v]=-1
 		fi
 	done 
-#EN-16870-
-#EN-16880-
+	unset paginasPendientesUsarTotal[$ejecutandoinst] #Se borra la variable para volver a crearla con las páginas aún pendientes de ejecutar.
+	for ((v=${numeroPaginasUsadasProceso[$ejecutandoinst]}; v<${tiempoEjecucion[$ejecutandoinst]}; v++)); do #Se crea la secuencia de páginas de cada proceso pendientes de ejecutar.
 		pagina=${paginasDefinidasTotal[$ejecutandoinst,$v]}
 		paginasPendientesUsarTotal[$ejecutandoinst,$v]=$pagina
 	done
-#EN-16890-
-#EN-16900-
+	unset paginasUsadasTotal[$ejecutandoinst] #Se borra la variable para volver a crearla con las páginas aún pendientes de ejecutar.
+	for ((v=0; v<=${numeroPaginasUsadasProceso[$ejecutandoinst]}; v++)); do #Se crea la secuencia de páginas de cada proceso ya ejecutadas.
 		pagina=${paginasDefinidasTotal[$ejecutandoinst,$v]}
 		paginasUsadasTotal[$ejecutandoinst,$v]=$pagina
-#EN-16910-
+		paginasUsadasProceso[$v]=$pagina #No es necesario ya que paginasUsadasTotal[] se genera en cada ejecución de la función.
 	done 
-#EN-16920-
-#EN-16930-
+	for (( counter=0 ; counter<$nprocesos ; counter++ )); do #Se actualizan los datos de frecuencia o antigüedad de uso de cada marco de memoria ocupado por una página de un proceso.
+		if [[ ${numeroMarcosUsados[$counter]} -ne 0 ]]; then #Si no es el primer instante de ejecución de este proceso. Primero se copian y luego se modifican si es necesario.
 			for (( jj=0; jj<${memoria[$counter]}; jj++ )); do
-#EN-16940-
-#EN-16950-
-#EN-16960-
-#EN-16970-
-#EN-16980-
-#EN-16990-
+				ResuPaginaAcumulado[$counter,$jj,$reloj]=${ResuPaginaAcumulado[$counter,$jj,$(($reloj - 1))]} #Recoge los datos del array con las páginbas en ls diferentes marcos en el instante anterior.
+				ResuUsoRecienteAcumulado[$counter,$jj,$reloj]=${ResuUsoRecienteAcumulado[$counter,$jj,$(($reloj - 1))]} #Recoge los datos del array de frecuencias de uso de las páginas contenidas en los marcos en el instante anterior.
+				ResuFrecuenciaAcumulado[$counter,$jj,$reloj]=${ResuFrecuenciaAcumulado[$counter,$jj,$(($reloj - 1))]} #Recoge los datos del array de frecuencias de uso de las páginas contenidas en los marcos en el instante anterior.
+				ResuPaginaOrdinalAcumulado[$counter,$jj,$reloj]=${ResuPaginaOrdinalAcumulado[$counter,$jj,$(($reloj - 1))]} #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso.
+				if [[ $seleccionAlgoritmoPaginacion -eq 5 && ${ResuTiempoOptimoAcumulado[$counter,$jj,$(($reloj - 1))]} -gt 0 ]]; then #Óptimo
+					ResuTiempoOptimoAcumulado[$counter,$jj,$reloj]=$((${ResuTiempoOptimoAcumulado[$counter,$jj,$(($reloj - 1))]} - 1)) #Recoge los datos del array de clases de uso de las páginas contenidas en los marcos en el instante anterior.
 				elif [[ $seleccionAlgoritmoPaginacion -eq 5 ]]; then
-#EN-17000-
+					ResuTiempoOptimoAcumulado[$counter,$jj,$reloj]=0 #Recoge los datos del array de clases de uso de las páginas contenidas en los marcos en el instante anterior.
 				fi
-#EN-17010-
-#EN-17020-
+				if [[ $seleccionAlgoritmoPaginacion -eq 16 || $seleccionAlgoritmoPaginacion -eq 17 ]]; then #NFU con clases sobre MFU/LFU
+					ResuClaseAcumulado[$counter,$jj,$reloj]=${ResuClaseAcumulado[$counter,$jj,$(($reloj - 1))]} #Recoge los datos del array de clases de uso de las páginas contenidas en los marcos en el instante anterior.
 				fi
 			done
 		fi
 	done
 	
-#EN-17030-
+	for ((indMemIni=0; indMemIni<${memoria[$ejecutandoinst]}; indMemIni++)); do #Se crea la secuencia de páginas en memoria de cada proceso.
 		indPagIni=$((${numeroPaginasUsadasProceso[$ejecutandoinst]}))
 		if [[ $indPagIni -eq 0 ]]; then
-#EN-17040-
-#EN-17050-
-#EN-17060-
+			ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMemIni]=0 #Resumen - Índices: (proceso, marco). Dato: Valor de la "frecuencia/tiempo desde su último uso" para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación
+			ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMemIni]=0 #Resumen - Índices: (proceso, marco). Dato: Valor de la "frecuencia/tiempo desde su último uso" para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación
+			directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$indMemIni,0]=0 #Resumen - Índices: (proceso, marco, ordinal del tiempo de ejecución (página)). Dato: Se usará para determinar si una página ha sido o no referenciada y modificada en un tiempo anterior inferior a seleccionAlgoritmoPaginacion_uso_rec_valor unidades de tiempo en los algoritmos NFU y NRU. Se inicia a 0 por no haber sido aún referenciada (vista o modificada) y se cambia sólo cuando ya estuviera en memoria.
 		else
-#EN-17070-
+			directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$indMemIni,$indPagIni]=${directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$indMemIni,$(($indPagIni - 1))]} #Resumen - Índices: (proceso, marco, ordinal del tiempo de ejecución (página)). Dato: Se usará para determinar si una página ha sido o no referenciada y modificada en un tiempo anterior inferior a seleccionAlgoritmoPaginacion_uso_rec_valor unidades de tiempo en los algoritmos NFU y NRU. Se inicia a 0 por no haber sido aún referenciada (vista o modificada) y se cambia sólo cuando ya estuviera en memoria.
 		fi
 	done 
-#EN-17080-
+	for ((indMarco=0; indMarco<${numeroMarcosUsados[$ejecutandoinst]}; indMarco++)); do #Se actualizan los valores del tiempo que falta para ejecutarse una página de cada proceso, salvo si es 0, ya que en ese caso, no se volverá a encontrar en la sucesión de páginas pendientes del proceso.
 		if [[ ${primerTiempoEntradaPagina[$ejecutandoinst,$indMarco]} -gt 0 ]]; then
-#EN-17090-
+			primerTiempoEntradaPagina[$ejecutandoinst,$indMarco]=$((${primerTiempoEntradaPagina[$ejecutandoinst,$indMarco]} - 1)) #Se inicializa a 0 el número de unidades de tiempo que hace que se cambió la clase por llegar al máximo de tiempo en una clase 2 o 3, o al máximo de frecuencia de uso.
 		fi
 	done 
 
-#EN-17100-
-#EN-17110-
-#EN-17120-
-#EN-17130-
-#EN-17140-
-#EN-17150-
-#EN-17160-
-#EN-17170-
+	if [[ ${numeroPaginasUsadasProceso[$ejecutandoinst]} -lt ${tiempoEjecucion[$ejecutandoinst]} ]]; then #Si aún quedan páginas por ejecutar de ese proceso.
+		primera_pagina=${paginasDefinidasTotal[$ejecutandoinst,${numeroPaginasUsadasProceso[$ejecutandoinst]}]} #Se determina la primera página de la secuencia de páginas pendientes.
+		numeroPaginasUsadasProceso[$ejecutandoinst]=$((${numeroPaginasUsadasProceso[$ejecutandoinst]} + 1)) #Número de páginas usadas en el proceso en ejecución. Aumenta en todas las unidades de ejecución del proceso. 
+		paginaAUsar[$ejecutandoinst]=${paginasDefinidasTotal[$ejecutandoinst,$((${numeroPaginasUsadasProceso[$ejecutandoinst]}))]} #Siguiente página, pendiente de ejecutar.
+		if [[ ${numeroMarcosUsados[$ejecutandoinst]} -lt ${memoria[$ejecutandoinst]} ]]; then #Si el número de marcos usados es menor que el tamaño de la memoria asociada al proceso.
+			x=0 #Define si encuentra o no la página en paginasEnMemoriaProceso
+			for buscar_primera_pagina in "${!paginasEnMemoriaProceso[@]}"; do #Localiza en qué posición encuentra la página en paginasEnMemoriaProceso (da la posición, pero no la variable en el array).
+				if [[ ${paginasEnMemoriaProceso[$buscar_primera_pagina]} -eq $primera_pagina ]]; then #Esta línea es para cuando usamos la posición del dato y no su valor. Si la página está en memoria define x=1.
 					x=1
-#EN-17180-
+					indMarcoMem=$buscar_primera_pagina # Se guarda el marco en el que se encuentra la página.
 				fi 
 			done
-#EN-17190-
-#EN-17200-
-#EN-17210-
+			if [[ $x -eq 1 && $((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) -ne 0 ]]; then #USO DE PÁGINA - Si la página está en memoria, y si no es la primera página a usar para evitar la inicialización de la variable paginasEnMemoriaTotal[$ejecutandoinst,ordinal}] a 0.
+				#Se van a tratar las variables que no se corresponden con el marco usado.
+				for ((indMarcoRec=0; indMarcoRec<${numeroMarcosUsados[$ejecutandoinst]}; indMarcoRec++)); do #El tiempo desde que se usó una página en memoria aumenta en cada unidad de tiempo de ejecución del proceso, siempre que no sea la que se usa, o sobre la que se produce el fallo de paginación. 
 					if [[ $indMarcoRec -ne $indMarcoMem ]]; then
-#EN-17220-
-#EN-17230-
+						if [[ $seleccionAlgoritmoPaginacion -eq 5 ]]; then #Óptimo 
+							calcularResuTiempoOptimoAcumulado_PaginaNoEjecutada #Con $indOptimo se busca el tiempo que falta hasta una nueva ejecución de la misma página. 0 si no hay más repeticiones de esa página.
 							ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]=$((${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]} + 1))
 							ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]} + 1))
-#EN-17240-
+						elif [[ $seleccionAlgoritmoPaginacion -eq 12 || $seleccionAlgoritmoPaginacion -eq 13 ]]; then #MFU/LFU. Sin máximo de tiempo desde que se usó por última vez.
 							ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]=$((${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]} + 1))
 							ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]} + 1))
-#EN-17250-
-#EN-17260-
+						elif [[ $seleccionAlgoritmoPaginacion -eq 14 || $seleccionAlgoritmoPaginacion -eq 15 ]]; then #NFU-MFU/NFU-LFU
+							if [[ ${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,${indiceResuPaginaAcumulado[$ejecutandoinst]}]} -lt $seleccionAlgoritmoPaginacion_uso_rec_valor ]]; then #Hay un máximo par el tiempo desde que se usó (seleccionAlgoritmoPaginacion_uso_rec_valor).
 								ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]=$((${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]} + 1))
 							else
 								ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]=$seleccionAlgoritmoPaginacion_uso_rec_valor
 							fi
 							ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]} + 1))
-#EN-17270-
+						elif [[ $seleccionAlgoritmoPaginacion -eq 16 || $seleccionAlgoritmoPaginacion -eq 17 ]]; then #NFU-MFU/NFU-LFU con clases. Sin máximo de tiempo desde que se usó por última vez.
 							ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]=$((${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]} + 1))
-#EN-17280-
+							if [[ ${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,${indiceResuPaginaAcumulado[$ejecutandoinst]}]} -lt $seleccionAlgoritmoPaginacion_clases_uso_rec_valor ]]; then #Hay un máximo par el tiempo desde que se usó (seleccionAlgoritmoPaginacion_uso_rec_valor).
 								ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]} + 1))
 							else
 								ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]=$seleccionAlgoritmoPaginacion_clases_uso_rec_valor
@@ -5848,55 +5848,55 @@ function gestionAlgoritmoPagAlgPagFrecFIFORelojSegOp {
 						fi
 					fi
 					if [[ $indMarcoRec -eq $indMarcoMem ]]; then
-#EN-17290-
-#EN-17300-
-#EN-17310-
-#EN-17320-
-#EN-17330-
+						ResuPunteroMarcoUsado[$ejecutandoinst,$reloj]=$indMarcoMem #Índice que apunta al marco con la página que acaba de ser usada (ya exitente anteriormente). 
+						if [[ $seleccionAlgoritmoPaginacion -eq 5 ]]; then #Óptimo
+							calcularResuTiempoOptimoAcumulado_PaginaEjecutada #Con $indOptimo se busca el tiempo que falta hasta una nueva ejecución de la misma página. 0 si no hay más repeticiones de esa página.
+							ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoMem,$reloj]=$((${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoMem,$reloj]} + 1)) #Resumen - Índices: (proceso, marco, reloj). Dato: Tiempo que hace que se usó la Página de un proceso que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso.
+							ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoMem]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoMem]} + 1)) #Resumen - Índices: (proceso, marco). Dato: Histórico con el valor de la "frecuencia/tiempo desde su último uso" para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación
 						fi
 					fi
 				done
-#EN-17340-
-#EN-17350-
-#EN-17360-
-#EN-17370-
+				#Ahora se definirán las variables que se corresponden con el marco usado. 
+				ResuPaginaOrdinalAcumulado[$ejecutandoinst,$indMarcoMem,$reloj]=$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso.
+				ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoMem,$reloj]=0 #0 por haber sido usado.
+				if [[ $seleccionAlgoritmoPaginacion -eq 16 || $seleccionAlgoritmoPaginacion -eq 17 ]]; then #NFU-MFU/NFU-LFU con clases
 					directions_AlgPagFrecUsoRec_marco_pagina_referenciada[$ejecutandoinst,$indMarcoMem]=1
 					ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoMem]=0
-#EN-17380-
-#EN-17390-
+					usoMismaPagina=0 #Se usa una página que ya estaba en memoria (0) y, por tanto, no es el resultado de un fallo de página (1).
+					#Si las páginas tienen una frecuencia de uso mayor que la frecuencia máxima $seleccionAlgoritmoPaginacion_clases_uso_rec_valor
 				fi
 									
-#EN-17400-
-#EN-17410-
-#EN-17420-
+				indiceResuPaginaAcumulado[$ejecutandoinst]=$reloj #Guarda el índice de la última modificación de datos por no usar el reloj en todos sus instantes sino sólo en los que se ejecuta este proceso. También se usa para las frecuencias.
+				if [[ ${numeroMarcosUsados[$ejecutandoinst]} -lt ${memoria[$ejecutandoinst]} ]]; then #Si el número de páginas en memoria del proceso es menor que el tamaño de la memoria del proceso. 
+					ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]=${numeroMarcosUsados[$ejecutandoinst]} #Sumaría 1 al número de marco sobre el que se hará el fallo de página porque aún hay marcos libres, pero no lo suma porque el número de marcos usados no empezará en 0 sino en 1, mientras que las variables suelene empezar en 0. 
 				fi
-#EN-17430-
-#EN-17440-
+				if [[ $seleccionAlgoritmoPaginacion -eq 16 || $seleccionAlgoritmoPaginacion -eq 17 ]]; then #NFU con clases sobre MFU/LFU
+					gestionAlgoritmoPagAlgPagRecNRU_Referenciado_Modificado $indMarcoMem $((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) #Se recalculan las clases NRU de las páginas de cada proceso, dependiendo de si han sido referenciadas y/o modificadas. Se envía: marco + ordinal_página
 				fi
 			
-#EN-17450-
-#EN-17460-
-#EN-17470-
-#EN-17480-
-#EN-17490-
+			else #Si NO está en memoria... FALLO DE PÁGINA
+				numeroMarcosUsados[$ejecutandoinst]=$((${numeroMarcosUsados[$ejecutandoinst]} + 1)) #Aumenta en 1 el número de marcos usados. Sólo aumenta cuando se usa un nuevo marco y no en todas las unidades de ejecución del proceso. Debe ser la última línea dentro del if paradejarlo preparado para su siguiente uso como variable.
+				ResuPunteroMarcoUsado[$ejecutandoinst,$reloj]=$(($((${numeroMarcosUsados[$ejecutandoinst]} - 1)))) #Índice que apunta al marco con la página que acaba de ser incluida (ocupa un espacio ya utilizado anteriormente por otra página). Sería -1 porque numeroMarcosUsados empieza a contar en 1.
+				#Se van a tratar las variables que no se corresponden con el marco usado.
+				for ((indMarcoRec=0; indMarcoRec<${numeroMarcosUsados[$ejecutandoinst]}; indMarcoRec++)); do #El tiempo desde que se usó una página en memoria aumenta en cada unidad de tiempo de ejecución del proceso, siempre que no sea la que se usa, o sobre la que se produce el fallo de paginación. 
 					if [[ $indMarcoRec -ne ResuPunteroMarcoUsado[$ejecutandoinst,$reloj] ]]; then
-#EN-17500-
-#EN-17510-
+						if [[ $seleccionAlgoritmoPaginacion -eq 5 ]]; then #Óptimo
+							calcularResuTiempoOptimoAcumulado_PaginaNoEjecutada #Con $indOptimo se busca el tiempo que falta hasta una nueva ejecución de la misma página. 0 si no hay más repeticiones de esa página.
 							ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]=$((${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]} + 1))
 							ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]} + 1))
-#EN-17520-
+						elif [[ $seleccionAlgoritmoPaginacion -eq 12 || $seleccionAlgoritmoPaginacion -eq 13 ]]; then #MFU/LFU. Sin máximo de tiempo desde que se usó por última vez.
 							ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]=$((${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]} + 1))
 							ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]} + 1))
-#EN-17530-
-#EN-17540-
+						elif [[ $seleccionAlgoritmoPaginacion -eq 14 || $seleccionAlgoritmoPaginacion -eq 15 ]]; then #NFU-MFU/NFU-LFU
+							if [[ ${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,${indiceResuPaginaAcumulado[$ejecutandoinst]}]} -lt $seleccionAlgoritmoPaginacion_uso_rec_valor ]]; then #Hay un máximo par el tiempo desde que se usó (seleccionAlgoritmoPaginacion_uso_rec_valor).
 								ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]=$((${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]} + 1))
 							else
 								ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]=$seleccionAlgoritmoPaginacion_uso_rec_valor
 							fi
 							ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]} + 1))
-#EN-17550-
+						elif [[ $seleccionAlgoritmoPaginacion -eq 16 || $seleccionAlgoritmoPaginacion -eq 17 ]]; then #NFU-MFU/NFU-LFU con clases. Sin máximo de tiempo desde que se usó por última vez.
 							ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]=$((${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]} + 1))
-#EN-17560-
+							if [[ ${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,${indiceResuPaginaAcumulado[$ejecutandoinst]}]} -lt $seleccionAlgoritmoPaginacion_clases_uso_rec_valor ]]; then #Hay un máximo par el tiempo desde que se usó (seleccionAlgoritmoPaginacion_uso_rec_valor).
 								ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]} + 1))
 							else
 								ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]=$seleccionAlgoritmoPaginacion_clases_uso_rec_valor
@@ -5904,123 +5904,123 @@ function gestionAlgoritmoPagAlgPagFrecFIFORelojSegOp {
 						fi
 					fi
 					if [[ $indMarcoRec -eq ${ResuPunteroMarcoUsado[$ejecutandoinst,$reloj]} ]]; then
-#EN-17570-
-#EN-17580-
+						if [[ $seleccionAlgoritmoPaginacion -eq 5 ]]; then #Óptimo
+							calcularResuTiempoOptimoAcumulado_PaginaEjecutada #Con $indOptimo se busca el tiempo que falta hasta una nueva ejecución de la misma página. 0 si no hay más repeticiones de esa página.
 							
-#EN-17590-
-#EN-17600-
+							ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]=$((${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]} + 1)) #Resumen - Índices: (proceso, marco, reloj). Dato: Tiempo que hace que se usó la Página de un proceso que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso.
+							ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]} + 1)) #Resumen - Índices: (proceso, marco). Dato: Histórico con el valor de la "frecuencia/tiempo desde su último uso" para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación
 						fi
 					fi
 				done
-#EN-17610-
-#EN-17620-
-#EN-17630-
-#EN-17640-
-#EN-17650-
-#EN-17660-
-#EN-17670-
-#EN-17680-
-#EN-17690-
-#EN-17700-
-#EN-17710-
-#EN-17720-
+				#Ahora se definirán el resto de variables que se corresponden con el marco usado. 
+				paginasEnMemoriaProceso[$((${numeroMarcosUsados[$ejecutandoinst]} - 1))]=$primera_pagina #... la página se añade a la secuencia de páginas del proceso en ejecución en memoria.
+				paginasEnMemoriaTotal[$ejecutandoinst,$((${numeroMarcosUsados[$ejecutandoinst]} - 1))]=$primera_pagina #... y la página se añade a la secuencia de páginas de ese proceso junto con el resto de páginas del resto de procesos residentes en memoria (Índices:Proceso, Páginas). Sale de forma calculada de paginasDefinidasTotal y su orden es el establecido tras los fallos de paginación.
+				contadorAlgPagFallosTotalesProcesos[$ejecutandoinst]=$((contadorAlgPagFallosTotalesProcesos[$ejecutandoinst] + 1)) #Contador de fallos de página totales de cada proceso.
+				((contadorAlgPagFallosProcesoAcumulado[$ejecutandoinst]++)) #Contador de fallos totales de cada proceso
+				ResuPaginaAcumulado[$ejecutandoinst,$((${numeroMarcosUsados[$ejecutandoinst]} - 1)),$reloj]=$primera_pagina #Se añade el dato de la página que acaba de ser incluida en un marco.
+				ResuPaginaOrdinalAcumulado[$ejecutandoinst,$((${numeroMarcosUsados[$ejecutandoinst]} - 1)),$reloj]=$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso.
+				ResuUsoRecienteAcumulado[$ejecutandoinst,$((${numeroMarcosUsados[$ejecutandoinst]} - 1)),$reloj]=0 # Se añade el dato de la frecuencia de la página que acaba de ser incluida en un marco.
+				ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$((${numeroMarcosUsados[$ejecutandoinst]} - 1))]=0 #Resumen - Índices: (proceso, marco). Dato: Valor de la "frecuencia/tiempo desde su último uso" para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación
+				ResuFallosPaginaProceso[$ejecutandoinst,$reloj]=$primera_pagina #Y se añade la página a la secuencia de fallos. 
+				ResuFallosMarcoProceso[$ejecutandoinst,$reloj]=$((${numeroMarcosUsados[$ejecutandoinst]} - 1)) #Y se añade el marco a la secuencia de fallos. 
+				indiceResuPaginaAcumulado[$ejecutandoinst]=$reloj #Guarda el índice de la última modificación de datos por no usar el reloj en todos sus instantes sino sólo en los que se usa este proceso. También se usa para las frecuencias.
 				directions_AlgPagFrecUsoRec_marco_pagina_referenciada[$ejecutandoinst,$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1))]=0
-#EN-17730-
-#EN-17740-
-#EN-17750-
+				if [[ ${numeroMarcosUsados[$ejecutandoinst]} -ge ${memoria[$ejecutandoinst]} ]]; then #Sólo es necesario si se llenan todos los marcos asociados al proceso. 
+					if [[ $seleccionAlgoritmoPaginacion -eq 5 ]]; then #MFU
+						max_AlgPagFrecRec_FrecRec[$ejecutandoinst]=-1 #Se recalcula el siguiente uso de la página utilizada más alejado en el tiempo.
 						max_AlgPagFrecRec_Position[$ejecutandoinst]=0
 						for (( indMaxAlgPag=0; indMaxAlgPag<${memoria[$ejecutandoinst]}; indMaxAlgPag++ )); do
-#EN-17760-
-#EN-17770-
-#EN-17780-
+							if [[ ${ResuTiempoOptimoAcumulado[$ejecutandoinst,$indMaxAlgPag,$reloj]} -gt ${max_AlgPagFrecRec_FrecRec[$ejecutandoinst]} ]]; then #Localiza en qué posición encuentra la página.
+								max_AlgPagFrecRec_FrecRec[$ejecutandoinst]=${ResuTiempoOptimoAcumulado[$ejecutandoinst,$indMaxAlgPag,$reloj]} #Mayor frecuencia encontrada.
+								max_AlgPagFrecRec_Position[$ejecutandoinst]=$indMaxAlgPag #Posición del marco con la mayor frecuencia.
 							fi
-#EN-17790-
-#EN-17800-
-#EN-17810-
+						done #Y sobre esa localización se hace el fallo de página
+					elif [[ $seleccionAlgoritmoPaginacion -eq 12 || $seleccionAlgoritmoPaginacion -eq 14 ]]; then #MFU
+						max_AlgPagFrecRec_FrecRec[$ejecutandoinst]=-1 #Se recalcula la mayor frecuencia, aunque parezca no necesario hacerlo, por si es necesario para su impresión.
 						max_AlgPagFrecRec_Position[$ejecutandoinst]=0
 						for (( indMaxAlgPag=0; indMaxAlgPag<${memoria[$ejecutandoinst]}; indMaxAlgPag++ )); do
-#EN-17820-
-#EN-17830-
-#EN-17840-
+							if [[ ${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMaxAlgPag,$reloj]} -gt ${max_AlgPagFrecRec_FrecRec[$ejecutandoinst]} ]]; then #Localiza en qué posición encuentra la página.
+								max_AlgPagFrecRec_FrecRec[$ejecutandoinst]=${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMaxAlgPag,$reloj]} #Mayor frecuencia encontrada.
+								max_AlgPagFrecRec_Position[$ejecutandoinst]=$indMaxAlgPag #Posición del marco con la mayor frecuencia.
 							fi
-#EN-17850-
-#EN-17860-
-#EN-17870-
+						done #Y sobre esa localización se hace el fallo de página
+					elif [[ $seleccionAlgoritmoPaginacion -eq 16 ]]; then #NFU con clases sobre MFU
+						max_AlgPagFrecRec_FrecRec[$ejecutandoinst]=-1 #Se recalcula la mayor frecuencia, aunque parezca no necesario hacerlo, por si es necesario para su impresión.
 						max_AlgPagFrecRec_Position[$ejecutandoinst]=0
 						ultimasPaginasAConsiderar=$(($((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) - $seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado))
 						paginasPendientesEjecutar=$((${ejecucion[$ejecutandoinst]}-$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1))))
-#EN-17880-
-#EN-17890-
+						if [[ $ultimasPaginasAConsiderar -ge 0 ]]; then #Sin se han usado muchas páginas. sólo se consideran las últimas definidas mediante seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado.
+							limite_j=$ultimasPaginasAConsiderar #QUEDA PENDIENTE USARLO PARA RESTAR LA FRECUENCIA ACTUAL DE LA QUE TENÍA EN AQUEL MOMENTO.
 						else
 							limite_j=0
 						fi
-#EN-17900-
-#EN-17910-
-#EN-17920-
+						gestionAlgoritmoPagAlgPagRecNRU_Paginas_Clases_Max $limite_j #Se calcula el máximo de las frecuencias de las páginas de cada proceso en NFU (max_AlgPagFrecRec_FrecRec y max_AlgPagFrecRec_Position), por clases empezando por 0.
+					elif [[ $seleccionAlgoritmoPaginacion -eq 13 || $seleccionAlgoritmoPaginacion -eq 15 ]]; then #LFU
+						min_AlgPagFrecRec_FrecRec[$ejecutandoinst]=${ResuUsoRecienteAcumulado[$ejecutandoinst,0,$reloj]} #Se recalcula la menor frecuencia, aunque parezca no necesario hacerlo, por si es necesario para su impresión. Y se comienza con la frecuencia de la primera página en el primer marco asociado al proceso.
 						min_AlgPagFrecRec_Position[$ejecutandoinst]=0
 						for (( indMinAlgPag=0; indMinAlgPag<${memoria[$ejecutandoinst]}; indMinAlgPag++ )); do
-#EN-17930-
-#EN-17940-
-#EN-17950-
+							if [[ ${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMinAlgPag,$reloj]} -lt ${min_AlgPagFrecRec_FrecRec[$ejecutandoinst]} ]]; then #Localiza en qué posición encuentra la página.
+								min_AlgPagFrecRec_FrecRec[$ejecutandoinst]=${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMinAlgPag,$reloj]} #Menor frecuencia encontrada.
+								min_AlgPagFrecRec_Position[$ejecutandoinst]=$indMinAlgPag #Posición del marco con la menor frecuencia.
 							fi
-#EN-17960-
-#EN-17970-
-#EN-17980-
+						done #Y sobre esa localización se hace el fallo de página					
+					elif [[ $seleccionAlgoritmoPaginacion -eq 17 ]]; then #NFU con clases sobre MFU
+						min_AlgPagFrecRec_FrecRec[$ejecutandoinst]=${ResuUsoRecienteAcumulado[$ejecutandoinst,0,$reloj]} #Se recalcula la menor frecuencia, aunque parezca no necesario hacerlo, por si es necesario para su impresión. Y se comienza con la frecuencia de la primera página en el primer marco asociado al proceso.
 						min_AlgPagFrecRec_Position[$ejecutandoinst]=0
 						ultimasPaginasAConsiderar=$(($((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) - $seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado))
 						paginasPendientesEjecutar=$((${ejecucion[$ejecutandoinst]}-$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1))))
-#EN-17990-
+						if [[ $ultimasPaginasAConsiderar -ge 0 ]]; then #Sin se han usado muchas páginas. sólo se consideran las últimas definidas mediante seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado.
 							limite_j=$ultimasPaginasAConsiderar
 						else
 							limite_j=0
 						fi
-#EN-18000-
+						gestionAlgoritmoPagAlgPagRecNRU_Paginas_Clases_Min $limite_j #Se calcula el máximo de las frecuencias de las páginas de cada proceso en NFU (max_AlgPagFrecRec_FrecRec y max_AlgPagFrecRec_Position), por clases empezando por 0.
 					fi
 				fi
-#EN-18010-
-#EN-18020-
+				if [[ ${numeroMarcosUsados[$ejecutandoinst]} -lt ${memoria[$ejecutandoinst]} ]]; then #Si el número de páginas en memoria del proceso es menor que el tamaño de la memoria del proceso. 
+					ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]=${numeroMarcosUsados[$ejecutandoinst]} #Suma 1 al número de marco sobre el que se hará el fallo de página porque aún hay marcos libres. 
 				else
-#EN-18030-
-#EN-18040-
-#EN-18050-
-#EN-18060-
+					if [[ $seleccionAlgoritmoPaginacion -eq 5 || $seleccionAlgoritmoPaginacion -eq 12 || $seleccionAlgoritmoPaginacion -eq 14 || $seleccionAlgoritmoPaginacion -eq 16 ]]; then #MFU
+						ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]=${max_AlgPagFrecRec_Position[$ejecutandoinst]} #El marco siguiente para el fallo de página será el que tiene la máxima frecuencia.  
+					elif [[ $seleccionAlgoritmoPaginacion -eq 13 || $seleccionAlgoritmoPaginacion -eq 15 || $seleccionAlgoritmoPaginacion -eq 17 ]]; then #LFU
+						ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]=${min_AlgPagFrecRec_Position[$ejecutandoinst]} #El marco siguiente para el fallo de página será el que tiene la mínima frecuencia.  
 					fi
 				fi
 			fi
 
-#EN-18070-
-#EN-18080-
-#EN-18090-
-#EN-18100-
+		else #Si el número de marcos usados es mayor o igual que el tamaño de la memoria asociada al proceso.
+			x=0 #Define si encuentra o no la página en paginasEnMemoriaProceso.
+			for buscar_primera_pagina in "${!paginasEnMemoriaProceso[@]}"; do #Localiza en qué posición encuentra la página (da la posición pero no la variable en el array).
+				if [[ ${paginasEnMemoriaProceso[$buscar_primera_pagina]} -eq $primera_pagina ]]; then #Si la página está en memoria define x=1.
 					x=1
 				fi 
 			done
-#EN-18110-
-#EN-18120-
+			if [[ $x -eq 1 ]]; then #Si la página está en memoria...USO DE PÁGINA
+				for indMarcoMem in "${!paginasEnMemoriaProceso[@]}"; do #Localiza en qué posición encuentra la página (da la posición pero no la variable en el array).
 					if [[ ${paginasEnMemoriaProceso[$indMarcoMem]} -eq $primera_pagina ]]; then
-#EN-18130-
-#EN-18140-
-#EN-18150-
+						ResuPunteroMarcoUsado[$ejecutandoinst,$reloj]=$indMarcoMem #Índice que apunta al marco con la página que acaba de ser usada (ya exitente anteriormente). 
+						#Se van a tratar las variables que no se corresponden con el marco usado.
+						for ((indMarcoRec=0; indMarcoRec<${numeroMarcosUsados[$ejecutandoinst]}; indMarcoRec++)); do #El tiempo desde que se usó una página en memoria aumenta en cada unidad de tiempo de ejecución del proceso, siempre que no sea la que se usa, o sobre la que se produce el fallo de paginación. 
 							if [[ $indMarcoRec -ne ResuPunteroMarcoUsado[$ejecutandoinst,$reloj] ]]; then
-#EN-18160-
-#EN-18170-
+								if [[ $seleccionAlgoritmoPaginacion -eq 5 ]]; then #Óptimo
+									calcularResuTiempoOptimoAcumulado_PaginaNoEjecutada #Con $indOptimo se busca el tiempo que falta hasta una nueva ejecución de la misma página. 0 si no hay más repeticiones de esa página.
 
-#EN-18180-
-#EN-18190-
+									ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]=$((${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]} + 1)) #Resumen - Índices: (proceso, marco, reloj). Dato: Tiempo que hace que se usó la Página de un proceso que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso.
+									ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]} + 1)) #Resumen - Índices: (proceso, marco). Dato: Histórico con el valor de la "frecuencia/tiempo desde su último uso" para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación
 
-#EN-18200-
+								elif [[ $seleccionAlgoritmoPaginacion -eq 12 || $seleccionAlgoritmoPaginacion -eq 13 ]]; then #MFU/LFU. Sin máximo de tiempo desde que se usó por última vez.
 									ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]=$((${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]} + 1))
 									ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]} + 1))
-#EN-18210-
-#EN-18220-
+								elif [[ $seleccionAlgoritmoPaginacion -eq 14 || $seleccionAlgoritmoPaginacion -eq 15 ]]; then #NFU-MFU/NFU-LFU
+									if [[ ${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,${indiceResuPaginaAcumulado[$ejecutandoinst]}]} -lt $seleccionAlgoritmoPaginacion_uso_rec_valor ]]; then #Hay un máximo par el tiempo desde que se usó (seleccionAlgoritmoPaginacion_uso_rec_valor).
 										ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]=$((${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]} + 1))
 									else
 										ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]=$seleccionAlgoritmoPaginacion_uso_rec_valor
 									fi
 									ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]} + 1))
-#EN-18230-
+								elif [[ $seleccionAlgoritmoPaginacion -eq 16 || $seleccionAlgoritmoPaginacion -eq 17 ]]; then #NFU-MFU/NFU-LFU con clases. Sin máximo de tiempo desde que se usó por última vez.
 									ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]=$((${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]} + 1))
-#EN-18240-
+									if [[ ${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,${indiceResuPaginaAcumulado[$ejecutandoinst]}]} -lt $seleccionAlgoritmoPaginacion_clases_uso_rec_valor ]]; then #Hay un máximo par el tiempo desde que se usó (seleccionAlgoritmoPaginacion_uso_rec_valor).
 										ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]} + 1))
 									else
 										ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]=$seleccionAlgoritmoPaginacion_clases_uso_rec_valor
@@ -6028,133 +6028,133 @@ function gestionAlgoritmoPagAlgPagFrecFIFORelojSegOp {
 								fi
 							fi
 							if [[ $indMarcoRec -eq ResuPunteroMarcoUsado[$ejecutandoinst,$reloj] ]]; then
-#EN-18250-
-#EN-18260-
+								if [[ $seleccionAlgoritmoPaginacion -eq 5 ]]; then #Óptimo
+									calcularResuTiempoOptimoAcumulado_PaginaEjecutada #Con $indOptimo se busca el tiempo que falta hasta una nueva ejecución de la misma página. 0 si no hay más repeticiones de esa página.
 
 									ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoMem,$reloj]=0
 								fi
 							fi							
 						done
-#EN-18270-
-#EN-18280-
-#EN-18290-
+						#Ahora se definirán las variables que se corresponden con el marco usado. 
+						ResuPaginaOrdinalAcumulado[$ejecutandoinst,$indMarcoMem,$reloj]=$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso.
+						if [[ $seleccionAlgoritmoPaginacion -eq 12 || $seleccionAlgoritmoPaginacion -eq 13 ]]; then #MFU/LFU
 							ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoMem,$reloj]=0
-#EN-18300-
+						elif [[ $seleccionAlgoritmoPaginacion -eq 14 || $seleccionAlgoritmoPaginacion -eq 15 ]]; then #NFU-MFU/NFU-LFU
 							if [[ ${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoMem,${indiceResuPaginaAcumulado[$ejecutandoinst]}]} -lt $seleccionAlgoritmoPaginacion_uso_rec_valor ]]; then 
 								ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoMem,$reloj]=0
 							else
 								ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoMem,$reloj]=0
 							fi
-#EN-18310-
+						elif [[ $seleccionAlgoritmoPaginacion -eq 16 || $seleccionAlgoritmoPaginacion -eq 17 ]]; then #NFU-MFU/NFU-LFU con clases
 							ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoMem,$reloj]=0
 							directions_AlgPagFrecUsoRec_marco_pagina_referenciada[$ejecutandoinst,$indMarcoMem]=1
 							ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoMem]=0
-#EN-18320-
-#EN-18330-
-#EN-18340-
+							usoMismaPagina=0 #Se usa una página que ya estaba en memoria (0) y, por tanto, no es el resultado de un fallo de página (1).
+							#Si las páginas tienen una frecuencia de uso mayor que la frecuencia máxima $seleccionAlgoritmoPaginacion_clases_uso_rec_valor
+							gestionAlgoritmoPagAlgPagRecNRU_Referenciado_Modificado $indMarcoMem $((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) #Se recalculan las clases NRU de las páginas de cada proceso, dependiendo de si han sido referenciadas y/o modificadas. Se envía: marco + ordinal_página
 						fi
-#EN-18350-
-#EN-18360-
+						if [[ $seleccionAlgoritmoPaginacion -eq 5 ]]; then #MFU
+							max_AlgPagFrecRec_FrecRec[$ejecutandoinst]=-1 #Se recalcula el siguiente uso de la página utilizada más alejado en el tiempo.
 							max_AlgPagFrecRec_Position[$ejecutandoinst]=0
 							for (( indMaxAlgPag=0; indMaxAlgPag<${memoria[$ejecutandoinst]}; indMaxAlgPag++ )); do
-#EN-18370-
-#EN-18380-
-#EN-18390-
+								if [[ ${ResuTiempoOptimoAcumulado[$ejecutandoinst,$indMaxAlgPag,$reloj]} -gt ${max_AlgPagFrecRec_FrecRec[$ejecutandoinst]} ]]; then #Localiza en qué posición encuentra la página.
+									max_AlgPagFrecRec_FrecRec[$ejecutandoinst]=${ResuTiempoOptimoAcumulado[$ejecutandoinst,$indMaxAlgPag,$reloj]} #Mayor frecuencia encontrada.
+									max_AlgPagFrecRec_Position[$ejecutandoinst]=$indMaxAlgPag #Posición del marco con la mayor frecuencia.
 								fi
-#EN-18400-
-#EN-18410-
-#EN-18420-
-#EN-18430-
+							done #Y sobre esa localización se hace el fallo de página
+							ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]=${max_AlgPagFrecRec_Position[$ejecutandoinst]} #El marco siguiente para el fallo de página será el que tiene la máxima frecuencia.  
+						elif [[ $seleccionAlgoritmoPaginacion -eq 12 || $seleccionAlgoritmoPaginacion -eq 14 ]]; then #MFU
+							max_AlgPagFrecRec_FrecRec[$ejecutandoinst]=-1 #Se recalcula la mayor frecuencia, aunque parezca no necesario hacerlo, por si es necesario para su impresión.
 							max_AlgPagFrecRec_Position[$ejecutandoinst]=0
 							for (( indMaxAlgPag=0; indMaxAlgPag<${memoria[$ejecutandoinst]}; indMaxAlgPag++ )); do
-#EN-18440-
-#EN-18450-
-#EN-18460-
+								if [[ ${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMaxAlgPag,$reloj]} -gt ${max_AlgPagFrecRec_FrecRec[$ejecutandoinst]} ]]; then #Localiza en qué posición encuentra la página.
+									max_AlgPagFrecRec_FrecRec[$ejecutandoinst]=${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMaxAlgPag,$reloj]} #Mayor frecuencia encontrada.
+									max_AlgPagFrecRec_Position[$ejecutandoinst]=$indMaxAlgPag #Posición del marco con la mayor frecuencia.
 								fi
-#EN-18470-
-#EN-18480-
+							done #Y sobre esa localización se hace el fallo de página
+							ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]=${max_AlgPagFrecRec_Position[$ejecutandoinst]} #El marco siguiente para el fallo de página será el que tiene la máxima frecuencia.  
 				
-#EN-18490-
-#EN-18500-
+						elif [[ $seleccionAlgoritmoPaginacion -eq 16 ]]; then #NFU con clases sobre MFU
+							max_AlgPagFrecRec_FrecRec[$ejecutandoinst]=-1 #Se recalcula la mayor frecuencia, aunque parezca no necesario hacerlo, por si es necesario para su impresión.
 							max_AlgPagFrecRec_Position[$ejecutandoinst]=0
 							ultimasPaginasAConsiderar=$(($((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) - $seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado))
 							paginasPendientesEjecutar=$((${ejecucion[$ejecutandoinst]}-$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1))))
-#EN-18510-
+							if [[ $ultimasPaginasAConsiderar -ge 0 ]]; then #Sin se han usado muchas páginas. sólo se consideran las últimas definidas mediante seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado.
 								limite_j=$ultimasPaginasAConsiderar
 							else
 								limite_j=0
 							fi
-#EN-18520-
-#EN-18530-
-#EN-18540-
-#EN-18550-
+							gestionAlgoritmoPagAlgPagRecNRU_Paginas_Clases_Max $limite_j #Se calcula el máximo de las frecuencias de las páginas de cada proceso en NFU (max_AlgPagFrecRec_FrecRec y max_AlgPagFrecRec_Position), por clases empezando por 0.
+							ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]=${max_AlgPagFrecRec_Position[$ejecutandoinst]} #El marco siguiente para el fallo de página será el que tiene la máxima frecuencia.  
+						elif [[ $seleccionAlgoritmoPaginacion -eq 13 || $seleccionAlgoritmoPaginacion -eq 15 ]]; then #LFU
+							min_AlgPagFrecRec_FrecRec[$ejecutandoinst]=${ResuUsoRecienteAcumulado[$ejecutandoinst,0,$reloj]} #Se recalcula la menor frecuencia, aunque parezca no necesario hacerlo, por si es necesario para su impresión. Y se comienza con la frecuencia de la primera página en el primer marco asociado al proceso.
 							min_AlgPagFrecRec_Position[$ejecutandoinst]=0
 							for (( indMinAlgPag=0; indMinAlgPag<${memoria[$ejecutandoinst]}; indMinAlgPag++ )); do
-#EN-18560-
-#EN-18570-
-#EN-18580-
+								if [[ ${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMinAlgPag,$reloj]} -lt ${min_AlgPagFrecRec_FrecRec[$ejecutandoinst]} ]]; then #Localiza en qué posición encuentra la página.
+									min_AlgPagFrecRec_FrecRec[$ejecutandoinst]=${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMinAlgPag,$reloj]} #Menor frecuencia encontrada.
+									min_AlgPagFrecRec_Position[$ejecutandoinst]=$indMinAlgPag #Posición del marco con la menor frecuencia.
 								fi
-#EN-18590-
-#EN-18600-
-#EN-18610-
-#EN-18620-
+							done #Y sobre esa localización se hace el fallo de página
+							ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]=${min_AlgPagFrecRec_Position[$ejecutandoinst]} #El marco siguiente para el fallo de página será el que tiene la mínima frecuencia.  
+						elif [[ $seleccionAlgoritmoPaginacion -eq 17 ]]; then #NFU con clases sobre MFU
+							min_AlgPagFrecRec_FrecRec[$ejecutandoinst]=${ResuUsoRecienteAcumulado[$ejecutandoinst,0,$reloj]} #Se recalcula la menor frecuencia, aunque parezca no necesario hacerlo, por si es necesario para su impresión. Y se comienza con la frecuencia de la primera página en el primer marco asociado al proceso.
 							min_AlgPagFrecRec_Position[$ejecutandoinst]=0
 							ultimasPaginasAConsiderar=$(($((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) - $seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado))
 							paginasPendientesEjecutar=$((${ejecucion[$ejecutandoinst]}-$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1))))
-#EN-18630-
+							if [[ $ultimasPaginasAConsiderar -ge 0 ]]; then #Sin se han usado muchas páginas. sólo se consideran las últimas definidas mediante seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado.
 								limite_j=$ultimasPaginasAConsiderar
 							else
 								limite_j=0
 							fi
-#EN-18640-
-#EN-18650-
+							gestionAlgoritmoPagAlgPagRecNRU_Paginas_Clases_Min $limite_j #Se calcula el máximo de las frecuencias de las páginas de cada proceso en NFU (max_AlgPagFrecRec_FrecRec y max_AlgPagFrecRec_Position), por clases empezando por 0.
+							ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]=${min_AlgPagFrecRec_Position[$ejecutandoinst]} #El marco siguiente para el fallo de página será el que tiene la mínima frecuencia.  
 						fi
-#EN-18660-
+						indiceResuPaginaAcumulado[$ejecutandoinst]=$reloj #Guarda el índice de la última modificación de datos por no usar el reloj en todos sus instantes sino sólo en los que se usa este proceso. También se usa para las frecuencias.
 					fi
 				done
 
-#EN-18670-
-#EN-18680-
-#EN-18690-
-#EN-18700-
-#EN-18710-
-#EN-18720-
-#EN-18730-
-#EN-18740-
-#EN-18750-
-#EN-18760-
-#EN-18770-
-#EN-18780-
-#EN-18790-
+			else #Y si NO está en la memoria...FALLO DE PÁGINA. Se localiza el que tenga el primer valor del mayor contador de frecuencia por ser AlgPagFrecMFU.
+				if [[ $seleccionAlgoritmoPaginacion -eq 5 || $seleccionAlgoritmoPaginacion -eq 12 || $seleccionAlgoritmoPaginacion -eq 14 ]]; then #MFU
+					ResuPunteroMarcoUsado[$ejecutandoinst,$reloj]=${max_AlgPagFrecRec_Position[$ejecutandoinst]} #Índice que apunta al marco con la página que acaba de ser incluida (ocupa un espacio ya utilizado anteriormente por otra página). 
+					paginasEnMemoriaProceso[${max_AlgPagFrecRec_Position[$ejecutandoinst]}]="$primera_pagina" #Se hace el fallo de página sobre el primer marco con la mayor frecuencia, sustituyendo la página.
+					paginasEnMemoriaTotal[$ejecutandoinst,${max_AlgPagFrecRec_Position[$ejecutandoinst]}]=$primera_pagina #Páginas residentes en memoria de todos los Procesos (Índices:Proceso, Páginas). Sale de forma calculada de paginasDefinidasTotal y su orden es el establecido tras los fallos de paginación.
+				elif [[ $seleccionAlgoritmoPaginacion -eq 13 || $seleccionAlgoritmoPaginacion -eq 15 ]]; then #LFU
+					ResuPunteroMarcoUsado[$ejecutandoinst,$reloj]=${min_AlgPagFrecRec_Position[$ejecutandoinst]} #Índice que apunta al marco con la página que acaba de ser incluida (ocupa un espacio ya utilizado anteriormente por otra página). 
+					paginasEnMemoriaProceso[${min_AlgPagFrecRec_Position[$ejecutandoinst]}]="$primera_pagina" #Se hace el fallo de página sobre el primer marco con la menor frecuencia, sustituyendo la página.
+					paginasEnMemoriaTotal[$ejecutandoinst,${min_AlgPagFrecRec_Position[$ejecutandoinst]}]=$primera_pagina #Páginas residentes en memoria de todos los Procesos (Índices:Proceso, Páginas). Sale de forma calculada de paginasDefinidasTotal y su orden es el establecido tras los fallos de paginación.
+				elif [[ $seleccionAlgoritmoPaginacion -eq 16 ]]; then #NFU con clases sobre MFU
+					ResuPunteroMarcoUsado[$ejecutandoinst,$reloj]=${max_AlgPagFrecRec_Position[$ejecutandoinst]} #Índice que apunta al marco con la página que acaba de ser incluida (ocupa un espacio ya utilizado anteriormente por otra página). 
+					paginasEnMemoriaProceso[${max_AlgPagFrecRec_Position[$ejecutandoinst]}]="$primera_pagina" #Se hace el fallo de página sobre el primer marco con la mayor frecuencia, sustituyendo la página.
+					paginasEnMemoriaTotal[$ejecutandoinst,${max_AlgPagFrecRec_Position[$ejecutandoinst]}]=$primera_pagina #Páginas residentes en memoria de todos los Procesos (Índices:Proceso, Páginas). Sale de forma calculada de paginasDefinidasTotal y su orden es el establecido tras los fallos de paginación.
 					directions_AlgPagFrecUsoRec_marco_pagina_referenciada[$ejecutandoinst,${max_AlgPagFrecRec_Position[$ejecutandoinst]}]=0
 				
-#EN-18800-
-#EN-18810-
-#EN-18820-
-#EN-18830-
+				elif [[ $seleccionAlgoritmoPaginacion -eq 17 ]]; then #NFU con clases sobre MFU
+					ResuPunteroMarcoUsado[$ejecutandoinst,$reloj]=${min_AlgPagFrecRec_Position[$ejecutandoinst]} #Índice que apunta al marco con la página que acaba de ser incluida (ocupa un espacio ya utilizado anteriormente por otra página). 
+					paginasEnMemoriaProceso[${min_AlgPagFrecRec_Position[$ejecutandoinst]}]="$primera_pagina" #Se hace el fallo de página sobre el primer marco con la menor frecuencia, sustituyendo la página.
+					paginasEnMemoriaTotal[$ejecutandoinst,${min_AlgPagFrecRec_Position[$ejecutandoinst]}]=$primera_pagina #Páginas residentes en memoria de todos los Procesos (Índices:Proceso, Páginas). Sale de forma calculada de paginasDefinidasTotal y su orden es el establecido tras los fallos de paginación.
 					directions_AlgPagFrecUsoRec_marco_pagina_referenciada[$ejecutandoinst,${min_AlgPagFrecRec_Position[$ejecutandoinst]}]=0
 				fi
-#EN-18840-
-#EN-18850-
+				#Se van a tratar las variables que no se corresponden con el marco usado.
+				for ((indMarcoRec=0; indMarcoRec<${numeroMarcosUsados[$ejecutandoinst]}; indMarcoRec++)); do #El tiempo desde que se usó una página en memoria aumenta en cada unidad de tiempo de ejecución del proceso, siempre que no sea la que se usa, o sobre la que se produce el fallo de paginación. 
 					if [[ $indMarcoRec -ne ${ResuPunteroMarcoUsado[$ejecutandoinst,$reloj]} ]]; then
-#EN-18860-
-#EN-18870-
+						if [[ $seleccionAlgoritmoPaginacion -eq 5 ]]; then #Óptimo
+							calcularResuTiempoOptimoAcumulado_PaginaNoEjecutada #Con $indOptimo se busca el tiempo que falta hasta una nueva ejecución de la misma página. 0 si no hay más repeticiones de esa página.
 							ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]=$((${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]} + 1))
 							ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]} + 1))
 
-#EN-18880-
+						elif [[ $seleccionAlgoritmoPaginacion -eq 12 || $seleccionAlgoritmoPaginacion -eq 13 ]]; then #MFU/LFU. Sin máximo de tiempo desde que se usó por última vez.
 							ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]=$((${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]} + 1))
 							ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]} + 1))
-#EN-18890-
-#EN-18900-
+						elif [[ $seleccionAlgoritmoPaginacion -eq 14 || $seleccionAlgoritmoPaginacion -eq 15 ]]; then #NFU-MFU/NFU-LFU
+							if [[ ${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,${indiceResuPaginaAcumulado[$ejecutandoinst]}]} -lt $seleccionAlgoritmoPaginacion_uso_rec_valor ]]; then #Hay un máximo par el tiempo desde que se usó (seleccionAlgoritmoPaginacion_uso_rec_valor).
 								ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]=$((${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]} + 1))
 							else
 								ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]=$seleccionAlgoritmoPaginacion_uso_rec_valor
 							fi
 							ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]} + 1))
-#EN-18910-
+						elif [[ $seleccionAlgoritmoPaginacion -eq 16 || $seleccionAlgoritmoPaginacion -eq 17 ]]; then #NFU-MFU/NFU-LFU con clases. Sin máximo de tiempo desde que se usó por última vez.
 							ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]=$((${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]} + 1))
-#EN-18920-
+							if [[ ${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,${indiceResuPaginaAcumulado[$ejecutandoinst]}]} -lt $seleccionAlgoritmoPaginacion_clases_uso_rec_valor ]]; then #Hay un máximo par el tiempo desde que se usó (seleccionAlgoritmoPaginacion_uso_rec_valor).
 								ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]} + 1))
 							else
 								ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]=$seleccionAlgoritmoPaginacion_clases_uso_rec_valor
@@ -6162,110 +6162,110 @@ function gestionAlgoritmoPagAlgPagFrecFIFORelojSegOp {
 						fi
 					fi
 					if [[ $indMarcoRec -eq ${ResuPunteroMarcoUsado[$ejecutandoinst,$reloj]}  ]]; then
-#EN-18930-
-#EN-18940-
+						if [[ $seleccionAlgoritmoPaginacion -eq 5 ]]; then #Óptimo
+							calcularResuTiempoOptimoAcumulado_PaginaEjecutada #Con $indOptimo se busca el tiempo que falta hasta una nueva ejecución de la misma página. 0 si no hay más repeticiones de esa página.
 
-#EN-18950-
-#EN-18960-
-#EN-18970-
+							ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]=$((${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]} + 1)) #Resumen - Índices: (proceso, marco, reloj). Dato: Tiempo que hace que se usó la Página de un proceso que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso.
+							ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMarcoRec]} + 1)) #Resumen - Índices: (proceso, marco). Dato: Histórico con el valor de la "frecuencia/tiempo desde su último uso" para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación
+							ResuPaginaAcumulado[$ejecutandoinst,${max_AlgPagFrecRec_Position[$ejecutandoinst]},$reloj]=$primera_pagina # Se añade el dato de la página que acaba de ser incluida en un marco.
 						fi
 					fi					
 				done
-#EN-18980-
-#EN-18990-
-#EN-19000-
-#EN-19010-
-#EN-19020-
-#EN-19030-
-#EN-19040-
-#EN-19050-
-#EN-19060-
-#EN-19070-
-#EN-19080-
-#EN-19090-
-#EN-19100-
-#EN-19110-
-#EN-19120-
+				#Ahora se definirán las variables que se corresponden con el marco usado. 
+				contadorAlgPagFallosTotalesProcesos[$ejecutandoinst]=$((contadorAlgPagFallosTotalesProcesos[$ejecutandoinst] + 1)) #Aumenta en una unidad el número de fallos de página del proceso.
+				((contadorAlgPagFallosProcesoAcumulado[$ejecutandoinst]++)) #Contador de fallos totales de cada proceso
+				if [[ $seleccionAlgoritmoPaginacion -eq 12 || $seleccionAlgoritmoPaginacion -eq 14 || $seleccionAlgoritmoPaginacion -eq 16 ]]; then #MFU
+					ResuPaginaAcumulado[$ejecutandoinst,${max_AlgPagFrecRec_Position[$ejecutandoinst]},$reloj]=$primera_pagina # Se añade el dato de la página que acaba de ser incluida en un marco.
+					ResuPaginaOrdinalAcumulado[$ejecutandoinst,${max_AlgPagFrecRec_Position[$ejecutandoinst]},$reloj]=$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso.
+					ResuUsoRecienteAcumulado[$ejecutandoinst,${max_AlgPagFrecRec_Position[$ejecutandoinst]},$reloj]=0 #Como la página acaba de ser metida en el marco, se suma 1 a la frecuencia de la página. 
+					ResuFallosPaginaProceso[$ejecutandoinst,$reloj]=$primera_pagina #Y se añade la página a la secuencia de fallos. 
+					ResuFallosMarcoProceso[$ejecutandoinst,$reloj]=${max_AlgPagFrecRec_Position[$ejecutandoinst]} #Y se añade el marco a la secuencia de fallos. 
+					if [[ $seleccionAlgoritmoPaginacion -eq 16 ]]; then #NFU-MFU con clases					
+						ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,${max_AlgPagFrecRec_Position[$ejecutandoinst]}]=0 #Resumen - Índices: (proceso, marco). Dato: Valor de la "frecuencia/tiempo desde su último uso" para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación
+						primerTiempoEntradaPagina[$ejecutandoinst,${ResuPunteroMarcoUsado[$ejecutandoinst,$reloj]}]=0 #Se inicializa a 0 el número de unidades de tiempo que hace que se cambió la clase por llegar al máximo de tiempo en una clase 2 o 3 o al máximo de frecuencia de uso.
+						usoMismaPagina=1 #Resultado de un fallo de página (1) y no por usar una página ya existente en memoria (0).
+						gestionAlgoritmoPagAlgPagRecNRU_Referenciado_Modificado ${max_AlgPagFrecRec_Position[$ejecutandoinst]} $((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) #Se recalculan las clases NRU de las páginas de cada proceso, dependiendo de si han sido referenciadas y/o modificadas. Se envía: marco + ordinal_página
+						max_AlgPagFrecRec_FrecRec[$ejecutandoinst]=-1 #Se recalcula la mayor frecuencia, aunque parezca no necesario hacerlo, por si es necesario para su impresión.
 						max_AlgPagFrecRec_Position[$ejecutandoinst]=0
 						ultimasPaginasAConsiderar=$(($((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) - $seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado))
 						paginasPendientesEjecutar=$((${ejecucion[$ejecutandoinst]}-$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1))))
-#EN-19130-
+						if [[ $ultimasPaginasAConsiderar -ge 0 ]]; then #Sin se han usado muchas páginas. sólo se consideran las últimas definidas mediante seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado.
 							limite_j=$ultimasPaginasAConsiderar
 						else
 							limite_j=0
 						fi
-#EN-19140-
+						gestionAlgoritmoPagAlgPagRecNRU_Paginas_Clases_Max $limite_j #Se calcula el máximo de las frecuencias de las páginas de cada proceso en NFU (max_AlgPagFrecRec_FrecRec y max_AlgPagFrecRec_Position), por clases empezando por 0.
 					else
-#EN-19150-
+						max_AlgPagFrecRec_FrecRec[$ejecutandoinst]=-1 #Se recalcula la mayor frecuencia, aunque parezca no necesario hacerlo, por si es necesario para su impresión.
 						max_AlgPagFrecRec_Position[$ejecutandoinst]=0
 						for (( indMaxAlgPag=0; indMaxAlgPag<${memoria[$ejecutandoinst]}; indMaxAlgPag++ )); do
-#EN-19160-
-#EN-19170-
-#EN-19180-
+							if [[ ${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMaxAlgPag,$reloj]} -gt ${max_AlgPagFrecRec_FrecRec[$ejecutandoinst]} ]]; then #Localiza en qué posición encuentra la página.
+								max_AlgPagFrecRec_FrecRec[$ejecutandoinst]=${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMaxAlgPag,$reloj]} #Mayor frecuencia encontrada.
+								max_AlgPagFrecRec_Position[$ejecutandoinst]=$indMaxAlgPag #Posición del marco con la mayor frecuencia.
 							fi
-#EN-19190-
+						done #Y sobre esa localización se hace el fallo de página.
 					fi
-#EN-19200-
-#EN-19210-
-#EN-19220-
-#EN-19230-
-#EN-19240-
-#EN-19250-
-#EN-19260-
-#EN-19270-
-#EN-19280-
-#EN-19290-
-#EN-19300-
-#EN-19310-
-#EN-19320-
+					ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]=${max_AlgPagFrecRec_Position[$ejecutandoinst]} #El marco siguiente para el fallo de página será el que tiene la máxima frecuencia.  
+				elif [[ $seleccionAlgoritmoPaginacion -eq 13 || $seleccionAlgoritmoPaginacion -eq 15 || $seleccionAlgoritmoPaginacion -eq 17 ]]; then #LFU
+					ResuPaginaAcumulado[$ejecutandoinst,${min_AlgPagFrecRec_Position[$ejecutandoinst]},$reloj]=$primera_pagina # Se añade el dato de la página que acaba de ser incluida en un marco.
+					ResuPaginaOrdinalAcumulado[$ejecutandoinst,${min_AlgPagFrecRec_Position[$ejecutandoinst]},$reloj]=$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso.
+					ResuUsoRecienteAcumulado[$ejecutandoinst,${min_AlgPagFrecRec_Position[$ejecutandoinst]},$reloj]=0 #Como la página acaba de ser metida en el marco, se suma 1 a la frecuencia de la página. 
+					ResuFallosPaginaProceso[$ejecutandoinst,$reloj]=$primera_pagina #Y se añade la página a la secuencia de fallos. 
+					ResuFallosMarcoProceso[$ejecutandoinst,$reloj]=${min_AlgPagFrecRec_Position[$ejecutandoinst]} #Y se añade el marco a la secuencia de fallos. 
+					if [[ $seleccionAlgoritmoPaginacion -eq 17 ]]; then #NFU-LFU con clases
+						ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,${max_AlgPagFrecRec_Position[$ejecutandoinst]}]=0 #Resumen - Índices: (proceso, marco). Dato: Valor de la "frecuencia/tiempo desde su último uso" para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación
+						primerTiempoEntradaPagina[$ejecutandoinst,${ResuPunteroMarcoUsado[$ejecutandoinst,$reloj]}]=0 #Se inicializa a 0 el número de unidades de tiempo que hace que se cambió la clase por llegar al máximo de tiempo en una clase 2 o 3 o al máximo de frecuencia de uso.
+						usoMismaPagina=1 #Resultado de un fallo de página (1) y no por usar una página ya existente en memoria (0).
+						gestionAlgoritmoPagAlgPagRecNRU_Referenciado_Modificado ${min_AlgPagFrecRec_Position[$ejecutandoinst]} $((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) #Se recalculan las clases NRU de las páginas de cada proceso, dependiendo de si han sido referenciadas y/o modificadas. Se envía: marco + ordinal_página
+						min_AlgPagFrecRec_FrecRec[$ejecutandoinst]=${ResuUsoRecienteAcumulado[$ejecutandoinst,0,$reloj]} #Se recalcula la menor frecuencia, aunque parezca no necesario hacerlo, por si es necesario para su impresión. Y se comienza con la frecuencia de la primera página en el primer marco asociado al proceso.
 						min_AlgPagFrecRec_Position[$ejecutandoinst]=0
 						ultimasPaginasAConsiderar=$(($((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)) - $seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado))
 						paginasPendientesEjecutar=$((${ejecucion[$ejecutandoinst]}-$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1))))
-#EN-19330-
+						if [[ $ultimasPaginasAConsiderar -ge 0 ]]; then #Sin se han usado muchas páginas. sólo se consideran las últimas definidas mediante seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado.
 							limite_j=$ultimasPaginasAConsiderar
 						else
 							limite_j=0
 						fi
-#EN-19340-
+						gestionAlgoritmoPagAlgPagRecNRU_Paginas_Clases_Min $limite_j #Se calcula el máximo de las frecuencias de las páginas de cada proceso en NFU (max_AlgPagFrecRec_FrecRec y max_AlgPagFrecRec_Position), por clases empezando por 0.
 					else
-#EN-19350-
+						min_AlgPagFrecRec_FrecRec[$ejecutandoinst]=${ResuUsoRecienteAcumulado[$ejecutandoinst,0,$reloj]} #Se recalcula la menor frecuencia, aunque parezca no necesario hacerlo, por si es necesario para su impresión. Y se comienza con la frecuencia de la primera página en el primer marco asociado al proceso.
 						min_AlgPagFrecRec_Position[$ejecutandoinst]=0
 						for (( indMinAlgPag=0; indMinAlgPag<${memoria[$ejecutandoinst]}; indMinAlgPag++ )); do
-#EN-19360-
-#EN-19370-
-#EN-19380-
+							if [[ ${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMinAlgPag,$reloj]} -lt ${min_AlgPagFrecRec_FrecRec[$ejecutandoinst]} ]]; then #Localiza en qué posición encuentra la página.
+								min_AlgPagFrecRec_FrecRec[$ejecutandoinst]=${ResuUsoRecienteAcumulado[$ejecutandoinst,$indMinAlgPag,$reloj]} #Mayor frecuencia encontrada.
+								min_AlgPagFrecRec_Position[$ejecutandoinst]=$indMinAlgPag #Posición del marco con la menor frecuencia.
 							fi
-#EN-19390-
+						done #Y sobre esa localización se hace el fallo de página.
 					fi
-#EN-19400-
+					ResuPunteroMarcoSiguienteFalloPagAcumulado[$ejecutandoinst,$reloj]=${min_AlgPagFrecRec_Position[$ejecutandoinst]} #El marco siguiente para el fallo de página será el que tiene la mínima frecuencia.  
 				fi
-#EN-19410-
+				indiceResuPaginaAcumulado[$ejecutandoinst]=$reloj #Guarda el índice de la última modificación de datos por no usar el reloj en todos sus instantes sino sólo en los que se usa este proceso. También se usa para las frecuencias.
 			fi
 		fi          
 	
 	else #[[ ${temp_rej[$ejecutandoinst]} -eq 0 ]]; then #Y si no quedan más páginas pendientes de ejecutar. No es tiempoEjecucion sino temp_rej.
 		for (( counter=0; counter<$nprocesos; counter++ )); do
 			if [[ " ${llegados[*]} " == *" $ejecutandoinst "* ]]; then 
-#EN-19420-
-#EN-19430-
+				retorno[$ejecutandoinst]=$((reloj - llegada[$ejecutandoinst])) #Como temp_ret(). Se aconseja quitar la variable $retorno y estandarizar las variables a usar ??????????.
+				retorno+=("${retorno[$ejecutandoinst]}") #Como temp_ret(). Se aconseja quitar la variable $retorno y estandarizar las variables a usar ??????????.
 				if [[ ! " ${ejecutando[*]} " == *" $ejecutandoinst "* ]]; then
-#EN-19440-
+					espera[$ejecutandoinst]=$((reloj - llegada[$ejecutandoinst])) #Como temp_wait(). Se aconseja quitar la variable $espera y estandarizar las variables a usar ??????????.
 					if [[ " ${haestadopausado[*]} " == *" $ejecutandoinst "* ]]; then
 						resta[$ejecutandoinst]=$((tiempo[$ejecutandoinst] - tiempoEjecucion[$ejecutandoinst])) #Como temp_rej() #tiempo o ejecucion[$counter] ???????????? #Esa resta debería ser alrevés, el de ejecución menos lo ya ejecutado...
 						espera[$ejecutandoinst]=$((reloj - llegada[$ejecutandoinst] - resta[$ejecutandoinst])) #Como temp_wait() #Tampoco es (reloj - llegada[$ejecutandoinst]).
 					fi
-#EN-19450-
+					espera+=("${espera[${numeroproceso[$ejecutandoinst]}]}") #Como temp_wait(). Se aconseja quitar la variable $espera y estandarizar las variables a usar ??????????.
 				fi
 			fi
 		done
-#EN-19460-
+		finalizado=$ejecutandoinst #Actualización de variables y cambios de estado. Algunos ya se hacen en ajusteFinalTiemposEsperaEjecucionRestante().
 #		procFinalizado=$ejecutandoinst #Variable que se usa para controlar la impresión de entrada a dibujaResumenAlgPagFrecUsoRec(). Se modifica en inicializaVectoresVariables(), gestionAlgoritmoPagAlgPagFrecMFU(), gestionProcesosFCFS(), gestionProcesosSJF(), gestionProcesosSRPT() y en inicioNuevo().
 		ejecutando="" 
 		finalizados+=("$finalizado")
 		finalizadonuevo+=("$finalizado")
 		hanestadomem=$paginasEnMemoriaProceso
 		if [[ ${#finalizados[@]} -ge ${#llegada[@]} ]]; then #De momento se cambia ordenados por llegada.
-#EN-19470-
+			for i in "${!enmemoria[@]}"; do #Localiza en qué posición encuentra el dato (da la posición, pero no la variable en el array).
 				if [[ "${enmemoria[$i]}" == "$finalizado" ]]; then
 					posicion_finalizado=$i
 					unset 'enmemoria[$posicion_finalizado]'
@@ -6277,22 +6277,22 @@ function gestionAlgoritmoPagAlgPagFrecFIFORelojSegOp {
 			done
 		fi
 	fi
-#EN-19480-
+} #Fin de gestionAlgoritmoPagAlgPagRecMRULRUNRU()
 
 ####################################################################################
-#EN-19490-
+# Sinopsis: Se calculan las clases NRU de las páginas de cada proceso, dependiendo de si han sido referenciadas y/o modificadas.
 ####################################################################################
 function calcularResuTiempoOptimoAcumulado_PaginaEjecutada { 
 	varCierreOptimo=0
 	indOptimo=$((${numeroPaginasUsadasProceso[$ejecutandoinst]}))
 	until [[ $varCierreOptimo -eq 1 ]]; do 
-#EN-19500-
+		if [[ $indOptimo -lt ${ejecucion[$ejecutandoinst]} ]]; then #Con $indOptimo se busca el tiempo que falta hasta una nueva ejecución de la misma página. 0 si no hay más repeticiones de esa página.
 			if [[ ${paginasDefinidasTotal[$ejecutandoinst,$indOptimo]} -eq $primera_pagina ]]; then
-#EN-19510-
+				ResuTiempoOptimoAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]=$(($indOptimo - $((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)))) #Recoge los datos del array de clases de uso de las páginas contenidas en los marcos en el instante anterior.
 				varCierreOptimo=1
 			fi
 		else
-#EN-19520-
+			ResuTiempoOptimoAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]=0 #Recoge los datos del array de clases de uso de las páginas contenidas en los marcos en el instante anterior.
 			varCierreOptimo=1
 		fi
 		indOptimo=$(($indOptimo + 1)) 
@@ -6300,20 +6300,20 @@ function calcularResuTiempoOptimoAcumulado_PaginaEjecutada {
 }
 
 ####################################################################################
-#EN-19530-
+# Sinopsis: Se calculan las clases NRU de las páginas de cada proceso, dependiendo de si han sido referenciadas y/o modificadas.
 ####################################################################################
 function calcularResuTiempoOptimoAcumulado_PaginaNoEjecutada { 
 	varCierreOptimo=0
-#EN-19540-
+#	indOptimo=$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1))
 	indOptimo=$((${numeroPaginasUsadasProceso[$ejecutandoinst]}))
 	until [[ $varCierreOptimo -eq 1 ]]; do 
-#EN-19550-
+		if [[ $indOptimo -lt ${ejecucion[$ejecutandoinst]} ]]; then #Con $indOptimo se busca el tiempo que falta hasta una nueva ejecución de la misma página. 0 si no hay más repeticiones de esa página.
 			if [[ ${paginasDefinidasTotal[$ejecutandoinst,$indOptimo]} -eq ${paginasEnMemoriaProceso[$indMarcoRec]} ]]; then
-#EN-19560-
+				ResuTiempoOptimoAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]=$(($indOptimo - $((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1)))) #Recoge los datos del array de clases de uso de las páginas contenidas en los marcos en el instante anterior.
 				varCierreOptimo=1
 			fi
 		else
-#EN-19570-
+			ResuTiempoOptimoAcumulado[$ejecutandoinst,$indMarcoRec,$reloj]=0 #Recoge los datos del array de clases de uso de las páginas contenidas en los marcos en el instante anterior.
 			varCierreOptimo=1
 		fi
 		indOptimo=$(($indOptimo + 1)) 
@@ -6321,212 +6321,212 @@ function calcularResuTiempoOptimoAcumulado_PaginaNoEjecutada {
 }
 
 ####################################################################################
-#EN-19580-
+# Sinopsis: Se calculan las clases NRU de las páginas de cada proceso, dependiendo de si han sido referenciadas y/o modificadas.
 ####################################################################################
 function gestionAlgoritmoPagAlgPagRecNRU_Referenciado_Modificado { 
-#EN-19590-
+	for ((indMarco=0; indMarco <= $((${numeroMarcosUsados[$ejecutandoinst]} - 1)); indMarco++)); do #Se usará para determinar si una página ha sido o no referenciada y modificada en un tiempo anterior inferior a seleccionAlgoritmoPaginacion_clases_valor unidades de tiempo en los algoritmos NFU y NRU. Se inicia a 0 por no haber sido aún referenciada (vista o modificada) y se cambia sólo cuando ya estuviera en memoria.
 		tiempoPag=$((${numeroPaginasUsadasProceso[$ejecutandoinst]} - 1))
-#EN-19600-
-#EN-19610-
-#EN-19620-
-#EN-19630-
+		if [[ $usoMismaPagina -eq 1 && $indMarco -eq $1 ]]; then #Con cambio de página por fallo de página ($usoMismaPagina=1) y, por tanto, sólo para esa página. El fallo sobre un marco sólo puede producir clases 0 o 1.
+			pagUsadaMarco=$2 #Se define como página usada o modificada	
+			directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$1,$tiempoPag]=0 #Se reinicia la clase a NO referenciada-NO modificada para recalcular después la clase correcta.
+			ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]=0 #Resumen - Índices: (proceso, marco, ordinal del tiempo de ejecución (página)). Dato: Histórico con el tiempo desde la asigación de las clases 2 o 3 para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación.
 			if [[ ${directions_AlgPagFrecUsoRec_marco_pagina_referenciada[$ejecutandoinst,$1]} -eq 0 && ${directions_AlgPagFrecUsoRec_pagina_modificada[$ejecutandoinst,$pagUsadaMarco,0]} -eq 0 ]]; then
-#EN-19640-
+				directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$1,$tiempoPag]=0 #NO referenciada-NO modificada en un tiempo anterior inferior a seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado unidades de tiempo.
 			elif [[ ${directions_AlgPagFrecUsoRec_marco_pagina_referenciada[$ejecutandoinst,$1]} -eq 0 && ${directions_AlgPagFrecUsoRec_pagina_modificada[$ejecutandoinst,$pagUsadaMarco,0]} -eq 1 ]]; then
-#EN-19650-
+				directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$1,$tiempoPag]=1 #NO referenciada-SI modificada en un tiempo anterior inferior a seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado unidades de tiempo.
 			fi
 		fi
 
-#EN-19660-
+		if [[ $usoMismaPagina -eq 1 && $indMarco -ne $1 ]]; then #Con cambio de página por fallo de página ($usoMismaPagina=1), pero sin actuar sobre la página tratada, ya que se deben actualizar las clases de todas las páginas. El fallo sobre otro marco sólo puede producir un aumento en el tiempo ordinal que hace que se cambió la clase, por lo que podría pasar de clase 2 a 0, o de 3 a 1.
 			pagUsadaMarco=${#paginasEnMemoriaTotal[$ejecutandoinst,$indMarco]} #Se define como página no usada ni modificada	
 			if [[ ${directions_AlgPagFrecUsoRec_marco_pagina_referenciada[$ejecutandoinst,$indMarco]} -eq 0 && ${directions_AlgPagFrecUsoRec_pagina_modificada[$ejecutandoinst,$pagUsadaMarco,0]} -eq 0 ]]; then
-#EN-19670-
-#EN-19680-
+				directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$indMarco,$tiempoPag]=0 #NO referenciada-NO modificada en un tiempo anterior inferior a seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado unidades de tiempo.
+				ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]} + 1)) #Resumen - Índices: (proceso, marco, ordinal del tiempo de ejecución (página)). Dato: Histórico con el tiempo desde la asigación de las clases 2 o 3 para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación.
 			elif [[ ${directions_AlgPagFrecUsoRec_marco_pagina_referenciada[$ejecutandoinst,$indMarco]} -eq 0 && ${directions_AlgPagFrecUsoRec_pagina_modificada[$ejecutandoinst,$pagUsadaMarco,0]} -eq 1 ]]; then
-#EN-19690-
-#EN-19700-
+				directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$indMarco,$tiempoPag]=1 #SI referenciada-NO modificada en un tiempo anterior inferior a seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado unidades de tiempo.
+				ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]} + 1)) #Resumen - Índices: (proceso, marco). Dato: Tiempo desde la asigación de las clases 2 o 3 para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación.
 			elif [[ ${directions_AlgPagFrecUsoRec_marco_pagina_referenciada[$ejecutandoinst,$indMarco]} -eq 1 && ${directions_AlgPagFrecUsoRec_pagina_modificada[$ejecutandoinst,$pagUsadaMarco,0]} -eq 0 ]]; then
-#EN-19710-
-#EN-19720-
+				directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$indMarco,$tiempoPag]=2 #SI referenciada-SI modificada en un tiempo anterior inferior a seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado unidades de tiempo.
+				ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]} + 1)) #Resumen - Índices: (proceso, marco). Dato: Tiempo desde la asigación de las clases 2 o 3 para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación.
 			elif [[ ${directions_AlgPagFrecUsoRec_marco_pagina_referenciada[$ejecutandoinst,$indMarco]} -eq 1 && ${directions_AlgPagFrecUsoRec_pagina_modificada[$ejecutandoinst,$pagUsadaMarco,0]} -eq 1 ]]; then
-#EN-19730-
-#EN-19740-
-#EN-19750-
+				directions_AlgPagFrecUsoRec_marco_pagina_referenciada[$ejecutandoinst,$indMarco]=1 #Si lleva mucho tiempo como clase 3, pasa a no referenciado (0) y no modificada y, por tanto, a clase 0.
+				directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$indMarco,$tiempoPag]=3 #SI referenciada-NO modificada en un tiempo anterior inferior a seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado unidades de tiempo.
+				ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]} + 1)) #Resumen - Índices: (proceso, marco). Dato: Tiempo desde la asigación de las clases 2 o 3 para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación.
 			fi
 		fi
 
-#EN-19760-
-#EN-19770-
+		if [[ $usoMismaPagina -eq 0 && $indMarco -eq $1 ]]; then #Con uso de página, pero sin cambio por fallo de página ($usoMismaPagina=0), ya que se deben actualizar las clases de todas las páginas.
+			pagUsadaMarco=$2 #Se define como página usada o modificada	
 			if [[ ${directions_AlgPagFrecUsoRec_marco_pagina_referenciada[$ejecutandoinst,$1]} -eq 0 && ${directions_AlgPagFrecUsoRec_pagina_modificada[$ejecutandoinst,$pagUsadaMarco,0]} -eq 0 ]]; then
-#EN-19780-
-#EN-19790-
-#EN-19800-
-#EN-19810-
-#EN-19820-
-#EN-19830-
+				if [[ ${directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$1,$(($tiempoPag - 1))]} -eq 0 ]]; then #Referencia a una página ya ejecutada en una unidad de reloj anterior, dato copiado en todas las páginas de una unidad de tiempo a la siguiente, antes de analizar lo que ocurrirá en el tiempo actual. 
+					directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$1,$tiempoPag]=0 #NO referenciada-NO modificada en un tiempo anterior inferior a seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado unidades de tiempo.
+					ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]} + 1)) #Resumen - Índices: (proceso, marco). Dato: Tiempo desde la asigación de las clases 2 o 3 para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación.
+				elif [[ ${directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$1,$(($tiempoPag - 1))]} -eq 1 ]]; then #Si ya era de clase 2 se comprueba que no lleve más de un tiempo $seleccionAlgoritmoPaginacion_clases_valor
+					directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$1,$tiempoPag]=1 #SI referenciada-SI modificada en un tiempo anterior inferior a seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado unidades de tiempo.
+					ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]} + 1)) #Resumen - Índices: (proceso, marco). Dato: Tiempo desde la asigación de las clases 2 o 3 para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación.
 				fi
 			elif [[ ${directions_AlgPagFrecUsoRec_marco_pagina_referenciada[$ejecutandoinst,$1]} -eq 0 && ${directions_AlgPagFrecUsoRec_pagina_modificada[$ejecutandoinst,$pagUsadaMarco,0]} -eq 1 ]]; then
 				if [[ ${directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$1,$(($tiempoPag - 1))]} -eq 0 ]]; then 
-#EN-19840-
-#EN-19850-
-#EN-19860-
-#EN-19870-
-#EN-19880-
+					directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$1,$tiempoPag]=1 #NO referenciada-NO modificada en un tiempo anterior inferior a seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado unidades de tiempo.
+					ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]=0 #Resumen - Índices: (proceso, marco). Dato: Tiempo desde la asigación de las clases 2 o 3 para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación.
+				elif [[ ${directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$1,$(($tiempoPag - 1))]} -eq 1 ]]; then #Si ya era de clase 2 se comprueba que no lleve más de un tiempo $seleccionAlgoritmoPaginacion_clases_valor
+					directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$1,$tiempoPag]=1 #NO referenciada-NO modificada en un tiempo anterior inferior a seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado unidades de tiempo.
+					ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]} + 1)) #Resumen - Índices: (proceso, marco, ordinal del tiempo de ejecución (página)). Dato: Histórico con el tiempo desde la asigación de las clases 2 o 3 para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación.
 				fi
 			elif [[ ${directions_AlgPagFrecUsoRec_marco_pagina_referenciada[$ejecutandoinst,$1]} -eq 1 && ${directions_AlgPagFrecUsoRec_pagina_modificada[$ejecutandoinst,$pagUsadaMarco,0]} -eq 0 ]]; then
-#EN-19890-
-#EN-19900-
-#EN-19910-
+				if [[ ${directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$1,$(($tiempoPag - 1))]} -eq 0 ]]; then #Referencia a una página ya ejecutada en una unidad de reloj anterior, dato copiado en todas las páginas de una unidad de tiempo a la siguiente, antes de analizar lo que ocurrirá en el tiempo actual. 
+					directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$1,$tiempoPag]=2 #NO referenciada-NO modificada en un tiempo anterior inferior a seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado unidades de tiempo.
+					ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]=0 #Resumen - Índices: (proceso, marco). Dato: Tiempo desde la asigación de las clases 2 o 3 para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación.
 				elif [[ ${directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$1,$(($tiempoPag - 1))]} -eq 1 ]]; then 
-#EN-19920-
-#EN-19930-
-#EN-19940-
-#EN-19950-
-#EN-19960-
-#EN-19970-
-#EN-19980-
-#EN-19990-
+					directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$1,$tiempoPag]=3 #NO referenciada-NO modificada en un tiempo anterior inferior a seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado unidades de tiempo.
+					ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]=0 #Resumen - Índices: (proceso, marco). Dato: Tiempo desde la asigación de las clases 2 o 3 para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación.
+				elif [[ ${directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$1,$(($tiempoPag - 1))]} -eq 2 ]]; then #Si ya era de clase 2 se comprueba que no lleve más de un tiempo $seleccionAlgoritmoPaginacion_clases_valor
+					directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$1,$tiempoPag]=2 #SI referenciada-SI modificada en un tiempo anterior inferior a seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado unidades de tiempo.
+					ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]} + 1)) #Resumen - Índices: (proceso, marco). Dato: Tiempo desde la asigación de las clases 2 o 3 para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación.
+				elif [[ ${directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$1,$(($tiempoPag - 1))]} -eq 3 ]]; then #Si ya era de clase 2 se comprueba que no lleve más de un tiempo $seleccionAlgoritmoPaginacion_clases_valor
+					directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$1,$tiempoPag]=3 #NO referenciada-NO modificada en un tiempo anterior inferior a seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado unidades de tiempo.
+					ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]} + 1)) #Resumen - Índices: (proceso, marco). Dato: Tiempo desde la asigación de las clases 2 o 3 para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación.
 				fi
 			elif [[ ${directions_AlgPagFrecUsoRec_marco_pagina_referenciada[$ejecutandoinst,$1]} -eq 1 && ${directions_AlgPagFrecUsoRec_pagina_modificada[$ejecutandoinst,$pagUsadaMarco,0]} -eq 1 ]]; then
 				if [[ ${directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$1,$(($tiempoPag - 1))]} -eq 0 ]]; then 
-#EN-20000-
-#EN-20010-
+					directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$1,$tiempoPag]=3 #SI referenciada-NO modificada en un tiempo anterior inferior a seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado unidades de tiempo.
+					ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]=0 #Resumen - Índices: (proceso, marco). Dato: Tiempo desde la asigación de las clases 2 o 3 para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación.
 				elif [[ ${directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$1,$(($tiempoPag - 1))]} -eq 1 ]]; then 
-#EN-20020-
-#EN-20030-
-#EN-20040-
-#EN-20050-
-#EN-20060-
-#EN-20070-
-#EN-20080-
-#EN-20090-
-#EN-20100-
+					directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$1,$tiempoPag]=3 #SI referenciada-NO modificada en un tiempo anterior inferior a seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado unidades de tiempo.
+					ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]=0 #Resumen - Índices: (proceso, marco). Dato: Tiempo desde la asigación de las clases 2 o 3 para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación.
+				elif [[ ${directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$1,$(($tiempoPag - 1))]} -eq 2 ]]; then #Si ya era de clase 2 se comprueba que no lleve más de un tiempo $seleccionAlgoritmoPaginacion_clases_valor
+					directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$1,$tiempoPag]=3 #SI referenciada-NO modificada en un tiempo anterior inferior a seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado unidades de tiempo.
+					ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]=0 #Resumen - Índices: (proceso, marco). Dato: Tiempo desde la asigación de las clases 2 o 3 para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación.
+				elif [[ ${directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$1,$(($tiempoPag - 1))]} -eq 3 ]]; then #Si ya era de clase 3 se comprueba que no lleve más de un tiempo $seleccionAlgoritmoPaginacion_clases_valor
+					directions_AlgPagFrecUsoRec_marco_pagina_referenciada[$ejecutandoinst,$1]=1 #Si lleva mucho tiempo como clase 3, pasa a no referenciado (0) y no modificada y, por tanto, a clase 0.
+					directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$1,$tiempoPag]=3 #SI referenciada-NO modificada en un tiempo anterior inferior a seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado unidades de tiempo.
+					ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]} + 1)) #Resumen - Índices: (proceso, marco). Dato: Tiempo desde la asigación de las clases 2 o 3 para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación.
 				fi
 			fi 
 		fi
 		
-#EN-20110-
+		if [[ $usoMismaPagina -eq 0 && $indMarco -ne $1 ]]; then #Con uso, pero sin cambio de página ($usoMismaPagina=1), ya que se deben actualizar las clases de todas las páginas.
 			pagUsadaMarco=${#paginasEnMemoriaTotal[$ejecutandoinst,$indMarco]} #Se define como página no usada ni modificada	
 			if [[ ${directions_AlgPagFrecUsoRec_marco_pagina_referenciada[$ejecutandoinst,$indMarco]} -eq 0 && ${directions_AlgPagFrecUsoRec_pagina_modificada[$ejecutandoinst,$pagUsadaMarco,0]} -eq 0 ]]; then
-#EN-20120-
-#EN-20130-
+				directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$indMarco,$tiempoPag]=0 #NO referenciada-NO modificada en un tiempo anterior inferior a seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado unidades de tiempo.
+				ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]} + 1)) #Resumen - Índices: (proceso, marco, ordinal del tiempo de ejecución (página)). Dato: Histórico con el tiempo desde la asigación de las clases 2 o 3 para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación.
 			elif [[ ${directions_AlgPagFrecUsoRec_marco_pagina_referenciada[$ejecutandoinst,$indMarco]} -eq 0 && ${directions_AlgPagFrecUsoRec_pagina_modificada[$ejecutandoinst,$pagUsadaMarco,0]} -eq 1 ]]; then
-#EN-20140-
-#EN-20150-
+				directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$indMarco,$tiempoPag]=1 #SI referenciada-NO modificada en un tiempo anterior inferior a seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado unidades de tiempo.
+				ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]} + 1)) #Resumen - Índices: (proceso, marco). Dato: Tiempo desde la asigación de las clases 2 o 3 para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación.
 			elif [[ ${directions_AlgPagFrecUsoRec_marco_pagina_referenciada[$ejecutandoinst,$indMarco]} -eq 1 && ${directions_AlgPagFrecUsoRec_pagina_modificada[$ejecutandoinst,$pagUsadaMarco,0]} -eq 0 ]]; then
-#EN-20160-
-#EN-20170-
+				directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$indMarco,$tiempoPag]=2 #SI referenciada-SI modificada en un tiempo anterior inferior a seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado unidades de tiempo.
+				ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]} + 1)) #Resumen - Índices: (proceso, marco). Dato: Tiempo desde la asigación de las clases 2 o 3 para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación.
 			elif [[ ${directions_AlgPagFrecUsoRec_marco_pagina_referenciada[$ejecutandoinst,$indMarco]} -eq 1 && ${directions_AlgPagFrecUsoRec_pagina_modificada[$ejecutandoinst,$pagUsadaMarco,0]} -eq 1 ]]; then
-#EN-20180-
-#EN-20190-
-#EN-20200-
+				directions_AlgPagFrecUsoRec_marco_pagina_referenciada[$ejecutandoinst,$indMarco]=1 #Si lleva mucho tiempo como clase 3, pasa a no referenciado (0) y no modificada y, por tanto, a clase 0.
+				directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$indMarco,$tiempoPag]=3 #SI referenciada-NO modificada en un tiempo anterior inferior a seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado unidades de tiempo.
+				ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]=$((${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]} + 1)) #Resumen - Índices: (proceso, marco). Dato: Tiempo desde la asigación de las clases 2 o 3 para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación.
 			fi
 		fi
-#EN-20210-
-#EN-20220-
-#EN-20230-
-#EN-20240-
-#EN-20250-
-#EN-20260-
+		#Si el tiempo ordinal de una página en una clase 2 o 3 en los últimos instantes (intervalo de tiempo) es superior al límite ($seleccionAlgoritmoPaginacion_clases_valor) se modifica a "no referenciado" y luego se calcula la nueva clase.
+		if [[ ${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]} -gt $seleccionAlgoritmoPaginacion_clases_valor ]]; then # se comprueba que no lleve más de un tiempo $seleccionAlgoritmoPaginacion_clases_valor. Si lo supera se comprueba que no sea en la misma clase 2 o 3.
+			if [[ ${directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$indMarco,$tiempoPag]} -eq 2 ]]; then #Si ya era de clase 2 se pasa a clase 0.
+					directions_AlgPagFrecUsoRec_marco_pagina_referenciada[$ejecutandoinst,$indMarco]=0 #Si lleva mucho tiempo como clase 2, pasa a no referenciado (0) y no modificada y, por tanto, a clase 0.
+					directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$indMarco,$tiempoPag]=0 #SI referenciada-NO modificada en un tiempo anterior inferior a seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado unidades de tiempo.
+					ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]=0 #Resumen - Índices: (proceso, marco). Dato: Tiempo desde la asigación de las clases 2 o 3 para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación.
 			fi
-#EN-20270-
-#EN-20280-
-#EN-20290-
-#EN-20300-
+			if [[ ${directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$indMarco,$tiempoPag]} -eq 3 ]]; then #Si ya era de clase 3 se pasa a clase 1.
+					directions_AlgPagFrecUsoRec_marco_pagina_referenciada[$ejecutandoinst,$indMarco]=0 #Si lleva mucho tiempo como clase 2, pasa a no referenciado (0) y no modificada y, por tanto, a clase 0.
+					directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$indMarco,$tiempoPag]=1 #SI referenciada-SI modificada en un tiempo anterior inferior a seleccionAlgoritmoPaginacion_FrecRec_TiempoConsiderado unidades de tiempo.
+					ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[$ejecutandoinst,$indMarco]=0 #Resumen - Índices: (proceso, marco). Dato: Tiempo desde la asigación de las clases 2 o 3 para NFU/NRU en las opciones para la selección del algoritmo de gestión fallos de paginación.
 			fi
 		fi
-#EN-20310-
+#		echo ""
 	done
-#EN-20320-
+} #Fin de gestionAlgoritmoPagAlgPagRecNRU_Referenciado_Modificado()
 
 ####################################################################################
-#EN-20330-
+# Sinopsis: Se calcula el máximo de las frecuencias de las páginas de cada proceso en NFU (max_AlgPagFrecRec_FrecRec y max_AlgPagFrecRec_Position), por clases empezando por 0.
 ####################################################################################
 function gestionAlgoritmoPagAlgPagRecNRU_Paginas_Clases_Max {  
-#EN-20340-
+	xxx_0=0 #Para determinar si hay alguna página de clase 0, y de no ser así, de clase 1,...
 	xxx_1=0
 	xxx_2=0
 	xxx_3=0
-#EN-20350-
-#EN-20360-
-#EN-20370-
-#EN-20380-
-#EN-20390-
-#EN-20400-
-#EN-20410-
-#EN-20420-
+	max_AlgPagFrecRec_FrecRec_0=-1 #Mayor frecuencia encontrada en las páginas de clase 0.
+	max_AlgPagFrecRec_FrecRec_1=-1 #Mayor frecuencia encontrada en las páginas de clase 1.
+	max_AlgPagFrecRec_FrecRec_2=-1 #Mayor frecuencia encontrada en las páginas de clase 2.
+	max_AlgPagFrecRec_FrecRec_3=-1 #Mayor frecuencia encontrada en las páginas de clase 3.
+	max_AlgPagFrecRec_Position_0=0 #Posición del marco con la mayor frecuencia en las páginas de clase 0.
+	max_AlgPagFrecRec_Position_1=0 #Posición del marco con la mayor frecuencia en las páginas de clase 1.
+	max_AlgPagFrecRec_Position_2=0 #Posición del marco con la mayor frecuencia en las páginas de clase 2.
+	max_AlgPagFrecRec_Position_3=0 #Posición del marco con la mayor frecuencia en las páginas de clase 3.
 
-#EN-20430-
-#EN-20440-
+	for (( indMax=0; indMax<=$((${numeroMarcosUsados[$ejecutandoinst]} - 1)); indMax++ )); do #Se calculan los max para las 4 clases
+		punteroPagMarco=${ResuPaginaOrdinalAcumulado[$ejecutandoinst,$indMax,$reloj]} #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso.
 		if [[ ${directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$indMax,$punteroPagMarco]} -eq 0 ]]; then
-#EN-20450-
-#EN-20460-
-#EN-20470-
-#EN-20480-
+			if [[ ${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMax]} -gt $max_AlgPagFrecRec_FrecRec_0 ]]; then #Localiza en qué posición encuentra la página.
+				max_AlgPagFrecRec_FrecRec_0=${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMax]} #Mayor frecuencia encontrada.
+				max_AlgPagFrecRec_Position_0=$indMax #Posición del marco con la mayor frecuencia.
+				xxx_0=1 #Sólo se marca en caso de que haya cambio de max. De no ser así, no se marca y tampoco se cambia la variable max_AlgPagFrecRec_FrecRec ni max_AlgPagFrecRec_Position
 			fi
 		elif [[ ${directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$indMax,$punteroPagMarco]} -eq 1 ]]; then
-#EN-20490-
-#EN-20500-
-#EN-20510-
+			if [[ ${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMax]} -gt $max_AlgPagFrecRec_FrecRec_1 ]]; then #Localiza en qué posición encuentra la página.
+				max_AlgPagFrecRec_FrecRec_1=${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMax]} #Mayor frecuencia encontrada.
+				max_AlgPagFrecRec_Position_1=$indMax #Posición del marco con la mayor frecuencia.
 				xxx_1=1
 			fi
 		elif [[ ${directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$indMax,$punteroPagMarco]} -eq 2 ]]; then
-#EN-20520-
-#EN-20530-
-#EN-20540-
+			if [[ ${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMax]} -gt $max_AlgPagFrecRec_FrecRec_2 ]]; then #Localiza en qué posición encuentra la página.
+				max_AlgPagFrecRec_FrecRec_2=${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMax]} #Mayor frecuencia encontrada.
+				max_AlgPagFrecRec_Position_2=$indMax #Posición del marco con la mayor frecuencia.
 				xxx_2=1
 			fi
 		elif [[ ${directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$indMax,$punteroPagMarco]} -eq 3 ]]; then
-#EN-20550-
-#EN-20560-
-#EN-20570-
+			if [[ ${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMax]} -gt $max_AlgPagFrecRec_FrecRec_3 ]]; then #Localiza en qué posición encuentra la página.
+				max_AlgPagFrecRec_FrecRec_3=${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMax]} #Mayor frecuencia encontrada.
+				max_AlgPagFrecRec_Position_3=$indMax #Posición del marco con la mayor frecuencia.
 				xxx_3=1
 			fi
 		fi
-#EN-20580-
+	done #Y sobre esa localización se hace el fallo de página
 	if [[ $xxx_0 -eq 1 && $xxx_1 -eq 0 && $xxx_2 -eq 0 && $xxx_3 -eq 0 ]]; then
-#EN-20590-
-#EN-20600-
+		max_AlgPagFrecRec_FrecRec[$ejecutandoinst]=$max_AlgPagFrecRec_FrecRec_0 #Mayor frecuencia encontrada.
+		max_AlgPagFrecRec_Position[$ejecutandoinst]=$max_AlgPagFrecRec_Position_0 #Posición del marco con la mayor frecuencia.
 	elif [[ $xxx_1 -eq 1 && $xxx_2 -eq 0 && $xxx_3 -eq 0 ]]; then
-#EN-20610-
-#EN-20620-
+		max_AlgPagFrecRec_FrecRec[$ejecutandoinst]=$max_AlgPagFrecRec_FrecRec_1 #Mayor frecuencia encontrada.
+		max_AlgPagFrecRec_Position[$ejecutandoinst]=$max_AlgPagFrecRec_Position_1 #Posición del marco con la mayor frecuencia.
 	elif [[ $xxx_2 -eq 1 && $xxx_3 -eq 0 ]]; then
-#EN-20630-
-#EN-20640-
+		max_AlgPagFrecRec_FrecRec[$ejecutandoinst]=$max_AlgPagFrecRec_FrecRec_2 #Mayor frecuencia encontrada.
+		max_AlgPagFrecRec_Position[$ejecutandoinst]=$max_AlgPagFrecRec_Position_2 #Posición del marco con la mayor frecuencia.
 	elif [[ $xxx_3 -eq 1 ]]; then
-#EN-20650-
-#EN-20660-
+		max_AlgPagFrecRec_FrecRec[$ejecutandoinst]=$max_AlgPagFrecRec_FrecRec_3 #Mayor frecuencia encontrada.
+		max_AlgPagFrecRec_Position[$ejecutandoinst]=$max_AlgPagFrecRec_Position_3 #Posición del marco con la mayor frecuencia.
 	fi
-#EN-20670-
+} #Fin de gestionAlgoritmoPagAlgPagRecNRU_Paginas_Clases_Max() 
 
 ####################################################################################
-#EN-20680-
+# Sinopsis: Se calcula el máximo de las frecuencias de las páginas de cada proceso en NFU (max_AlgPagFrecRec_FrecRec y max_AlgPagFrecRec_Position), por clases empezando por 0.
 ####################################################################################
 function gestionAlgoritmoPagAlgPagRecNRU_Paginas_Clases_Min {  
-#EN-20690-
+	xxx_0=0 #Para determinar si hay alguna página de clase 0, y de no ser así, de clase 1,...
 	xxx_1=0
 	xxx_2=0
 	xxx_3=0
-#EN-20700-
-#EN-20710-
-#EN-20720-
-#EN-20730-
-#EN-20740-
-#EN-20750-
-#EN-20760-
-#EN-20770-
+	min_AlgPagFrecRec_FrecRec_0=-1 #Menor frecuencia encontrada en las páginas de clase 0.
+	min_AlgPagFrecRec_FrecRec_1=-1 #Menor frecuencia encontrada en las páginas de clase 1.
+	min_AlgPagFrecRec_FrecRec_2=-1 #Menor frecuencia encontrada en las páginas de clase 2.
+	min_AlgPagFrecRec_FrecRec_3=-1 #Menor frecuencia encontrada en las páginas de clase 3.
+	min_AlgPagFrecRec_Position_0=0 #Posición del marco con la menor frecuencia en las páginas de clase 0.
+	min_AlgPagFrecRec_Position_1=0 #Posición del marco con la menor frecuencia en las páginas de clase 1.
+	min_AlgPagFrecRec_Position_2=0 #Posición del marco con la menor frecuencia en las páginas de clase 2.
+	min_AlgPagFrecRec_Position_3=0 #Posición del marco con la menor frecuencia en las páginas de clase 3.
 
-#EN-20780-
-#EN-20790-
+	for (( indMin=0; indMin<=$((${numeroMarcosUsados[$ejecutandoinst]} - 1)); indMin++ )); do #Se calculan los min para las 4 clases
+		punteroPagMarco=${ResuPaginaOrdinalAcumulado[$ejecutandoinst,$indMin,$reloj]} #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso.
 		if [[ ${directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$indMin,$punteroPagMarco]} -eq 0 ]]; then
 			if [[ $min_AlgPagFrecRec_FrecRec_0 -eq -1 ]]; then
 				min_AlgPagFrecRec_FrecRec_0=${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMin]}
 				min_AlgPagFrecRec_Position_0=$indMin
-#EN-20800-
+				xxx_0=1 #Sólo se marca en caso de que haya cambio de min. De no ser así, no se marca y tampoco se cambia la variable min_AlgPagFrecRec_FrecRec ni min_AlgPagFrecRec_Position
 			fi
-#EN-20810-
-#EN-20820-
-#EN-20830-
+			if [[ ${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMin]} -lt $min_AlgPagFrecRec_FrecRec_0 ]]; then #Localiza en qué posición encuentra la página.
+				min_AlgPagFrecRec_FrecRec_0=${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMin]} #Menor frecuencia encontrada.
+				min_AlgPagFrecRec_Position_0=$indMin #Posición del marco con la menor frecuencia.
 			fi
 		elif [[ ${directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$indMin,$punteroPagMarco]} -eq 1 ]]; then
 			if [[ $min_AlgPagFrecRec_FrecRec_1 -eq -1 ]]; then
@@ -6534,9 +6534,9 @@ function gestionAlgoritmoPagAlgPagRecNRU_Paginas_Clases_Min {
 				min_AlgPagFrecRec_Position_1=$indMin
 				xxx_1=1
 			fi
-#EN-20840-
-#EN-20850-
-#EN-20860-
+			if [[ ${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMin]} -lt $min_AlgPagFrecRec_FrecRec_1 ]]; then #Localiza en qué posición encuentra la página.
+				min_AlgPagFrecRec_FrecRec_1=${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMin]} #Menor frecuencia encontrada.
+				min_AlgPagFrecRec_Position_1=$indMin #Posición del menor con la mayor frecuencia.
 			fi
 		elif [[ ${directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$indMin,$punteroPagMarco]} -eq 2 ]]; then
 			if [[ $min_AlgPagFrecRec_FrecRec_2 -eq -1 ]]; then
@@ -6544,9 +6544,9 @@ function gestionAlgoritmoPagAlgPagRecNRU_Paginas_Clases_Min {
 				min_AlgPagFrecRec_Position_2=$indMin
 				xxx_2=1
 			fi
-#EN-20870-
-#EN-20880-
-#EN-20890-
+			if [[ ${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMin]} -lt $min_AlgPagFrecRec_FrecRec_2 ]]; then #Localiza en qué posición encuentra la página.
+				min_AlgPagFrecRec_FrecRec_2=${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMin]} #Menor frecuencia encontrada.
+				min_AlgPagFrecRec_Position_2=$indMin #Posición del marco con la menor frecuencia.
 			fi
 		elif [[ ${directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,$indMin,$punteroPagMarco]} -eq 3 ]]; then
 			if [[ $min_AlgPagFrecRec_FrecRec_3 -eq -1 ]]; then
@@ -6554,36 +6554,36 @@ function gestionAlgoritmoPagAlgPagRecNRU_Paginas_Clases_Min {
 				min_AlgPagFrecRec_Position_3=$indMin
 				xxx_3=1
 			fi
-#EN-20900-
-#EN-20910-
-#EN-20920-
+			if [[ ${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMin]} -lt $min_AlgPagFrecRec_FrecRec_3 ]]; then #Localiza en qué posición encuentra la página.
+				min_AlgPagFrecRec_FrecRec_3=${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[$ejecutandoinst,$indMin]} #Menor frecuencia encontrada.
+				min_AlgPagFrecRec_Position_3=$indMin #Posición del marco con la menor frecuencia.
 			fi
 		fi
-#EN-20930-
+	done #Y sobre esa localización se hace el fallo de página
 	if [[ $xxx_0 -eq 1 && $xxx_1 -eq 0 && $xxx_2 -eq 0 && $xxx_3 -eq 0 ]]; then
-#EN-20940-
-#EN-20950-
+		min_AlgPagFrecRec_FrecRec[$ejecutandoinst]=$min_AlgPagFrecRec_FrecRec_0 #Menor frecuencia encontrada.
+		min_AlgPagFrecRec_Position[$ejecutandoinst]=$min_AlgPagFrecRec_Position_0 #Posición del marco con la menor frecuencia.
 	elif [[ $xxx_1 -eq 1 && $xxx_2 -eq 0 && $xxx_3 -eq 0 ]]; then
-#EN-20960-
-#EN-20970-
+		min_AlgPagFrecRec_FrecRec[$ejecutandoinst]=$min_AlgPagFrecRec_FrecRec_1 #Menor frecuencia encontrada.
+		min_AlgPagFrecRec_Position[$ejecutandoinst]=$min_AlgPagFrecRec_Position_1 #Posición del marco con la menor frecuencia.
 	elif [[ $xxx_2 -eq 1 && $xxx_3 -eq 0 ]]; then
-#EN-20980-
-#EN-20990-
+		min_AlgPagFrecRec_FrecRec[$ejecutandoinst]=$min_AlgPagFrecRec_FrecRec_2 #Menor frecuencia encontrada.
+		min_AlgPagFrecRec_Position[$ejecutandoinst]=$min_AlgPagFrecRec_Position_2 #Posición del marco con la menor frecuencia.
 	elif [[ $xxx_3 -eq 1 ]]; then
-#EN-21000-
-#EN-21010-
+		min_AlgPagFrecRec_FrecRec[$ejecutandoinst]=$min_AlgPagFrecRec_FrecRec_3 #Menor frecuencia encontrada.
+		min_AlgPagFrecRec_Position[$ejecutandoinst]=$min_AlgPagFrecRec_Position_3 #Posición del marco con la menor frecuencia.
 	fi
 
-#EN-21020-
+} #Fin de gestionAlgoritmoPagAlgPagRecNRU_Paginas_Clases_Min() 
 
 ####################################################################################
 ####################################################################################
 # Funciones para mostrar los datos por pantalla ####################################
 ####################################################################################
-#EN-21030-
+# Sinopsis: Impresión pantalla tras la solicitud de datos/introducción desde fichero
 ####################################################################################
 function dibujaDatosPantallaFCFS_SJF_SRPT_RR {
-#EN-21040-
+	echo -e "\n$azul Los datos introducidos al sistema son:$NC" | tee -a $informeConColorTotal #...color
 	echo -e " ┌───────────────┬───────────────┬───────────────┬───────────────┐" | tee -a $informeConColorTotal 
 	echo -e " │    Proceso$NC    │  T.Llegada$NC    │  T.Ejecución$NC  │    Tamaño$NC     │" | tee -a $informeConColorTotal 
 	echo -e " └───────────────┴───────────────┴───────────────┴───────────────┘" | tee -a $informeConColorTotal 
@@ -6591,15 +6591,15 @@ function dibujaDatosPantallaFCFS_SJF_SRPT_RR {
 		echo -e "${coloress[$i % 6]} \t${proceso[$i]}\t \t${llegada[$i]}\t \t${ejecucion[$i]}\t \t${memoria[$i]}\t  $NC" | tee -a $informeConColorTotal
 	done 
 	echo -e "\n\n Memoria total: $mem_libre uds." | tee -a $informeConColorTotal
-#EN-21050-
+	if [[ $seleccionMenuReubicabilidad -eq 2 ]]; then #Se ejecuta cuando la selección inicial es por ejecución automática repetitiva. Se guardan todos los datos, aún cuando no es por Round-Robin.
 		echo " Tamaño a partir del cual se reubica: $variableReubicar uds." | tee -a $informeConColorTotal 
 	fi
-#EN-21060-
+	if [[ $seleccionMenuAlgoritmoGestionProcesos -eq 5 ]]; then #Se ejecuta cuando la selección inicial es por ejecución automática repetitiva. Se guardan todos los datos, aún cuando no es por Round-Robin.
 		echo " Quantum de tiempo para Round-Robin (RR): $quantum" | tee -a $informeConColorTotal 
 	fi
 	echo " ---------------------------------------------" | tee -a $informeConColorTotal 
    
-#EN-21070-
+	echo -e "\n Los datos introducidos al sistema son:" >> $informeSinColorTotal #...b/n
 	echo -e " ┌───────────────┬───────────────┬───────────────┬───────────────┐" >> $informeSinColorTotal
 	echo -e " │    Proceso    │  T.Llegada    │  T.Ejecución  │    Tamaño     │" >> $informeSinColorTotal
 	echo -e " └───────────────┴───────────────┴───────────────┴───────────────┘" >> $informeSinColorTotal
@@ -6607,30 +6607,30 @@ function dibujaDatosPantallaFCFS_SJF_SRPT_RR {
 		echo -e " \t${proceso[$i]}\t \t${llegada[$i]}\t \t${ejecucion[$i]}\t \t${memoria[$i]}\t  " >> $informeSinColorTotal
 	done
 	echo -e "\n\n Memoria total: $mem_libre uds." >> $informeSinColorTotal
-#EN-21080-
+	if [[ $seleccionMenuReubicabilidad -eq 2 ]]; then #Se ejecuta cuando la selección inicial es por ejecución automática repetitiva. Se guardan todos los datos, aún cuando no es por Round-Robin.
 		echo -e " Tamaño a partir del cual se reubica: $variableReubicar uds." >> $informeSinColorTotal
 	fi
-#EN-21090-
+	if [[ $seleccionMenuAlgoritmoGestionProcesos -eq 5 ]]; then #Se ejecuta cuando la selección inicial es por ejecución automática repetitiva. Se guardan todos los datos, aún cuando no es por Round-Robin.
 		echo -e " Quantum de tiempo para Round-Robin (RR): $quantum uds." >> $informeSinColorTotal
 	fi
 	echo -e  " ---------------------------------------------" >> $informeSinColorTotal
-#EN-21100-
+	if [[ $seleccionMenuEnsayos -ne 1 && $seleccionMenuEnsayos -ne 2 && $seleccionMenuEnsayos -ne 3 && $seleccionMenuEnsayos -ne 4 ]]; then #No se ejecuta cuando la selección inicial es la ejecución automática repetitiva.
 		echo -e "\n$NC Pulse enter para continuar..." | tee -a $informeConColorTotal
 		echo -e "\n Pulse enter para continuar..." >> $informeSinColorTotal
 		read enter
 		echo -e $enter "\n" >> $informeConColorTotal
 		echo -e $enter "\n" >> $informeSinColorTotal
 	fi
-#EN-21110-
+#    clear
 }
 
 ####################################################################################
-#EN-21120-
+# Sinopsis: Muestra un resumen inicial ordenado por tiempo de llegada de todos los procesos introducidos.
 ####################################################################################
 function dibujaDatosPantallaPrioridad {
-#EN-21130-
-#EN-21140-
-#EN-21150-
+#	ordenacion
+	ordenarDatosEntradaFicheros #Se ordenan los datos sacados desde $ficheroParaLectura o a medida que se van itroduciendo, por tiempo de llegada. 
+	echo -e "\n$azul Los datos introducidos al sistema son:$NC" | tee -a $informeConColorTotal #...color
 	echo -e " ┌───────────────┬───────────────┬───────────────┬───────────────┬───────────────┐" | tee -a $informeConColorTotal 
 	echo -e " │    Proceso$NC    │  T.Llegada$NC    │  T.Ejecución$NC  │    Tamaño$NC     │   Prioridad$NC   │" | tee -a $informeConColorTotal 
 	echo -e " └───────────────┴───────────────┴───────────────┴───────────────┴───────────────┘" | tee -a $informeConColorTotal 
@@ -6641,7 +6641,7 @@ function dibujaDatosPantallaPrioridad {
 	echo " Tamaño a partir del cual se reubica: $variableReubicar uds." | tee -a $informeConColorTotal 
 	echo " ---------------------------------------------" | tee -a $informeConColorTotal 
    
-#EN-21160-
+	echo -e "\n Los datos introducidos al sistema son:" >> $informeSinColorTotal #...b/n
 	echo -e " ┌───────────────┬───────────────┬───────────────┬───────────────┬───────────────┐" >> $informeSinColorTotal
 	echo -e " │    Proceso    │  T.Llegada    │  T.Ejecución  │    Tamaño     │   Prioridad   │" >> $informeSinColorTotal
 	echo -e " └───────────────┴───────────────┴───────────────┴───────────────┴───────────────┘" >> $informeSinColorTotal
@@ -6651,27 +6651,27 @@ function dibujaDatosPantallaPrioridad {
 	echo -e "\n\n Memoria total: $mem_libre uds." >> $informeSinColorTotal
 	echo -e " Tamaño a partir del cual se reubica: $variableReubicar uds." >> $informeSinColorTotal
 	echo -e  " ---------------------------------------------" >> $informeSinColorTotal
-#EN-21170-
+	if [[ $seleccionMenuEnsayos -ne 1 && $seleccionMenuEnsayos -ne 2 && $seleccionMenuEnsayos -ne 3 && $seleccionMenuEnsayos -ne 4 ]]; then #No se ejecuta cuando la selección inicial es la ejecución automática repetitiva.
 		echo -e "\n$NC Pulse enter para continuar..." | tee -a $informeConColorTotal
 		echo -e "\n Pulse enter para continuar..." >> $informeSinColorTotal
 		read enter
 		echo -e $enter "\n" >> $informeConColorTotal
 		echo -e $enter "\n" >> $informeSinColorTotal
 	fi
-#EN-21180-
-#EN-21190-
+#    clear
+} #Fin de imprimeprocesosresumen
 
 ####################################################################################
-#EN-21200-
+# Sinopsis: Genera la Banda de Memoria y la muestra en pantalla/informe 
 ####################################################################################
 function dibujaResumenBandaMemoriaMarcosPagina { 
-#EN-21210-
-#EN-21220-
-#EN-21230-
+	terminal2=`tput cols` #Ancho del terminal para adecuar el ancho de líneas a cada volcado
+	anchoColumna=$((9 + $digitosUnidad - 3)) #Para poder incluir -clase en la página. Se restan 3 porque previamente se ha añadido la logitud $digitosUnidad, y ya venía incluido.
+	for ((indProc=0;indProc<$nprocesos;indProc++)); do #Desde 0, es el ordinal del número de marcos en memoria asociados a cada proceso (Índices:Proceso)
 		ordinalMarcosProcesoDibujados[$indProc]=-1	
 	done
 	echo ""
-#EN-21240-
+	AlgPagFrecUsoRecTitulo=(); #Se inicializan las variables.
 	AlgPagFrecUsoRecNotas1=();
 	AlgPagFrecUsoRecNotas2=();
 	filaAlgPagFrecUsoRecTituloColor=""
@@ -6679,7 +6679,7 @@ function dibujaResumenBandaMemoriaMarcosPagina {
 	filaAlgPagFrecUsoRecNotas1Color=""
 	filaAlgPagFrecUsoRecNotas1BN=""
 	
-#EN-21250-
+	if [[ $mem_libre -lt $mem_num_marcos ]]; then #Si hay algún proceso en memoria. ResuUsoRecienteAcumulado
 		AlgPagFrecUsoRecTitulo=" Resumen de los Marcos/Páginas-Clase/Estadísticas de Frecuencia de Uso/Estadísticas de Antigüedad de Uso de todos los procesos en memoria en la unidad de tiempo actual (reloj:"$reloj")."
 		filaAlgPagFrecUsoRecTituloColor=`echo -e "$NORMAL$AlgPagFrecUsoRecTitulo$NORMAL "`
 		filaAlgPagFrecUsoRecTituloBN=`echo -e "$AlgPagFrecUsoRecTitulo "`
@@ -6708,9 +6708,9 @@ function dibujaResumenBandaMemoriaMarcosPagina {
 		filaAlgPagFrecUsoRecNotas2BN=`echo -e "$AlgPagFrecUsoRecNotas2 "`
 	fi
 
-#EN-21260-
-#EN-21270-
-#EN-21280-
+	# GENERACIÓN STRING DE PROCESOS (Línea 1 del Resumen de la Banda de Memoria) 
+	aux=0 #Define el número de saltos a realizar.
+	filaprocesosColor[$aux]="$NC Proc.  " #Contiene el texto a escribir de las diferentes filas antes de hacer cada salto.
 	filamarcosColor[$aux]="$NC Marco  "
 	filapagColor[$aux]="$NC Pág.   "
 	if ([[ $seleccionAlgoritmoPaginacion -ge 0 && $seleccionAlgoritmoPaginacion -le 4 ]]) || ([[ $seleccionAlgoritmoPaginacion -ge 6 && $seleccionAlgoritmoPaginacion -le 11 ]]); then
@@ -6726,33 +6726,33 @@ function dibujaResumenBandaMemoriaMarcosPagina {
 	elif ([[ $seleccionAlgoritmoPaginacion -eq 5 ]]) || ([[ $seleccionAlgoritmoPaginacion -ge 12 && $seleccionAlgoritmoPaginacion -le 17 ]]); then
 		filaAlgPagFrecUsoRecBN[$aux]=" UsoRec "
 	fi
-#EN-21290-
-#EN-21300-
-#EN-21310-
-#EN-21320-
-#EN-21330-
+	long=("${memoria[@]}") #Determina el número de procesos al contar el número de datos en la variable memoria.	
+	in=0 #Índice que recorre los procesos del problema
+	dibujar_memoria=("${enmemoria[@]}") #Determina qué procesos están en memoria.
+	paginadibujar=("${paginasEnMemoriaProceso[@]}") #Páginas residentes en memoria del Proceso en ejecución. Sale de forma calculada de paginasDefinidasTotal y su orden es el establecido tras los fallos de paginación.
+	numCaracteres2=8 #Deja 1 de margen izquierdo y 7 para controlar el comienzo del espacio usado para los datos para controlar los saltos de línea.
 
-#EN-21340-
+	xx=0 # Variable que indica si se ha añadido un proceso al Resumen de la Banda de Memoria. ${memoria[$procFinalizado]}
 	for ((indMem=0;indMem<$mem_num_marcos;indMem++)); do
-#EN-21350-
-#EN-21360-
-#EN-21370-
+		if [[ ${unidMemOcupadas[$indMem]} != "_" ]]; then # El proceso se puede imprimir en memoria
+			if [[ $(($numCaracteres2 + $anchoColumna + 1)) -gt $terminal2 ]]; then # El texto no cabe en la terminal
+				aux=$(($aux + 1)) # Se pasa a la siguiente línea
 				filaprocesosColor[$aux]="        "
 				filaprocesosBN[$aux]="        "
-#EN-21380-
+				numCaracteres2=8 #Espacio por la izquierda para cuadrar líneas
 			fi
-#EN-21390-
+			if [[ $indMem -ne 0 && $xx -eq 1 && ${proceso[$((${unidMemOcupadas[$indMem]}))]} != ${proceso[$((${unidMemOcupadas[$((indMem - 1))]}))]} ]]; then # El texto no cabe en la terminal
 				xx=0
 			fi
-#EN-21400-
-#EN-21410-
+			if [[ $xx -eq 0 ]]; then # Se añade el proceso a la banda
+				espaciosfinal=${varhuecos:1:$(($anchoColumna - 1 - ${#proceso[$((${unidMemOcupadas[$indMem]}))]}))}
 				filaprocesosBN[$aux]+=`echo -e "${proceso[$((${unidMemOcupadas[$indMem]}))]}""$espaciosfinal "`
 				filaprocesosColor[$aux]+=`echo -e "${coloress[${unidMemOcupadas[$indMem]} % 6]}${proceso[$((${unidMemOcupadas[$indMem]}))]}""$NORMAL$espaciosfinal "`
 				numCaracteres2=$(($numCaracteres2 + $anchoColumna))
 				xx=1
 			else
-#EN-21420-
-#EN-21430-
+				if [[ $(($numCaracteres2 + $anchoColumna + 1)) -gt $terminal2 ]]; then # El texto no cabe en la terminal
+					aux=$(($aux + 1)) # Se pasa a la siguiente línea
 					filaprocesosBN[$aux]="        "
 					filaprocesosColor[$aux]="        "
 					numCaracteres2=8
@@ -6771,8 +6771,8 @@ function dibujaResumenBandaMemoriaMarcosPagina {
 			fi
 		else
 			xx=0
-#EN-21440-
-#EN-21450-
+			if [[ $(($numCaracteres2 + $anchoColumna + 1)) -gt $terminal2 ]]; then # El texto no cabe en la terminal
+				aux=$(($aux + 1)) # Se pasa a la siguiente línea
 				filaprocesosBN[$aux]="        "
 				filaprocesosColor[$aux]="        "
 				numCaracteres2=8
@@ -6784,36 +6784,36 @@ function dibujaResumenBandaMemoriaMarcosPagina {
 		fi
 	done
 
-#EN-21460-
-#EN-21470-
-#EN-21480-
+	# GENERACIÓN STRING DE MARCOS (Línea 2 del Resumen de Memoria)  
+	aux=0 #Define el número de saltos a realizar.
+	numCaracteres2=10 #Deja 1 de margen izquierdo y 7 para controlar el comienzo del espacio usado para los datos para controlar los saltos de línea.
 	textoFallo1="M"
 	textoFallo2="-F"
 	for ((indMem=0;indMem<$mem_num_marcos;indMem++)); do
-#EN-21490-
-#EN-21500-
+		if [[ $(($numCaracteres2 + $anchoColumna + 1)) -gt $terminal2 ]]; then # El texto no cabe en la terminal
+			aux=$(($aux + 1)) # Se pasa a la siguiente línea
 			filamarcosColor[$aux]="        "
 			filamarcosBN[$aux]="        "
-#EN-21510-
+			numCaracteres2=8 #Espacio por la izquierda para cuadrar líneas
 		fi
 		if [[ ${unidMemOcupadas[$indMem]} != "_" ]]; then	
-#EN-21520-
-#EN-21530-
-#EN-21540-
-#EN-21550-
-#EN-21560-
-#EN-21570-
-#EN-21580-
+			varImprimirSiguiente="" #Contendrá el código de subrayado con para subrayar la referencia del marco sobre el que se produciría el siguiente fallo de página.
+			varImprimirFallo="" #Contendrá el código de negrita para la referencia del marco sobre el que se habría producido el fallo de página.
+			varSiguiente=${ResuPunteroMarcoSiguienteFalloPagAcumulado[${unidMemOcupadas[$indMem]},$reloj]} #Ordinal del marco usado (Puntero - De 0 a n) para el Proceso en ejecución en una unidad de Tiempo.
+			varFallo=${ResuFallosMarcoProceso[${unidMemOcupadas[$indMem]},$reloj]} #Negrita - Marcos donde se produjeron Fallos de Página del Proceso en ejecución.
+			dato1=${relacionMarcosUsados[${unidMemOcupadas[$indMem]},$reloj,$varSiguiente]} #Marco real correspondiente al ordinal de un marco.
+			dato2=${relacionMarcosUsados[${unidMemOcupadas[$indMem]},$reloj,$varFallo]} #Marco real correspondiente al ordinal de un marco.
+			if [[ $dato1 == $indMem ]]; then #Si coincide el marco real al ordinal del marco usado, se define el color del fondo. 
 				varImprimirSiguiente="\e[4m"
 			fi
-#EN-21590-
+			if [[ $dato2 == $indMem ]]; then #Si coincide el marco real al ordinal del marco con fallo, se define el código de negrita. 
 				varImprimirFallo="\e[1m"
 			fi
-#EN-21600-
+			if [[ $varImprimirFallo == "" ]]; then #Si ese marco NO será sobre el que se produzca el siguiente fallo de página
 				espaciosfinal=${varhuecos:1:$(($anchoColumna - ${#indMem} - 2))} #Espacios por defecto. Se quita 1 por la M. 
 				filamarcosColor[$aux]+=`echo -e "$NC${coloress[${unidMemOcupadas[$indMem]} % 6]}$varImprimirSiguiente$textoFallo1$indMem$NC$espaciosfinal "`
 				filamarcosBN[$aux]+=`echo -e "M$indMem$espaciosfinal "`
-#EN-21610-
+			else #Si el marco será sobre el que se produzca el siguiente fallo de página
 				espaciosfinal=${varhuecos:1:$(($anchoColumna - ${#indMem} - 4))} #Se quita 1 por la M, y 2 por "-F".
 				filamarcosColor[$aux]+=`echo -e "$NC${coloress[${unidMemOcupadas[$indMem]} % 6]}$varImprimirSiguiente$varImprimirFallo$textoFallo1$indMem$textoFallo2$NC$espaciosfinal "`
 				filamarcosBN[$aux]+=`echo -e "M$indMem$textoFallo$espaciosfinal "`
@@ -6826,66 +6826,66 @@ function dibujaResumenBandaMemoriaMarcosPagina {
 		numCaracteres2=$(($numCaracteres2 + $anchoColumna))
 	done
 
-#EN-21620-
-#EN-21630-
+	# GENERACIÓN STRING DE PÁGINAS (Línea 3 del Resumen de la Banda de Memoria)
+	aux=0 # Línea de la banda
 	numCaracteres2=10
 	guionesAMeter=${varguiones:1:$(($anchoColumna - 2))}
 	asteriscosAMeter=${varasteriscos:1:$(($anchoColumna - 2))}
 	sumaTotalMemoria=0
-#EN-21640-
-#EN-21650-
+	numeroMarco=0 #Contador que recorrerá el número de marcos asociados a un proceso y determinar el ordinal que le corresponde.
+	xx=0 # Variable que indica si se ha añadido un proceso a la banda
 	for (( i=0; i<$nprocesos; i++)); do 
-#EN-21660-
+		numMarcosDibujadosPorProceso[$i]=0 #Número de Marcos en Memoria con Páginas ya dibujadas de cada Proceso para el resumen de Banda.
 	done
-#EN-21670-
-#EN-21680-
-#EN-21690-
-#EN-21700-
+	for ((indMem=0;indMem<$mem_num_marcos;indMem++)); do #unidMemOcupadas[$indMem] da el Proceso que ocupa el marco indMem
+		punteroPagMarco="" #Contendrá el ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo.
+		if [[ $(($numCaracteres2 + $anchoColumna + 1)) -gt $terminal2 ]]; then # El texto no cabe en la terminal
+			aux=$(($aux + 1)) # Se pasa a la siguiente línea
 			filapagBN[$aux]="        "
 			filapagColor[$aux]="        "
 			numCaracteres2=8
 		fi
-#EN-21710-
-#EN-21720-
+		dato4="" #Contendrá la clase de la página en NFU/NRU con clases.
+		datoM="" #Contendrá el coeficiente M de los algoritmos de Segunda Oportunidad.
 		espaciosadicionales=0
-#EN-21730-
-#EN-21740-
-#EN-21750-
-#EN-21760-
-#EN-21770-
-#EN-21780-
+		if [[ ${unidMemOcupadas[$indMem]} != "_" ]]; then # El proceso se puede imprimir en memoria
+			espaciosfinal=${varhuecos:1:$(($anchoColumna - 1 - ${#paginasEnMemoriaTotal[${unidMemOcupadas[$indMem]},${numMarcosDibujadosPorProceso[${unidMemOcupadas[$indMem]}]}]}))}
+			varImprimirUsado="" #Contendrá el color asociado al proceso en ejecución. Con él se establece el color del fondo de la página usada.
+			if [[ ${unidMemOcupadas[$indMem]} -eq $ejecutandoinst ]]; then #Sólo puede estar siendo usada una página en toda la memmoria y para el proceso en ejecución, y no las páginas de otros procesos en pausa. 
+				varUsado=${ResuPunteroMarcoUsado[${unidMemOcupadas[$indMem]},$reloj]} #Ordinal del marco usado (Puntero - De 0 a n) para el Proceso en ejecución en una unidad de Tiempo.
+				dato1=${relacionMarcosUsados[$ejecutandoinst,$reloj,$varUsado]} #Marco real correspondiente al ordinal de un marco ($varUsado).
 			fi
-#EN-21790-
+			if [[ $dato1 -eq $indMem ]]; then #Si coincide el marco real al puntero al ordinal del marco usado se define el color del fondo. 
 				varImprimirUsado=${colorfondo[${unidMemOcupadas[$indMem]} % 6]}
 			fi
 			if [[ ${#paginasEnMemoriaTotal[${unidMemOcupadas[$indMem]},${numMarcosDibujadosPorProceso[${unidMemOcupadas[$indMem]}]}]} -eq 0 ]]; then #Si no hay página se mete asterisco en BN.
-#EN-21800-
+				espaciosasteriscofinal="*"${varhuecos:1:$(($anchoColumna - 2 - ${#paginasEnMemoriaTotal[${unidMemOcupadas[$indMem]},${numMarcosDibujadosPorProceso[${unidMemOcupadas[$indMem]}]}]}))}
 				filapagBN[$aux]+=`echo -e "${paginasEnMemoriaTotal[${unidMemOcupadas[$indMem]},${numMarcosDibujadosPorProceso[${unidMemOcupadas[$indMem]}]}]}$espaciosasteriscofinal "`
 				filapagColor[$aux]+=`echo -e "$NC${coloress[${unidMemOcupadas[$indMem]} % 6]}${paginasEnMemoriaTotal[${unidMemOcupadas[$indMem]},${numMarcosDibujadosPorProceso[${unidMemOcupadas[$indMem]}]}]}$espaciosasteriscofinal$NC "`
-#EN-21810-
-#EN-21820-
-#EN-21830-
+			else  #Y si hay página se mete espacios y el número.
+				if [[ $seleccionAlgoritmoPaginacion -eq 2 || $seleccionAlgoritmoPaginacion -eq 4 ]]; then #FIFO y Reloj con Segunda oportunidad
+					punteroPagMarco=${ResuPaginaOrdinalAcumulado[$ejecutandoinst,${ResuPunteroMarcoUsado[$ejecutandoinst,$reloj]},$reloj]} #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso. Se busca el ordinal usado en ese instante porque sería el utilizado para la búsqueda de los coeficientes M en todos los marcos al ser el mayor número.
 					datoM="-"${coeficienteSegOp[$ejecutandoinst,${numMarcosDibujadosPorProceso[${unidMemOcupadas[$indMem]}]},$punteroPagMarco]}	
-#EN-21840-
+					espaciosadicionales=${#datoM}				
 
-#EN-21850-
-#EN-21860-
-#EN-21870-
-#EN-21880-
-#EN-21890-
-#EN-21900-
-#EN-21910-
+				elif [[ $seleccionAlgoritmoPaginacion -eq 5 ]]; then #Óptimo
+					dato4="-"${ResuTiempoOptimoAcumulado[$ejecutandoinst,${numMarcosDibujadosPorProceso[${unidMemOcupadas[$indMem]}]},$reloj]} #Índices: (proceso, marco, reloj).
+					espaciosadicionales=${#dato4}
+				elif [[ $seleccionAlgoritmoPaginacion -eq 10 || $seleccionAlgoritmoPaginacion -eq 11 || $seleccionAlgoritmoPaginacion -eq 16 || $seleccionAlgoritmoPaginacion -eq 17 ]]; then #Contendrá la clase de la página en NFU/NRU con clases.
+					punteroPagMarco=${ResuPaginaOrdinalAcumulado[$ejecutandoinst,${numMarcosDibujadosPorProceso[${unidMemOcupadas[$indMem]}]},$reloj]} #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso.
+					dato4="-"${directions_AlgPagFrecUsoRec_marco_pagina_clase[$ejecutandoinst,${numMarcosDibujadosPorProceso[${unidMemOcupadas[$indMem]}]},$punteroPagMarco]} #Índices: (proceso, marco, número ordinal de la dirección a ejecutar(número de páginas usadas del proceso)).
+					espaciosadicionales=${#dato4}
 				fi
 				espaciosfinal=${varhuecos:1:$(($anchoColumna - 1 - ${#paginasEnMemoriaTotal[${unidMemOcupadas[$indMem]},${numMarcosDibujadosPorProceso[${unidMemOcupadas[$indMem]}]}]} - $espaciosadicionales))} #2 por el tamaño de $datos4
-#EN-21920-
+				if [[ $varImprimirUsado == "" ]]; then #Si el marco NO ha sido usado en el instante actual
 					filapagBN[$aux]+=`echo -e "${paginasEnMemoriaTotal[${unidMemOcupadas[$indMem]},${numMarcosDibujadosPorProceso[${unidMemOcupadas[$indMem]}]}]}$dato4$datoM$espaciosfinal "`
 					filapagColor[$aux]+=`echo -e "$NC${coloress[${unidMemOcupadas[$indMem]} % 6]}${paginasEnMemoriaTotal[${unidMemOcupadas[$indMem]},${numMarcosDibujadosPorProceso[${unidMemOcupadas[$indMem]}]}]}$dato4$datoM$espaciosfinal$NC "`
-#EN-21930-
+				else #Si el marco ha sido usado en el instante actual
 					filapagBN[$aux]+=`echo -e "${paginasEnMemoriaTotal[${unidMemOcupadas[$indMem]},${numMarcosDibujadosPorProceso[${unidMemOcupadas[$indMem]}]}]}$dato4$datoM$espaciosfinal "`
 					filapagColor[$aux]+=`echo -e "$NC$varImprimirUsado${paginasEnMemoriaTotal[${unidMemOcupadas[$indMem]},${numMarcosDibujadosPorProceso[${unidMemOcupadas[$indMem]}]}]}$dato4$datoM$espaciosfinal$NC "`
 				fi
 			fi
-#EN-21940-
+			((numMarcosDibujadosPorProceso[${unidMemOcupadas[$indMem]}]++)) #Número de Marcos con Páginas ya dibujadas de cada Proceso.
 			numCaracteres2=$(($numCaracteres2 + $anchoColumna))
 			if [[ $indMem -ne 0 ]]; then
 				if [[ ${unidMemOcupadas[$((indMem - 1))]} !=  "_" ]]; then 
@@ -6894,69 +6894,69 @@ function dibujaResumenBandaMemoriaMarcosPagina {
 					fi
 				fi
 			fi
-#EN-21950-
+		else #Sin proceso asignado al marco 
 			xx=0
-#EN-21960-
+			espaciosguionfinal="-"${varhuecos:1:$(($anchoColumna - 2 - ${#paginasEnMemoriaTotal[${unidMemOcupadas[$indMem]},${numMarcosDibujadosPorProceso[${unidMemOcupadas[$indMem]}]}]}))}
 			filapagBN[$aux]+=`echo -e "$espaciosguionfinal "`
 			filapagColor[$aux]+=`echo -e "$NC$espaciosguionfinal$NC "`
 			numCaracteres2=$(($numCaracteres2 + $anchoColumna))
 		fi
-#EN-21970-
+  		numeroMarco=$((numeroMarco + 1)) #Aumenta el contador de marcos (ordinal de marcos distinto para cada proceso=
 	done
 
-#EN-21980-
-#EN-21990-
+	# GENERACIÓN STRING DE FRECUENCIA/USO RECIENTE DE USO DE LAS PÁGINAS (Línea 4 del Resumen de la Banda de Memoria)  
+	aux=0 # Línea de la frecuencia
 	numCaracteres2=10
 	guionesAMeter=${varguiones:1:$(($anchoColumna - 2))}
 	asteriscosAMeter=${varasteriscos:1:$(($anchoColumna - 2))}
 	sumaTotalMemoria=0
-#EN-22000-
+	xx=0 # Variable que indica si se ha añadido un proceso a la banda
 	for (( i=0; i<$nprocesos; i++)); do 
-#EN-22010-
+		numMarcosDibujadosPorProceso[$i]=0 #Número de Marcos en Memoria con Páginas ya dibujadas de cada Proceso para el resumen de Banda.
 	done			
 	for ((indMem=0;indMem<$mem_num_marcos;indMem++)); do
-#EN-22020-
-#EN-22030-
+		if [[ $(($numCaracteres2 + $anchoColumna + 1)) -gt $terminal2 ]]; then # El texto no cabe en la terminal
+			aux=$(($aux + 1)) # Se pasa a la siguiente línea
 			filaAlgPagFrecUsoRecBN[$aux]="        "
 			filaAlgPagFrecUsoRecColor[$aux]="        "
 			numCaracteres2=8
 		fi
-#EN-22040-
+		if [[ ${unidMemOcupadas[$indMem]} != "_" ]]; then # El proceso se puede imprimir en memoria
 			if [[ ${#paginasEnMemoriaTotal[${unidMemOcupadas[$indMem]},${numMarcosDibujadosPorProceso[${unidMemOcupadas[$indMem]}]}]} -eq 0 ]]; then #Si no hay página se mete asterisco por ser frecuencia 0.
 				espaciosasteriscofinal="*"${varhuecos:1:$(($anchoColumna - 2))}
 				filaAlgPagFrecUsoRecBN[$aux]+=`echo -e "$espaciosasteriscofinal "`
 				filaAlgPagFrecUsoRecColor[$aux]+=`echo -e "$NC${coloress[${unidMemOcupadas[$indMem]} % 6]}$espaciosasteriscofinal$NC "`
-#EN-22050-
+			else  #Y si hay página se mete espacios y el número.
 				dato5=""
 				dato6=""
 				espaciosadicionales1=0
 				espaciosadicionales2=0
-#EN-22060-
-#EN-22070-
-#EN-22080-
-#EN-22090-
-#EN-22100-
-#EN-22110-
+				if [[ $seleccionAlgoritmoPaginacion -eq 10 || $seleccionAlgoritmoPaginacion -eq 11 || $seleccionAlgoritmoPaginacion -eq 16 || $seleccionAlgoritmoPaginacion -eq 17 ]]; then #Contendrá la clase de la página en NFU/NRU con clases.
+					punteroPagMarco=${ResuPaginaOrdinalAcumulado[${unidMemOcupadas[$indMem]},${numMarcosDibujadosPorProceso[${unidMemOcupadas[$indMem]}]},$reloj]} #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso.
+					dato5="-"${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaFrecRec_valor[${unidMemOcupadas[$indMem]},${numMarcosDibujadosPorProceso[${unidMemOcupadas[$indMem]}]}]} #Índices: (proceso, marco)).
+					espaciosadicionales1=${#dato5}
+					dato6="-"${ResuTiempoProcesoUnidadEjecucion_MarcoPaginaClase_valor[${unidMemOcupadas[$indMem]},${numMarcosDibujadosPorProceso[${unidMemOcupadas[$indMem]}]}]} #Índices: (proceso, número ordinal del marco usado para ese proceso comenzando por 0).
+					espaciosadicionales2=${#dato6}
 				fi 
-#EN-22120-
-#EN-22130-
+				ordinalMarcosProcesoDibujados[${unidMemOcupadas[$indMem]}]=$((${ordinalMarcosProcesoDibujados[${unidMemOcupadas[$indMem]}]} + 1)) #Desde 0, es el ordinal del número de marcos en memoria asociados a cada proceso (Índices:Proceso)
+				espaciosfinal=${varhuecos:1:$(($anchoColumna - 1 - ${#ResuFrecuenciaAcumulado[${unidMemOcupadas[$indMem]},${numMarcosDibujadosPorProceso[${unidMemOcupadas[$indMem]}]},$reloj]} - $espaciosadicionales1 - $espaciosadicionales2))}
 				if [[ $seleccionAlgoritmoPaginacion -ge 0 && $seleccionAlgoritmoPaginacion -le 4 ]]; then
 					filaAlgPagFrecUsoRecBN[$aux]+=`echo -e "${ResuFrecuenciaAcumulado[${unidMemOcupadas[$indMem]},${ordinalMarcosProcesoDibujados[${unidMemOcupadas[$indMem]}]},$reloj]}$dato5$dato6$espaciosfinal "`
 					filaAlgPagFrecUsoRecColor[$aux]+=`echo -e "$NC${coloress[${unidMemOcupadas[$indMem]} % 6]}${ResuFrecuenciaAcumulado[${unidMemOcupadas[$indMem]},${ordinalMarcosProcesoDibujados[${unidMemOcupadas[$indMem]}]},$reloj]}$dato5$dato6$espaciosfinal$NC "`
 				elif [[ $seleccionAlgoritmoPaginacion -eq 5 ]]; then
-#EN-22140-
+					espaciosfinal=${varhuecos:1:$(($anchoColumna - 1 - ${#ResuUsoRecienteAcumulado[${unidMemOcupadas[$indMem]},${numMarcosDibujadosPorProceso[${unidMemOcupadas[$indMem]}]},$reloj]} - $espaciosadicionales1 - $espaciosadicionales2))}
 					filaAlgPagFrecUsoRecBN[$aux]+=`echo -e "${ResuUsoRecienteAcumulado[${unidMemOcupadas[$indMem]},${numMarcosDibujadosPorProceso[${unidMemOcupadas[$indMem]}]},$reloj]}$dato5$dato6$espaciosfinal "`
 					filaAlgPagFrecUsoRecColor[$aux]+=`echo -e "$NC${coloress[${unidMemOcupadas[$indMem]} % 6]}${ResuUsoRecienteAcumulado[${unidMemOcupadas[$indMem]},${numMarcosDibujadosPorProceso[${unidMemOcupadas[$indMem]}]},$reloj]}$dato5$dato6$espaciosfinal$NC "`
 				elif [[ $seleccionAlgoritmoPaginacion -ge 6 && $seleccionAlgoritmoPaginacion -le 11 ]]; then
 					filaAlgPagFrecUsoRecBN[$aux]+=`echo -e "${ResuFrecuenciaAcumulado[${unidMemOcupadas[$indMem]},${numMarcosDibujadosPorProceso[${unidMemOcupadas[$indMem]}]},$reloj]}$dato5$dato6$espaciosfinal "`
 					filaAlgPagFrecUsoRecColor[$aux]+=`echo -e "$NC${coloress[${unidMemOcupadas[$indMem]} % 6]}${ResuFrecuenciaAcumulado[${unidMemOcupadas[$indMem]},${numMarcosDibujadosPorProceso[${unidMemOcupadas[$indMem]}]},$reloj]}$dato5$dato6$espaciosfinal$NC "`
 				elif [[ $seleccionAlgoritmoPaginacion -ge 12 && $seleccionAlgoritmoPaginacion -le 17 ]]; then
-#EN-22150-
+					espaciosfinal=${varhuecos:1:$(($anchoColumna - 1 - ${#ResuUsoRecienteAcumulado[${unidMemOcupadas[$indMem]},${numMarcosDibujadosPorProceso[${unidMemOcupadas[$indMem]}]},$reloj]} - $espaciosadicionales1 - $espaciosadicionales2))}
 					filaAlgPagFrecUsoRecBN[$aux]+=`echo -e "${ResuUsoRecienteAcumulado[${unidMemOcupadas[$indMem]},${numMarcosDibujadosPorProceso[${unidMemOcupadas[$indMem]}]},$reloj]}$dato5$dato6$espaciosfinal "`
 					filaAlgPagFrecUsoRecColor[$aux]+=`echo -e "$NC${coloress[${unidMemOcupadas[$indMem]} % 6]}${ResuUsoRecienteAcumulado[${unidMemOcupadas[$indMem]},${numMarcosDibujadosPorProceso[${unidMemOcupadas[$indMem]}]},$reloj]}$dato5$dato6$espaciosfinal$NC "`
 				fi
 			fi 
-#EN-22160-
+			((numMarcosDibujadosPorProceso[${unidMemOcupadas[$indMem]}]++)) #Número de Marcos con Páginas ya dibujadas de cada Proceso.
 			numCaracteres2=$(($numCaracteres2 + $anchoColumna))
 			if [[ $indMem -ne 0 ]]; then
 				if [[ ${unidMemOcupadas[$((indMem - 1))]} !=  "_" ]]; then 
@@ -6967,18 +6967,18 @@ function dibujaResumenBandaMemoriaMarcosPagina {
 			fi
 		else
 			xx=0
-#EN-22170-
+			espaciosguionfinal="-"${varhuecos:1:$(($anchoColumna - 2 - ${#paginasEnMemoriaTotal[${unidMemOcupadas[$indMem]},${numMarcosDibujadosPorProceso[${unidMemOcupadas[$indMem]}]}]}))}
 			filaAlgPagFrecUsoRecBN[$aux]+=`echo -e "$espaciosguionfinal "`
 			filaAlgPagFrecUsoRecColor[$aux]+=`echo -e "$NC$espaciosguionfinal$NC "`
 			numCaracteres2=$(($numCaracteres2 + $anchoColumna))
 		fi
 	done
 
-#EN-22180-
-#EN-22190-
+	# GENERACIÓN STRING DE FALLOS TOTALES POR PROCESO   
+	fallosProceso=${contadorAlgPagFallosProcesoAcumulado[$ejecutandoinst]} #Total de Fallos de Página del Proceso en el instante actual 
 
-#EN-22200-
-#EN-22210-
+	# IMPRIMIR LAS 4 LÍNEAS DE LA BANDA DE MEMORIA (COLOR y BN a pantalla y ficheros)
+	if [[ $mem_libre -lt $mem_num_marcos ]]; then #Si hay algún proceso en memoria.
 		echo -e "$filaAlgPagFrecUsoRecTituloColor" | tee -a $informeConColorTotal
 		echo -e "$filaAlgPagFrecUsoRecNotas1Color" | tee -a $informeConColorTotal
 		echo -e "$filaAlgPagFrecUsoRecNotas2Color" | tee -a $informeConColorTotal
@@ -6997,40 +6997,40 @@ function dibujaResumenBandaMemoriaMarcosPagina {
 		echo -e "${filaAlgPagFrecUsoRecBN[$jj]}\n" >> $informeSinColorTotal
 	done
 
-#EN-22220-
-#EN-22230-
-#EN-22240-
-#EN-22250-
+	#Tras mostrar el resumen de la Banda de Memoria, se inicializan las variables usadas.
+	#Se inicializa la auxiliar usada para la reubicación de la memoria.
+	for (( ca=0; ca<(mem_num_marcos); ca++)); do #Se borran los datos de la variable auxiliar, usada para la reubicación.
+		unidMemOcupadasAux[$ca]="_" #Para cada posición de memoria se determinará qué proceso la ocupa.
 	done
-#EN-22260-
-#EN-22270-
-#EN-22280-
+	#Se inicializan los bloques donde se introducirán los datos de los procesos.
+	for (( ca=0; ca<($nprocesos) ; ca++)); do #Se borran los bloques usados para la reubicación
+		 bloques[$ca]=0 #Almacena el número de bloques en los que se fragmenta un proceso
 	done
-#EN-22290-
+	#Se inicializa la variable que contendrá el número de bloques de cada proceso.
 	nposiciones=0
-#EN-22300-
+	#Se inicializan las posiciones iniciales y finales de los bloques asociados a cada proceso, para borrar elementos innecesarios
 	for (( i=0; i<$nposiciones; i++ )) ; do
 		 inicialNCmodelo[$i]=0
 	done
 	for (( i=0; i<$nposiciones; i++ )) ; do 
 		 finalNCmodelo[$i]=0
 	done
-#EN-22310-
+} #Fin de la nueva versión de dibujaResumenBandaMemoriaMarcosPagina
 
 ####################################################################################
-#EN-22320-
+# Sinopsis: Muestra los fallos de paginación por AlgPagFrecUsoRec al acabar un proceso.  ${coloress[${unidMemOcupadas[$ii]} % 6]}
 ####################################################################################
-#EN-22330-
+function dibujaResumenAlgPagFrecUsoRec { #  proceso[$po]  ${unidMemOcupadas[$ii]}  nproceso ejecutandoinst numeroproceso
 	numCaracteres2Inicial=12
 	Terminal=$((`tput cols`)) 
 	if [[ $seleccionAlgoritmoPaginacion -eq 2 || $seleccionAlgoritmoPaginacion -eq 4 || $seleccionAlgoritmoPaginacion -eq 7 || $seleccionAlgoritmoPaginacion -eq 8 || $seleccionAlgoritmoPaginacion -eq 14 || $seleccionAlgoritmoPaginacion -eq 15 ]]; then 
-#EN-22340-
-#EN-22350-
-#EN-22360-
+		anchoColumna=$((10 + $digitosUnidad - 3)) #Para poder incluir -clase en la página. Se restan 3 porque previamente se ha añadido la logitud $digitosUnidad, y ya venía incluido.
+	elif [[ $seleccionAlgoritmoPaginacion -eq 10 || $seleccionAlgoritmoPaginacion -eq 11 || $seleccionAlgoritmoPaginacion -eq 16 || $seleccionAlgoritmoPaginacion -eq 17 ]]; then #MFU/LFU con clases 
+		anchoColumna=$((11 + $digitosUnidad - 3)) #Para poder incluir -clase en la página. Se restan 3 porque previamente se ha añadido la logitud $digitosUnidad, y ya venía incluido.
 	else
 		anchoColumna=$((8 + $digitosUnidad - 3))
 	fi
-#EN-22370-
+	filaAlgPagFrecUsoRecTituloColor=(); #Se inicializan las variables.
 	filaAlgPagFrecUsoRecTituloBN=();
 	filaAlgPagFrecUsoRecNotas1Color=();
 	filaAlgPagFrecUsoRecNotas1BN=();
@@ -7072,135 +7072,135 @@ function dibujaResumenBandaMemoriaMarcosPagina {
 	filaAlgPagFrecUsoRecNotas2Color=`echo -e "$NORMAL$AlgPagFrecUsoRecMFUNotas2$NORMAL "`
 	filaAlgPagFrecUsoRecNotas2BN=`echo -e "$AlgPagFrecUsoRecMFUNotas2 "`
 
-#EN-22380-
-#EN-22390-
+	# GENERACIÓN STRING DE RELOJ (Línea 1 del Resumen de Fallos de Paginación)  
+	aux=0 #Define el número de saltos a realizar.
 	filatiempoColor[$aux]="\n$NC Tiempo     "
 	filatiempoBN[$aux]="\n Tiempo     "
-#EN-22400-
-#EN-22410-
+	numCaracteres2=$numCaracteres2Inicial #Deja 1 de margen izquierdo y 11 para controlar el comienzo del espacio usado para los datos para controlar los saltos de línea.
+	counter=0 #Índice 
 	iiSiguiente=0
 	for ((counter=0;counter<${ejecucion[$procFinalizado]};counter++)); do
 		for ((ii=$iiSiguiente;ii<$reloj;ii++)); do
-#EN-22420-
-#EN-22430-
+			if [[ $(($numCaracteres2 + $anchoColumna + 1)) -gt $Terminal ]]; then # El texto no cabe en la terminal
+				aux=$(($aux + 1)) # Se pasa a la siguiente línea
 				filatiempoColor[$aux]="\n            "
 				filatiempoBN[$aux]="\n            "
-#EN-22440-
+				numCaracteres2=$numCaracteres2Inicial #Espacio por la izquierda para cuadrar líneas
 			fi
 			if [[ ${ResuTiempoProceso[$ii]} -eq $procFinalizado ]]; then
-#EN-22450-
+				espaciosfinal=${varhuecos:1:$(($anchoColumna - ${#ii}))}
 				filatiempoColor[$aux]+=`echo -e "$NORMAL""$ii$espaciosfinal$NORMAL "`
 				filatiempoBN[$aux]+=`echo -e "$ii$espaciosfinal "`
-#EN-22460-
+				iiSiguiente=$((ii + 1)) #Para que no se repitan los datos en cada ciclo al no empezar desde 0.
 				numCaracteres2=$(($numCaracteres2 + $anchoColumna + 1))
 			fi
 		done
 	done
 
-#EN-22470-
-#EN-22480-
+	# GENERACIÓN STRING DE PÁGINAS (Línea 2 del Resumen de Fallos de Paginación)  
+	aux=0 #Define el número de saltos a realizar. paginasDefinidasTotal  (Índices:Proceso, Páginas).
 	filapagColor[$aux]="$NC Página     "
 	filapagBN[$aux]=" Página     "
-#EN-22490-
+	numCaracteres2=$numCaracteres2Inicial #Deja 1 de margen izquierdo y 11 para controlar el comienzo del espacio usado para los datos para controlar los saltos de línea.
 	iiSiguiente=0
 	varCierre=0
 	for ((counter=0;counter<${ejecucion[$procFinalizado]};counter++)); do
 		for ((ii=$iiSiguiente;ii<$reloj;ii++)); do
-#EN-22500-
-#EN-22510-
+			if [[ $(($numCaracteres2 + $anchoColumna + 1)) -gt $Terminal ]]; then # El texto no cabe en la terminal
+				aux=$(($aux + 1)) # Se pasa a la siguiente línea
 				filapagColor[$aux]="            "
 				filapagBN[$aux]="            "
-#EN-22520-
+				numCaracteres2=$numCaracteres2Inicial #Espacio por la izquierda para cuadrar líneas
 			fi
-#EN-22530-
+			if [[ ${paginasDefinidasTotal[$procFinalizado,$ii]} -ge 0 && $varCierre -lt ${ejecucion[$procFinalizado]} ]]; then #Evita qe queden elementos definidos de ejecuciones anteriores por las que sake un número al final de la línea en una nueva columna que, teóricamente no existe.
 				varCierre=$(($varCierre + 1))
-#EN-22540-
+				espaciosfinal=${varhuecos:1:$(($anchoColumna - ${#paginasDefinidasTotal[$procFinalizado,$ii]}))}
 				filapagColor[$aux]+=`echo -e "$NORMAL""${paginasDefinidasTotal[$procFinalizado,$ii]}$espaciosfinal$NORMAL "`
 				filapagBN[$aux]+=`echo -e "${paginasDefinidasTotal[$procFinalizado,$ii]}$espaciosfinal "`
 				numCaracteres2=$(($numCaracteres2 + $anchoColumna + 1))
-#EN-22550-
+				iiSiguiente=$(($ii + 1)) #Para que no se repitan los datos en cada ciclo al no empezar desde 0.
 			fi
 		done
 	done
 
-#EN-22560-
-#EN-22570-
-#EN-22580-
+	# GENERACIÓN STRING DE Página-Frecuencia-Uso Reciente-Clase (Líneas de Marcos del Resumen de Fallos de Paginación)  
+	for (( k=0; k<${memoria[$procFinalizado]}; k++ )); do #Bucle que recorre la ejecución del proceso finalizado a lo largo del tiempo para generar las variables con los datos a usar en la impresión del resumen. 	
+		aux=0 #Define el número de saltos a realizar.
 		espaciosfinal=${varhuecos:1:$((2 - ${#k}))} #Se considera que los números de marcos, páginas y frecuencias no superarán los tres dígitos.
-#EN-22590-
-#EN-22600-
-#EN-22610-
+		filaAlgPagFrecUsoRecColor[$k,$aux]="$NC M$k(Orden)$espaciosfinal " #"$NC Marco-Pág-Frec/UsoRec "
+		filaAlgPagFrecUsoRecBN[$k,$aux]=" M$k(Orden)$espaciosfinal " #" Marco-Pág-Frec/UsoRec "
+		numCaracteres2=$numCaracteres2Inicial #Deja 1 de margen izquierdo y 12 para controlar el comienzo del espacio usado para los datos para controlar los saltos de línea.
 		iiSiguiente=0
 		for ((counter=0;counter<${ejecucion[$procFinalizado]};counter++)); do
 			for ((ii=$iiSiguiente;ii<$reloj;ii++)); do
-#EN-22620-
-#EN-22630-
-#EN-22640-
+				if [[ ${ResuTiempoProceso[$ii]} -eq $procFinalizado ]]; then #Si el proceso que se ejecuta en un instante es el finalizado...
+					if [[ $(($numCaracteres2 + $anchoColumna + 1)) -gt $Terminal ]]; then # El texto no cabe en la terminal
+						aux=$(($aux + 1)) # Se pasa a la siguiente línea
 						filaAlgPagFrecUsoRecColor[$k,$aux]="            "
 						filaAlgPagFrecUsoRecBN[$k,$aux]="            "
-#EN-22650-
+						numCaracteres2=$numCaracteres2Inicial #Espacio por la izquierda para cuadrar líneas
 					fi
-#EN-22660-
-#EN-22670-
+					dato1=${relacionMarcosUsados[$procFinalizado,$ii,$k]} #Índices: (proceso, tiempo, número ordinal de marco). Dato del marco real que corresponde al ordinal
+					dato2=${ResuPaginaAcumulado[$procFinalizado,$k,$ii]} #Índices: (proceso, marco, tiempo). Dato de la página contenida en el marco
 					if ([[ $seleccionAlgoritmoPaginacion -ge 0 && $seleccionAlgoritmoPaginacion -le 4 ]]) || ([[ $seleccionAlgoritmoPaginacion -ge 6 && $seleccionAlgoritmoPaginacion -le 9 ]]); then
-#EN-22680-
+						dato3=${ResuFrecuenciaAcumulado[$procFinalizado,$k,$ii]} #Índices: (proceso, marco, tiempo). Dato de la frecuencia de uso de la página contenida en el marco
 					elif [[ $seleccionAlgoritmoPaginacion -eq 5 ]]; then
-#EN-22690-
+						dato3=${ResuTiempoOptimoAcumulado[$procFinalizado,$k,$ii]} #Índices: (proceso, marco, tiempo). Dato del Tiempo que hace que se usó la página contenida en el marco
 					elif [[ $seleccionAlgoritmoPaginacion -ge 10 && $seleccionAlgoritmoPaginacion -le 11 ]]; then
 						dato3=${ResuFrecuenciaAcumulado[$procFinalizado,$k,$ii]}
 						if [[ $dato3 -ge $seleccionAlgoritmoPaginacion_clases_frecuencia_valor ]]; then
-#EN-22700-
+							dato3=$seleccionAlgoritmoPaginacion_clases_frecuencia_valor #Índices: (proceso, marco, tiempo). Dato del Tiempo que hace que se usó la página contenida en el marco
 						fi
 					elif [[ $seleccionAlgoritmoPaginacion -ge 12 && $seleccionAlgoritmoPaginacion -le 15 ]]; then
-#EN-22710-
+						dato3=${ResuUsoRecienteAcumulado[$procFinalizado,$k,$ii]} #Índices: (proceso, marco, tiempo). Dato del Tiempo que hace que se usó la página contenida en el marco
 					elif [[ $seleccionAlgoritmoPaginacion -ge 16 && $seleccionAlgoritmoPaginacion -le 17 ]]; then
 						dato3=${ResuUsoRecienteAcumulado[$procFinalizado,$k,$ii]}
 						if [[ $dato3 -ge $seleccionAlgoritmoPaginacion_clases_uso_rec_valor ]]; then
-#EN-22720-
+							dato3=$seleccionAlgoritmoPaginacion_clases_uso_rec_valor #Índices: (proceso, marco, tiempo). Dato del Tiempo que hace que se usó la página contenida en el marco
 						fi
 					fi
-#EN-22730-
-#EN-22740-
+					dato4="" #Contendrá la clase de la página en NFU/NRU con clases.
+					datoM="" #Contendrá el coeficiente M en algoritmos de Segunda Oportunidad.
 					if [[ $seleccionAlgoritmoPaginacion -eq 2 || $seleccionAlgoritmoPaginacion -eq 4 ]]; then
-#EN-22750-
-#EN-22760-
-#EN-22770-
+						if [[ $dato2 != "" ]]; then	#Si no hay página, tampoco habrá coeficiente M
+							punteroPagMarco=${ResuPaginaOrdinalAcumulado[$procFinalizado,${ResuPunteroMarcoUsado[$procFinalizado,$ii]},$ii]} #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso. Se busca el ordinal usado en ese instante porque sería el utilizado para la búsqueda de los coeficientes M en todos los marcos al ser el mayor número.
+							datoM=${coeficienteSegOp[$procFinalizado,$k,$punteroPagMarco]}	#Se usa el ordinal de la página desde ResuPaginaOrdinalAcumulado() que da el ordinal de la página en un marco en cada instante de reloj.				
 							datostot="$dato1-$dato2-$dato3-$datoM"
-#EN-22780-
+						else #Si no hay página asociada sólo se muestra el número de marco real.
 							datostot="$dato1"						
 						fi
 					elif [[ $seleccionAlgoritmoPaginacion -eq 5 ]]; then
-#EN-22790-
+						if [[ $dato2 != "" ]]; then	#Si no hay página, tampoco habrá tiempo hasta una nueva ejecución. 
 							datostot="$dato1-$dato2-$dato3"
 						else
 							datostot="$dato1"						
 						fi
 					elif [[ $seleccionAlgoritmoPaginacion -eq 10 || $seleccionAlgoritmoPaginacion -eq 11 || $seleccionAlgoritmoPaginacion -eq 16 || $seleccionAlgoritmoPaginacion -eq 17 ]]; then
-#EN-22800-
-#EN-22810-
-#EN-22820-
-#EN-22830-
+						if [[ $dato2 != "" ]]; then	#Si no hay página, tampoco habrá clase
+							punteroPagMarco=${ResuPaginaOrdinalAcumulado[$procFinalizado,$k,$ii]} #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso.
+							dato4=${directions_AlgPagFrecUsoRec_pagina_modificada[$procFinalizado,$punteroPagMarco,0]} #Resumen - Índices: (proceso, ordinal del tiempo de ejecución). Dato: Página modificada (1) o no modificada (0).
+							dato4=$dato4"-"${directions_AlgPagFrecUsoRec_marco_pagina_clase[$procFinalizado,$k,$punteroPagMarco]} #Índices: (proceso, marco, número ordinal de la dirección a ejecutar).
 						fi
 						datostot="$dato1-$dato2-$dato3-$dato4"
 					elif [[ $seleccionAlgoritmoPaginacion -eq 0 ]] || [[ $seleccionAlgoritmoPaginacion -eq 1 ]] || [[ $seleccionAlgoritmoPaginacion -eq 3 ]] || ([[ $seleccionAlgoritmoPaginacion -ge 6 && $seleccionAlgoritmoPaginacion -le 9 ]]) || ([[ $seleccionAlgoritmoPaginacion -ge 12 && $seleccionAlgoritmoPaginacion -le 15 ]]); then
 						datostot="$dato1-$dato2-$dato3"
 					fi
-#EN-22840-
-#EN-22850-
-#EN-22860-
+					espaciosfinal=${varhuecos:1:$(($anchoColumna - ${#datostot}))}  
+					#En lugar de generar diferentes opciones y comparativas, se generará una serie de variables con las modificaciones de formato. 
+					varUsado=${ResuPunteroMarcoUsado[$procFinalizado,$ii]} #Fondo de color - Marco usado (Puntero) para cada Proceso en cada unidad de Tiempo.
 					if [[ $seleccionAlgoritmoPaginacion -ne 0 ]]; then
-#EN-22870-
+						varSiguiente=${ResuPunteroMarcoSiguienteFalloPagAcumulado[$procFinalizado,$ii]} #Subrayado - Marco (Puntero) sobre el que se produce el siguiente fallo para cada Proceso en cada unidad de Tiempo.
 					fi
-#EN-22880-
+					varFallo=${ResuFallosMarcoProceso[$procFinalizado,$ii]} #Negrita - Marcos donde se produjeron Fallos de Página del Proceso en ejecución.
 					varImprimirUsado=""
 					varImprimirSiguiente=""
 					varImprimirFallo=""
-#EN-22890-
+					varFallo=${ResuFallosMarcoProceso[$procFinalizado,$ii]} #Contendría el marco sobre el que se produce un fallo.
 					if [[ ${varUsado} -eq $k ]]; then
 						varImprimirUsado=${colorfondo[$procFinalizado % 6]}
 					elif [[ ${varSiguiente} -eq $k && $seleccionAlgoritmoPaginacion -ne 0 ]]; then
 						varImprimirSiguiente="\e[4m"
-#EN-22900-
+					elif ! [[ -z $varFallo && $seleccionAlgoritmoPaginacion -ne 0 ]]; then #Si contiene algún dato (marco) es porque hay un fallo.
 						varImprimirFallo="\e[1m"
 					fi
 					if [[ $varImprimirUsado == "" ]]; then
@@ -7212,29 +7212,29 @@ function dibujaResumenBandaMemoriaMarcosPagina {
 					fi
 					numCaracteres2=$(($numCaracteres2 + $anchoColumna + 1))
 				fi
-#EN-22910-
+				iiSiguiente=$((ii + 1)) #Para que no se repitan los datos en cada ciclo al no empezar desde 0.
 			done
 		done
 	done
 
-#EN-22920-
-#EN-22930-
-#EN-22940-
-#EN-22950-
-#EN-22960-
-#EN-22970-
+	# GENERACIÓN STRING DE FALLOS (Líneas de Fallos del Resumen de Fallos de Paginación)  
+	aux=0 #Define el número de saltos a realizar.
+	espaciosfinal=${varhuecos:1:$(($anchoColumna - 1))} #Es fijo porque sólo se va a escribir "F" o "-".
+	filaFallosColor[$aux]="$NC Fallos (F) " #"$NC Marco-Pág-Frec/UsoRec "
+	filaFallosBN[$aux]=" Fallos (F) " #" Marco-Pág-Frec/UsoRec "
+	numCaracteres2=$numCaracteres2Inicial #Deja 1 de margen izquierdo y 12 para controlar el comienzo del espacio usado para los datos para controlar los saltos de línea.
 	iiSiguiente=0
 	for ((counter=0;counter<${ejecucion[$procFinalizado]};counter++)); do
 		for ((ii=$iiSiguiente;ii<=$reloj;ii++)); do
-#EN-22980-
-#EN-22990-
-#EN-23000-
+			if [[ ${ResuTiempoProceso[$ii]} -eq $procFinalizado ]]; then #Si el proceso que se ejecuta en un instante es el finalizado...
+				if [[ $(($numCaracteres2 + $anchoColumna + 1)) -gt $Terminal ]]; then # El texto no cabe en la terminal
+					aux=$(($aux + 1)) # Se pasa a la siguiente línea
 					filaFallosColor[$aux]="            "
 					filaFallosBN[$aux]="            "
-#EN-23010-
+					numCaracteres2=$numCaracteres2Inicial #Espacio por la izquierda para cuadrar líneas
 				fi
-#EN-23020-
-#EN-23030-
+				varFallo=${ResuFallosMarcoProceso[$procFinalizado,$ii]} #Contendría el marco sobre el que se produce un fallo.
+				if ! [[ -z $varFallo ]]; then #Si contiene algún dato (marco) es porque hay un fallo.
 					filaFallosColor[$aux]+=`echo -e "${coloress[$procFinalizado % 6]}""F""$NC$espaciosfinal "`
 					filaFallosBN[$aux]+=`echo -e "F""$espaciosfinal "`
 				else
@@ -7243,26 +7243,26 @@ function dibujaResumenBandaMemoriaMarcosPagina {
 				fi
 				numCaracteres2=$(($numCaracteres2 + $anchoColumna + 1))
 			fi
-#EN-23040-
+			iiSiguiente=$((ii + 1)) #Para que no se repitan los datos en cada ciclo al no empezar desde 0.
 		done
 	done
 
-#EN-23050-
-#EN-23060-
+	# GENERACIÓN STRING DE FALLOS TOTALES POR PROCESO  
+	fallosProceso=${contadorAlgPagFallosProcesoAcumulado[$procFinalizado]} #Total de Fallos de Página del Proceso 
 
-#EN-23070-
+	# IMPRIMIR LAS LÍNEAS DE LOS MARCOS DE MEMORIA POR PROCESO (COLOR y BN a pantalla y ficheros)
 	echo -e "$filaAlgPagFrecUsoRecTituloColor" | tee -a $informeConColorTotal
 	echo -e "$filaAlgPagFrecUsoRecNotas1Color" | tee -a $informeConColorTotal
 	echo -ne "$filaAlgPagFrecUsoRecNotas2Color" | tee -a $informeConColorTotal
 	echo -e "$filaAlgPagFrecUsoRecTituloBN" >> $informeSinColorTotal
 	echo -e "$filaMF$filaAlgPagFrecUsoRecNotas1BN" >> $informeSinColorTotal
 	echo -ne "$filaAlgPagFrecUsoRecNotas2BN" >> $informeSinColorTotal
-#EN-23080-
+	for (( jj = 0; jj <= $aux; jj++ )); do #Para cada salto de línea por no caber en la pantalla
 		echo -e "${filatiempoColor[$jj]}" | tee -a $informeConColorTotal
 		echo -e "${filapagColor[$jj]}" | tee -a $informeConColorTotal
 		echo -e "${filatiempoBN[$jj]}" >> $informeSinColorTotal
 		echo -e "${filapagBN[$jj]}" >> $informeSinColorTotal
-#EN-23090-
+		for (( k=0; k<${memoria[$procFinalizado]}; k++ )); do #Para cada marco asociado al proceso
 			echo -e "${filaAlgPagFrecUsoRecColor[$k,$jj]}" | tee -a $informeConColorTotal
 			echo -e "${filaAlgPagFrecUsoRecBN[$k,$jj]}" >> $informeSinColorTotal
 		done
@@ -7276,10 +7276,10 @@ function dibujaResumenBandaMemoriaMarcosPagina {
 		echo -e " Número de expulsiones forzadas en Round-Robin (RR) del Proceso "${proceso[$procFinalizado]}": "${contadorAlgPagExpulsionesForzadasProcesoAcumulado[$procFinalizado]} >> $informeSinColorTotal
 	fi
 #	procFinalizado=-1 #Se define a "-1" para que no vuelva a imprimirse en caso de producirse algún otro evento.
-#EN-23100-
+} #Fin de dibujaResumenAlgPagFrecUsoRec()
 
 ####################################################################################
-#EN-23110-
+# Sinopsis: Muestra los fallos del algoritmo basado en el reloj con un formato de reloj - SIN HACER POR SUMAR MUCHAS PÁGINAS SIN APORTAR NADA
 ####################################################################################
 function dibujaResumenReloj {	
 #	procFinalizadoOEjecutando #Variable que será procFinalizado o ejecutandoinst, dependiendo de si se muestra todo el proceso o sólo un instante. 
@@ -7298,26 +7298,26 @@ function dibujaResumenReloj {
 #ordinalMarcosProcesoDibujados 			#Desde 0, es el ordinal del número de marcos en memoria asociados a cada proceso (Índices:Proceso)
 #numeroMarcosUsados 					#Resumen - Índices: (proceso). Dato: Número de Marcos usados en cada Proceso.
 
-#EN-23120-
+#	clear
 	iiSiguiente=0
 	for ((counter=0;counter<${ejecucion[$procFinalizadoOEjecutando]};counter++)); do
 		for ((ii=$iiSiguiente;ii<=$reloj;ii++)); do
-#EN-23130-
+			if [[ ${ResuTiempoProceso[$ii]} -eq $procFinalizadoOEjecutando ]]; then #Si el proceso que se ejecuta en un instante es el finalizado...
 				dibujaReloj
 			fi
-#EN-23140-
+			iiSiguiente=$((ii + 1)) #Para que no se repitan los datos en cada ciclo al no empezar desde 0.
 		done
 	done
-#EN-23150-
+} #Fin de dibujaResumenReloj()
 
 ####################################################################################
-#EN-23160-
+# Sinopsis: Muestra los fallos de paginación por AlgPagFrecUsoRec al acabar un proceso. 
 ####################################################################################
 function dibujaReloj {		
-#EN-23170-
-#EN-23180-
+	#Las variables relacionadas con las posiciones empiezan en 1, y las relacionadas con las páginas de los marcos, en 0.
+#	clear
 	CReloj=${coloress[$procFinalizadoOEjecutando % 6]}
-#EN-23190-
+	AlgPagFrecUsoRecTitulo=(); #Se inicializan las variables.
 	AlgPagFrecUsoRecNotas1=();
 	filaAlgPagFrecUsoRecTituloColor=""
 	filaAlgPagFrecUsoRecTituloBN=""
@@ -7325,7 +7325,7 @@ function dibujaReloj {
 	filaAlgPagFrecUsoRecNotas1BN=""
 	echo "" | tee -a ./Informes/informeCOLOR.txt ./Informes/informeBN.txt
 	
-#EN-23200-
+	if [[ $mem_libre -lt $mem_num_marcos ]]; then #Si hay algún proceso en memoria. ResuUsoRecienteAcumulado
 		AlgPagFrecUsoRecTitulo=" Representación del Reloj para Fallos de Paginación (reloj:"$reloj")."
 		filaAlgPagFrecUsoRecTituloColor=`echo -e "$NORMAL$AlgPagFrecUsoRecTitulo$NORMAL "`
 		filaAlgPagFrecUsoRecTituloBN=`echo -e "$AlgPagFrecUsoRecTitulo "`
@@ -7339,106 +7339,106 @@ function dibujaReloj {
 		filaAlgPagFrecUsoRecNotas1BN=`echo -e "$AlgPagFrecUsoRecNotas1 "`
 		filaAlgPagFrecUsoRecNotas2BN=`echo -e "$AlgPagFrecUsoRecNotas2 "`
 	fi
-#EN-23210-
+	linea1Color=" " #Se inicializan las líneas del reloj a representar en Color.
 	linea3Color=" "
 	linea5Color=" "
-#EN-23220-
+	linea1BN=" " #Se inicializan las líneas del reloj a representar en BN.
 	linea2BN=" "
 	linea3BN=" "
 	linea4BN=" "
 	linea5BN=" "
 
 	longCampoDatosReloj=6
-#EN-23230-
-#EN-23240-
-#EN-23250-
+	TamNum=$longCampoDatosReloj #Espacios laterales 
+	guionesfinal=${varguiones:1:$TamNum} #Se inicializa a guiones para cuando no haya datos que escribir.
+	TamespaciosLineasMitad=2 #Se inicializan los espacios a izquierda y derecha del -, /, \ para centrar los caracteres de las páginas.
 	espaciosLineasMitad=${varhuecos:1:$TamespaciosLineasMitad}
-#EN-23260-
+	espaciosfinalIni=${varhuecos:1:$longCampoDatosReloj} #Se inicializa a espacios para cuando no haya datos que escribir.
 						
-#EN-23270-
-#EN-23280-
-#EN-23290-
-#EN-23300-
+	posActual=$(($((${numeroPaginasUsadasProceso[$procFinalizadoOEjecutando]} - 1)) % ${memoria[$procFinalizadoOEjecutando]} + 1)) #Se calcula sobre el número real de marcos existentes. Empieza en 1.
+	posSobrante=$((${memoria[$procFinalizadoOEjecutando]} % 4)) #Número de marcos de una vuelta incompleta.
+	if [ $posSobrante -eq 0 ]; then #Número de posiciones oblícuas en cada esquina del reloj.
+		numMarcosOblicuos=$(($((${memoria[$procFinalizadoOEjecutando]}/4)) - 1)) #Se resta una porque, inicialmente calcula las vueltas completas, y da una de más.
 	else
-#EN-23310-
+		numMarcosOblicuos=$(($((${memoria[$procFinalizadoOEjecutando]} - $posSobrante))/4)) #En cuanto sobra algo, ya se tiene que poner una posición más por cada esquina.
 	fi
-#EN-23320-
-#EN-23330-
-#EN-23340-
-#EN-23350-
+	vueltasTotales=$(($((${memoria[$procFinalizadoOEjecutando]} - $posSobrante))/4)) #Vueltas totales de los marcos (vueltas de 4 marcos). 
+	posArrIz=$(($((numMarcosOblicuos * 3)) + 4 + 1)) #Númeral de la posición del reloj del primer marco por la izquierda en la primera línea.
+	posArrIzCalculado=$(($posArrIz - 1)) #Se reajustan los índices de las posiciones (empiezan en 1) a los datos de páginas de los vectores (empiezan en 0).
+	posArrCentro=1 #Se ajusta a 1 porque se empieza en 1 en la primera posición centro-superior.
 	posArrCentroCalculado=$(($posArrCentro - 1))
-#EN-23360-
+	posArrDe=2 #Se ajusta a 2 porque se empieza en 1.
 	posArrDeCalculado=$(($posArrDe - 1))
-#EN-23370-
-#EN-23380-
-#EN-23390-
+	posCentroIz=$(($((numMarcosOblicuos * 3)) + 4)) #Númeral de la posición del reloj del primer marco por la izquierda en la segunda línea.
+	posCentroIzCalculado=$(($posCentroIz - 1)) #Se suma "-3+$posSobrante" por ser los posibles oblícuos anteriores de la última vuelta que haya sin usar.
+	posCentroDe=$(($((numMarcosOblicuos)) + 2)) #Númeral de la posición del reloj del primer marco por la izquierda en la segunda línea.
 	posCentroDeCalculado=$(($posCentroDe - 1))
-#EN-23400-
+	posAbIz=$(($((numMarcosOblicuos * 3)) + 3)) #Númeral de la posición del reloj del primer marco por la izquierda en la tercera línea.
 	posAbIzCalculado=$(($posAbIz - 1))
-#EN-23410-
-#EN-23420-
-#EN-23430-
-#EN-23440-
+	posAbCentro=$(($((numMarcosOblicuos * 2)) + 3)) #Númeral de la posición del reloj del marco central inferior en la tercera línea.
+	posAbCentroCalculado=$(($posAbCentro - 1)) #Se suma "-2+$posSobrante" por ser los posibles oblícuos anteriores de la última vuelta que haya sin usar.
+	posAbDe=$(($((numMarcosOblicuos * 2)) + 2)) #Númeral de la posición del reloj del primer marco por la izquierda en la tercera línea.
+	posAbDeCalculado=$(($posAbDe - 1)) #Se suma "-2+$posSobrante" por ser los posibles oblícuos anteriores de la última vuelta que haya sin usar.
 	if [ $posSobrante -ne 0 ]; then
-#EN-23450-
+		posCentroIzReal=$(($(($(($numMarcosOblicuos - 1)) * 3)) + 4  + $posSobrante - 1)) #Númeral de la posición real del reloj del primer marco por la izquierda en la segunda línea.
 	else
-#EN-23460-
+		posCentroIzReal=$(($(($numMarcosOblicuos * 3)) + 4 - 1)) #Númeral de la posición real del reloj del primer marco por la izquierda en la segunda línea.
 	fi
 
-#EN-23470-
-#EN-23480-
-#EN-23490-
+	varImprimirSiguiente="" #Variable relacionada con el dato: Subrayado-Siguiente Fallo de Página. Se definirán cuamdo el dato lo exija porque se haya producido un Fallo de Página sobre el marco elegido.
+	varImprimirFallo="" #Negrita-Fallo de Página
+	varImprimirPaginaUsada="" #Fondo-Marco usado
 	#varImprimirSiguiente="\e[4m" #Variable relacionada con el dato: Subrayado-Siguiente Fallo de Página
 	#varImprimirFallo="\e[1m" #Variable relacionada con el dato: Negrita-Fallo de Página
 	#varImprimirPaginaUsada=${colorfondo[$procFinalizado % 6]} #Variable relacionada con el dato: Fondo-Marco usado
 	varUsado=${ResuPunteroMarcoUsado[$procFinalizadoOEjecutando,$reloj]} # #Ordinal del marco usado (Puntero - De 0 a n) para el Proceso en ejecución en una unidad de Tiempo. Marco usado (Puntero) para cada Proceso en cada unidad de Tiempo.
-#EN-23500-
-#EN-23510-
+	varFallo=${ResuFallosMarcoProceso[$procFinalizadoOEjecutando,$reloj]} #Contendría el marco sobre el que se produce un fallo.
+	varSiguiente=${ResuPunteroMarcoSiguienteFalloPagAcumulado[$procFinalizadoOEjecutando,$reloj]} #Subrayado - Marco (Puntero) sobre el que se produce el siguiente fallo para cada Proceso en cada unidad de Tiempo.
 
-#EN-23520-
+	# GENERACIÓN STRING DEL RELOJ (Líneas 1 y 2)  
 	cuadrante=4
-#EN-23530-
-#EN-23540-
-#EN-23550-
-#EN-23560-
+	calcularSobrantes $cuadrante $posSobrante #Se calculan los sobrantes o número de páginas de la vuelta actual ya que dependen de cada cuadrante utilizado para ser restados de las posiciones reales calculadas. 
+	if [[ ${memoria[$procFinalizadoOEjecutando]} -gt 3 ]]; then #Da igual poner un total de 4 porque, en cuanto hay más de 4, ya existe $posCentroIz.
+		if [[ $numMarcosOblicuos -gt 0 ]]; then #No se calcula sobre el sobrante porque el resultado es 0.
+			posArrIzFinal=$(($posArrIzCalculado + $numMarcosOblicuos - 1)) #-1 para que sólo se ejecute el número justo de oblícuos.
 			if [[ $posArrIzCalculado -le $posArrIzFinal ]]; then 
 				counter1=0
 				for ((ii=$posArrIzCalculado; ii<=$posArrIzFinal; ii++)); do
 					posArrIzReal=$(($posCentroIzReal + 1 + $counter1))
-#EN-23570-
-#EN-23580-
-#EN-23590-
-#EN-23600-
-#EN-23610-
+					varImprimirPaginaUsada="" #Variable relacionada con el dato: Subrayado-Siguiente Fallo de Página. Se definirán cuamdo el dato lo exija porque se haya producido un Fallo de Página sobre el marco elegido.
+					varImprimirFallo="" #Negrita-Fallo de Página
+					varImprimirSiguiente="" #Fondo-Marco usado
+					if [[ $varUsado -eq $posArrIzReal ]]; then #Para determinar subrayado (siguiente fallo de página), fondo de color (uso)y negrita (fallo de página). 
+						varImprimirPaginaUsada="${colorfondo[$procFinalizado % 6]}" #Variable relacionada con el dato: Subrayado-Siguiente Fallo de Página
 					fi
 					if [[ $varFallo -eq $posArrIzReal ]]; then 
-#EN-23620-
+						varImprimirFallo="\e[1m" #Variable relacionada con el dato: Negrita-Fallo de Página
 					fi
 					if [[ $varSiguiente -eq $posArrIzReal ]]; then 
-#EN-23630-
+						varImprimirSiguiente="\e[4m" #Variable relacionada con el dato: Fondo-Marco usado
 					fi
-#EN-23640-
+					variacionesMarco=$CReloj$varImprimirPaginaUsada$varImprimirFallo$varImprimirSiguiente #Conjunto de las variaciones sobre el texto. 
 					if [[ ${paginasEnMemoriaProceso[$posArrIzReal]} -ne -1 && ${memoria[$procFinalizadoOEjecutando]} -gt $posArrIzReal ]]; then
 						if [[ $ii -ne $posArrIzFinal ]]; then
 							datoM=""
 							if [[ $seleccionAlgoritmoPaginacion -eq 4 ]]; then
-#EN-23650-
-#EN-23660-
+								punteroPagMarco=${ResuPaginaOrdinalAcumulado[$procFinalizadoOEjecutando,$posArrIzReal,$reloj]} #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso. Se busca el ordinal usado en ese instante porque sería el utilizado para la búsqueda de los coeficientes M en todos los marcos al ser el mayor número.
+								datoM="-"${coeficienteSegOp[$procFinalizadoOEjecutando,$posArrIzReal,$punteroPagMarco]} #Contendrá el coeficiente M en algoritmos de Segunda Oportunidad. Se usa el ordinal de la página desde ResuPaginaOrdinalAcumulado() que da el ordinal de la página en un marco en cada instante de reloj.				
 							fi
 							dato1="${paginasEnMemoriaProceso[$posArrIzReal]}$datoM"
-#EN-23670-
+							TamNum=$(($longCampoDatosReloj - ${#dato1})) 
 							espaciosfinal="${varhuecos:1:$TamNum}"
-#EN-23680-
-#EN-23690-
+							linea1BN="$linea1BN $espaciosfinal$dato1 " #Se añade un espacio porque no se representa ningún carácter (-/\).
+							linea1Color="$linea1Color $espaciosfinal$variacionesMarco$dato1$NC$CReloj " #Se añade un espacio porque no se representa ningún carácter (-/\).
 							linea2BN="$linea2BN $espaciosfinalIni\\"
 						elif [[ $ii -eq $posArrIzFinal ]] && [[ $cuadrante -le $posSobrante || $posSobrante -eq 0 ]]; then
 							datoM=""
 							if [[ $seleccionAlgoritmoPaginacion -eq 4 ]]; then
-#EN-23700-
-#EN-23710-
+								punteroPagMarco=${ResuPaginaOrdinalAcumulado[$procFinalizadoOEjecutando,$posArrIzReal,$reloj]} #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso. Se busca el ordinal usado en ese instante porque sería el utilizado para la búsqueda de los coeficientes M en todos los marcos al ser el mayor número.
+								datoM="-"${coeficienteSegOp[$procFinalizadoOEjecutando,$posArrIzReal,$punteroPagMarco]} #Contendrá el coeficiente M en algoritmos de Segunda Oportunidad. Se usa el ordinal de la página desde ResuPaginaOrdinalAcumulado() que da el ordinal de la página en un marco en cada instante de reloj.				
 							fi
 							dato1="${paginasEnMemoriaProceso[$posArrIzReal]}$datoM"
-#EN-23720-
+							TamNum=$(($longCampoDatosReloj - ${#dato1})) 
 							espaciosfinal="${varhuecos:1:$TamNum}"
 							linea1BN="$linea1BN $variacionesMarco$dato1 "
 							linea1Color="$linea1Color $variacionesMarco$espaciosfinal$dato1$NC$CReloj "
@@ -7486,24 +7486,24 @@ function dibujaReloj {
 			linea2BN="$linea2BN$espaciosfinalIni  "
 		fi
 	fi
-#EN-23730-
-#EN-23740-
-#EN-23750-
+	varImprimirPaginaUsada="" #Variable relacionada con el dato: Subrayado-Siguiente Fallo de Página. Se definirán cuamdo el dato lo exija porque se haya producido un Fallo de Página sobre el marco elegido.
+	varImprimirFallo="" #Negrita-Fallo de Página
+	varImprimirSiguiente="" #Fondo-Marco usado
 	if [[ $varUsado -eq $posArrCentroCalculado ]]; then 
-#EN-23760-
+		varImprimirPaginaUsada="${colorfondo[$procFinalizado % 6]}" #Variable relacionada con el dato: Subrayado-Siguiente Fallo de Página
 	fi
 	if [[ $varFallo -eq $posArrCentroCalculado ]]; then 
-#EN-23770-
+		varImprimirFallo="\e[1m" #Variable relacionada con el dato: Negrita-Fallo de Página
 	fi
 	if [[ $varSiguiente -eq $posArrCentroCalculado ]]; then 
-#EN-23780-
+		varImprimirSiguiente="\e[4m" #Variable relacionada con el dato: Fondo-Marco usado
 	fi
-#EN-23790-
+	variacionesMarco=$CReloj$varImprimirPaginaUsada$varImprimirFallo$varImprimirSiguiente #Conjunto de las variaciones sobre el texto.  
 	if [[ $seleccionAlgoritmoPaginacion -eq 4 ]]; then
-#EN-23800-
-#EN-23810-
+		punteroPagMarco=${ResuPaginaOrdinalAcumulado[$procFinalizadoOEjecutando,$posArrCentroCalculado,$reloj]} #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso. Se busca el ordinal usado en ese instante porque sería el utilizado para la búsqueda de los coeficientes M en todos los marcos al ser el mayor número.
+		datoM="-"${coeficienteSegOp[$procFinalizadoOEjecutando,$posArrCentroCalculado,$punteroPagMarco]} #Contendrá el coeficiente M en algoritmos de Segunda Oportunidad. Se usa el ordinal de la página desde ResuPaginaOrdinalAcumulado() que da el ordinal de la página en un marco en cada instante de reloj.				
 		dato1=" ${paginasEnMemoriaProceso[$posArrCentroCalculado]}$datoM"
-#EN-23820-
+		TamNum=$(($longCampoDatosReloj - ${#dato1}))  
 		espaciosfinal="${varhuecos:1:$TamNum}"
 		linea1BN="$linea1BN$dato1$espaciosfinal"
 		linea1Color="$linea1Color$variacionesMarco$dato1$NC$CReloj$espaciosfinal"
@@ -7517,31 +7517,31 @@ function dibujaReloj {
 		linea2BN="$linea2BN$espaciosLineasMitad|$espaciosLineasMitad"
 	fi
 	cuadrante=1
-#EN-23830-
-#EN-23840-
-#EN-23850-
+	calcularSobrantes $cuadrante $posSobrante #Se calculan los sobrantes o número de páginas de la vuelta actual ya que dependen de cada cuadrante utilizado para ser restados de las posiciones reales calculadas. 
+	if [[ $numMarcosOblicuos -gt 0 ]]; then #Con 2 porque tendría que tener de resto 1 para que tuviera dato.
+		posArrDeFinal=$(($posArrDeCalculado + $numMarcosOblicuos - 1)) #Se corrigen los valores del número de páginas oblícuas. -1 para que sólo se ejecute el número justo de oblícuos.
 		for ((ii=$posArrDeCalculado; ii<=$posArrDeFinal; ii++)); do
-#EN-23860-
-#EN-23870-
-#EN-23880-
+			varImprimirPaginaUsada="" #Variable relacionada con el dato: Subrayado-Siguiente Fallo de Página. Se definirán cuamdo el dato lo exija porque se haya producido un Fallo de Página sobre el marco elegido.
+			varImprimirFallo="" #Negrita-Fallo de Página
+			varImprimirSiguiente="" #Fondo-Marco usado
 			if [[ $varUsado -eq $ii ]]; then 
-#EN-23890-
+				varImprimirPaginaUsada="${colorfondo[$procFinalizado % 6]}" #Variable relacionada con el dato: Subrayado-Siguiente Fallo de Página
 			fi
 			if [[ $varFallo -eq $ii ]]; then 
-#EN-23900-
+				varImprimirFallo="\e[1m" #Variable relacionada con el dato: Negrita-Fallo de Página
 			fi
 			if [[ $varSiguiente -eq $ii ]]; then 
-#EN-23910-
+				varImprimirSiguiente="\e[4m" #Variable relacionada con el dato: Fondo-Marco usado
 			fi
-#EN-23920-
+			variacionesMarco=$CReloj$varImprimirPaginaUsada$varImprimirFallo$varImprimirSiguiente #Conjunto de las variaciones sobre el texto.  
 			if [[ ${paginasEnMemoriaProceso[$ii]} -ge 0 ]]; then
 				datoM=""
 				if [[ $seleccionAlgoritmoPaginacion -eq 4 ]]; then
-#EN-23930-
-#EN-23940-
+					punteroPagMarco=${ResuPaginaOrdinalAcumulado[$procFinalizadoOEjecutando,$ii,$reloj]} #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso. Se busca el ordinal usado en ese instante porque sería el utilizado para la búsqueda de los coeficientes M en todos los marcos al ser el mayor número.
+					datoM="-"${coeficienteSegOp[$procFinalizadoOEjecutando,$ii,$punteroPagMarco]} #Contendrá el coeficiente M en algoritmos de Segunda Oportunidad. Se usa el ordinal de la página desde ResuPaginaOrdinalAcumulado() que da el ordinal de la página en un marco en cada instante de reloj.				
 				fi
 				dato1="${paginasEnMemoriaProceso[$ii]}$datoM"
-#EN-23950-
+				TamNum=$(($longCampoDatosReloj - ${#dato1})) 
 				espaciosfinal="${varhuecos:1:$TamNum}"
 				linea1BN="$linea1BN $dato1$espaciosfinal "
 				linea1Color="$linea1Color $variacionesMarco$dato1$NC$CReloj$espaciosfinal "
@@ -7553,36 +7553,36 @@ function dibujaReloj {
 		done
 	fi
 
-#EN-23960-
+	# GENERACIÓN STRING DEL RELOJ (Línea 3)  
 	cuadrante=3
-#EN-23970-
+	calcularSobrantes $cuadrante $posSobrante #Se calculan los sobrantes o número de páginas de la vuelta actual ya que dependen de cada cuadrante utilizado para ser restados de las posiciones reales calculadas. 
 	if [[ $posSobrante -ge $cuadrante || $posSobrante -eq 0 ]]; then
-#EN-23980-
+		posCentroIzReal=$(($(($numMarcosOblicuos * 3)) + 4 - $sobrantes + $cuadrante - 1)) #Númeral de la posición real del reloj del primer marco por la izquierda en la segunda línea.
 	else
-#EN-23990-
+		posCentroIzReal=$(($(($numMarcosOblicuos * 3)) + 4 - $sobrantes + $posSobrante - 1)) #Númeral de la posición real del reloj del primer marco por la izquierda en la segunda línea.
 	fi
-#EN-24000-
-#EN-24010-
-#EN-24020-
+	varImprimirPaginaUsada="" #Variable relacionada con el dato: Subrayado-Siguiente Fallo de Página. Se definirán cuamdo el dato lo exija porque se haya producido un Fallo de Página sobre el marco elegido.
+	varImprimirFallo="" #Negrita-Fallo de Página
+	varImprimirSiguiente="" #Fondo-Marco usado
 	if [[ $varUsado -eq $posCentroIzReal ]]; then 
-#EN-24030-
+		varImprimirPaginaUsada="${colorfondo[$procFinalizado % 6]}" #Variable relacionada con el dato: Subrayado-Siguiente Fallo de Página
 	fi
 	if [[ $varFallo -eq $posCentroIzReal ]]; then 
-#EN-24040-
+		varImprimirFallo="\e[1m" #Variable relacionada con el dato: Negrita-Fallo de Página
 	fi
 	if [[ $varSiguiente -eq $posCentroIzReal ]]; then 
-#EN-24050-
+		varImprimirSiguiente="\e[4m" #Variable relacionada con el dato: Fondo-Marco usado
 	fi
-#EN-24060-
+	variacionesMarco=$CReloj$varImprimirPaginaUsada$varImprimirFallo$varImprimirSiguiente #Conjunto de las variaciones sobre el texto.  
 	if [[ ${memoria[$procFinalizadoOEjecutando]} -gt 3 ]]; then
 		if [[ ${paginasEnMemoriaProceso[$posCentroIzReal]} -ge 0 ]]; then
 			datoM=""
 			if [[ $seleccionAlgoritmoPaginacion -eq 4 ]]; then
-#EN-24070-
-#EN-24080-
+				punteroPagMarco=${ResuPaginaOrdinalAcumulado[$procFinalizadoOEjecutando,$posCentroIzReal,$reloj]} #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso. Se busca el ordinal usado en ese instante porque sería el utilizado para la búsqueda de los coeficientes M en todos los marcos al ser el mayor número.
+				datoM="-"${coeficienteSegOp[$procFinalizadoOEjecutando,$posCentroIzReal,$punteroPagMarco]} #Contendrá el coeficiente M en algoritmos de Segunda Oportunidad. Se usa el ordinal de la página desde ResuPaginaOrdinalAcumulado() que da el ordinal de la página en un marco en cada instante de reloj.				
 			fi
 			dato1="${paginasEnMemoriaProceso[$posCentroIzReal]}$datoM"
-#EN-24090-
+			TamNum=$(($longCampoDatosReloj - ${#dato1})) 
 			espaciosfinal="${varhuecos:1:$TamNum}"
 			linea3BN="$linea3BN$espaciosfinal$dato1 ─"
 			linea3Color="$linea3Color$espaciosfinal$variacionesMarco$dato1$NC$CReloj ─"
@@ -7591,46 +7591,46 @@ function dibujaReloj {
 			linea3Color="$linea3Color$variacionesMarco$guionesfinal$NC$CReloj ─"
 		fi
 	fi
-#EN-24100-
+	TamNum=$longCampoDatosReloj #Espacio equivalente a una unidad 
 	if [[ ${memoria[$procFinalizadoOEjecutando]} -le 3 ]]; then
 		espaciosIntermedios="${varhuecos:1:$TamNum}"
 	else
 		if [[ $numMarcosOblicuos -gt 0 ]]; then
-#EN-24110-
+			TamNum=$(($TamNum + $(($(($longCampoDatosReloj + 2)) * 2 * $(($numMarcosOblicuos - 1)) )) )) #Espacio equivalente a una unidad 
 		fi
 		espaciosIntermedios="${varhuecos:1:$TamNum}"
 	fi
-#EN-24120-
-#EN-24130-
+	linea3BN="$linea3BN$espaciosIntermedios" #Se considera el espacio definido para la posición superior central.
+	linea3Color="$linea3Color$espaciosIntermedios" #Se considera el espacio definido para la posición superior central.
 	cuadrante=1
-#EN-24140-
+	calcularSobrantes $cuadrante $posSobrante #Se calculan los sobrantes o número de páginas de la vuelta actual ya que dependen de cada cuadrante utilizado para ser restados de las posiciones reales calculadas. 
 	if [[ $posSobrante -ge $cuadrante || $posSobrante -eq 0 ]]; then
-#EN-24150-
+		posCentroDeReal=$(($((numMarcosOblicuos)) + 2 - $sobrantes + $cuadrante - 1)) #Númeral de la posición real del reloj del primer marco por la izquierda en la segunda línea.
 	else
-#EN-24160-
+		posCentroDeReal=$(($((numMarcosOblicuos)) + 2 - $sobrantes + $posSobrante - 1)) #Númeral de la posición real del reloj del primer marco por la izquierda en la segunda línea.
 	fi
 	if [[ ${memoria[$procFinalizadoOEjecutando]} -ge 2 ]]; then
-#EN-24170-
-#EN-24180-
-#EN-24190-
+		varImprimirPaginaUsada="" #Variable relacionada con el dato: Subrayado-Siguiente Fallo de Página. Se definirán cuamdo el dato lo exija porque se haya producido un Fallo de Página sobre el marco elegido.
+		varImprimirFallo="" #Negrita-Fallo de Página
+		varImprimirSiguiente="" #Fondo-Marco usado
 		if [[ $varUsado -eq $posCentroDeReal ]]; then 
-#EN-24200-
+			varImprimirPaginaUsada="${colorfondo[$procFinalizado % 6]}" #Variable relacionada con el dato: Subrayado-Siguiente Fallo de Página
 		fi
 		if [[ $varFallo -eq $posCentroDeReal ]]; then 
-#EN-24210-
+			varImprimirFallo="\e[1m" #Variable relacionada con el dato: Negrita-Fallo de Página
 		fi
 		if [[ $varSiguiente -eq $posCentroDeReal ]]; then 
-#EN-24220-
+			varImprimirSiguiente="\e[4m" #Variable relacionada con el dato: Fondo-Marco usado
 		fi
-#EN-24230-
+		variacionesMarco=$CReloj$varImprimirPaginaUsada$varImprimirFallo$varImprimirSiguiente #Conjunto de las variaciones sobre el texto.  
 		if [[ ${paginasEnMemoriaProceso[$posCentroDeReal]} -ge 0 ]]; then
 			datoM=""
 			if [[ $seleccionAlgoritmoPaginacion -eq 4 ]]; then
-#EN-24240-
-#EN-24250-
+				punteroPagMarco=${ResuPaginaOrdinalAcumulado[$procFinalizadoOEjecutando,$posCentroDeReal,$reloj]} #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso. Se busca el ordinal usado en ese instante porque sería el utilizado para la búsqueda de los coeficientes M en todos los marcos al ser el mayor número.
+				datoM="-"${coeficienteSegOp[$procFinalizadoOEjecutando,$posCentroDeReal,$punteroPagMarco]} #Contendrá el coeficiente M en algoritmos de Segunda Oportunidad. Se usa el ordinal de la página desde ResuPaginaOrdinalAcumulado() que da el ordinal de la página en un marco en cada instante de reloj.				
 			fi
 			dato1="${paginasEnMemoriaProceso[$posCentroDeReal]}$datoM"
-#EN-24260-
+			TamNum=$(($longCampoDatosReloj - ${#dato1})) 
 			espaciosfinal="${varhuecos:1:$TamNum}"
 			linea3BN="$linea3BN─ $dato1$espaciosfinal"
 			linea3Color="$linea3Color─ $variacionesMarco$dato1$NC$CReloj$espaciosfinal"
@@ -7640,38 +7640,38 @@ function dibujaReloj {
 		fi
 	fi
 
-#EN-24270-
+	# GENERACIÓN STRING DEL RELOJ (Líneas 4 y 5)  
 	cuadrante=3
-#EN-24280-
+	calcularSobrantes $cuadrante $posSobrante #Se calculan los sobrantes o número de páginas de la vuelta actual ya que dependen de cada cuadrante utilizado para ser restados de las posiciones reales calculadas. 
 	if [[ ${memoria[$procFinalizadoOEjecutando]} -gt 3 ]]; then
-#EN-24290-
-#EN-24300-
+		if [[ $numMarcosOblicuos -gt 0 ]]; then #Con 2 porque tendría que tener de resto 3 para que tuviera dato.
+			posAbIzFinal=$(($posAbIzCalculado + $numMarcosOblicuos - 1)) #-1 para que sólo se ejecute el número justo de oblícuos.
 			if [[ $posAbIzCalculado -le $posAbIzFinal ]]; then
 				for ((ii=$posAbIzFinal; ii>=$posAbIzCalculado; ii--)); do
 					counter1=$(($posAbIzFinal - $ii)) 
 					posAbIzReal=$(($posCentroIzReal - 1 - $counter1))
-#EN-24310-
-#EN-24320-
-#EN-24330-
+					varImprimirPaginaUsada="" #Variable relacionada con el dato: Subrayado-Siguiente Fallo de Página. Se definirán cuamdo el dato lo exija porque se haya producido un Fallo de Página sobre el marco elegido.
+					varImprimirFallo="" #Negrita-Fallo de Página
+					varImprimirSiguiente="" #Fondo-Marco usado
 					if [[ $varUsado -eq $posAbIzReal ]]; then 
-#EN-24340-
+						varImprimirPaginaUsada="${colorfondo[$procFinalizado % 6]}" #Variable relacionada con el dato: Subrayado-Siguiente Fallo de Página
 					fi
 					if [[ $varFallo -eq $posAbIzReal ]]; then 
-#EN-24350-
+						varImprimirFallo="\e[1m" #Variable relacionada con el dato: Negrita-Fallo de Página
 					fi
 					if [[ $varSiguiente -eq $posAbIzReal ]]; then 
-#EN-24360-
+						varImprimirSiguiente="\e[4m" #Variable relacionada con el dato: Fondo-Marco usado linea5Color
 					fi
-#EN-24370-
+					variacionesMarco=$CReloj$varImprimirPaginaUsada$varImprimirFallo$varImprimirSiguiente #Conjunto de las variaciones sobre el texto. 
 					if [[ ${paginasEnMemoriaProceso[$posAbIzReal]} -ne -1 && ${memoria[$procFinalizadoOEjecutando]} -gt $posAbIzReal ]]; then
 						if [[ $ii -ne $posAbIzCalculado ]]; then
 							datoM=""
 							if [[ $seleccionAlgoritmoPaginacion -eq 4 ]]; then
-#EN-24380-
-#EN-24390-
+								punteroPagMarco=${ResuPaginaOrdinalAcumulado[$procFinalizadoOEjecutando,$posAbIzReal,$reloj]} #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso. Se busca el ordinal usado en ese instante porque sería el utilizado para la búsqueda de los coeficientes M en todos los marcos al ser el mayor número.
+								datoM="-"${coeficienteSegOp[$procFinalizadoOEjecutando,$posAbIzReal,$punteroPagMarco]} #Contendrá el coeficiente M en algoritmos de Segunda Oportunidad. Se usa el ordinal de la página desde ResuPaginaOrdinalAcumulado() que da el ordinal de la página en un marco en cada instante de reloj.				
 							fi
 							dato1="${paginasEnMemoriaProceso[$posAbIzReal]}$datoM"
-#EN-24400-
+							TamNum=$(($longCampoDatosReloj - ${#dato1})) 
 							espaciosfinal="${varhuecos:1:$TamNum}"
 							linea4BN="$linea4BN $espaciosfinalIni/"
 							linea5BN="$linea5BN $espaciosfinal$dato1 "
@@ -7679,11 +7679,11 @@ function dibujaReloj {
 						elif [[ $ii -eq $posAbIzCalculado ]] && [[ $cuadrante -le $posSobrante || $posSobrante -eq 0 ]]; then
 							datoM=""
 							if [[ $seleccionAlgoritmoPaginacion -eq 4 ]]; then
-#EN-24410-
-#EN-24420-
+								punteroPagMarco=${ResuPaginaOrdinalAcumulado[$procFinalizadoOEjecutando,$posAbIzReal,$reloj]} #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso. Se busca el ordinal usado en ese instante porque sería el utilizado para la búsqueda de los coeficientes M en todos los marcos al ser el mayor número.
+								datoM="-"${coeficienteSegOp[$procFinalizadoOEjecutando,$posAbIzReal,$punteroPagMarco]} #Contendrá el coeficiente M en algoritmos de Segunda Oportunidad. Se usa el ordinal de la página desde ResuPaginaOrdinalAcumulado() que da el ordinal de la página en un marco en cada instante de reloj.				
 							fi
 							dato1="${paginasEnMemoriaProceso[$posAbIzReal]}$datoM$NC"
-#EN-24430-
+							TamNum=$(($longCampoDatosReloj - ${#dato1})) 
 							espaciosfinal="${varhuecos:1:$TamNum}"
 							linea4BN="$linea4BN $espaciosfinalIni/"
 							linea5BN="$linea5BN $espaciosfinal$dato1 "
@@ -7725,29 +7725,29 @@ function dibujaReloj {
 		fi
 	fi
 	cuadrante=2
-#EN-24440-
+	calcularSobrantes $cuadrante $posSobrante #Se calculan los sobrantes o número de páginas de la vuelta actual ya que dependen de cada cuadrante utilizado para ser restados de las posiciones reales calculadas. 
 	if [[ $posSobrante -ge $cuadrante || $posSobrante -eq 0 ]]; then
-#EN-24450-
+		posAbCentroReal=$(($((numMarcosOblicuos * 2)) + 3 - $sobrantes + $cuadrante - 1)) #Númeral de la posición real del reloj del marco central inferior en la tercera línea.
 	else
-#EN-24460-
+		posAbCentroReal=$(($((numMarcosOblicuos * 2)) + 3 - $sobrantes + $posSobrante - 1)) #Númeral de la posición real del reloj del marco central inferior en la tercera línea.
 	fi
-#EN-24470-
-#EN-24480-
-#EN-24490-
+	varImprimirPaginaUsada="" #Variable relacionada con el dato: Subrayado-Siguiente Fallo de Página. Se definirán cuamdo el dato lo exija porque se haya producido un Fallo de Página sobre el marco elegido.
+	varImprimirFallo="" #Negrita-Fallo de Página
+	varImprimirSiguiente="" #Fondo-Marco usado
 	if [[ $varUsado -eq $posAbCentroReal ]]; then 
-#EN-24500-
+		varImprimirPaginaUsada="${colorfondo[$procFinalizado % 6]}" #Variable relacionada con el dato: Subrayado-Siguiente Fallo de Página
 	fi
 	if [[ $varFallo -eq $posAbCentroReal ]]; then 
-#EN-24510-
+		varImprimirFallo="\e[1m" #Variable relacionada con el dato: Negrita-Fallo de Página
 	fi
 	if [[ $varSiguiente -eq $posAbCentroReal ]]; then 
-#EN-24520-
+		varImprimirSiguiente="\e[4m" #Variable relacionada con el dato: Fondo-Marco usado
 	fi
-#EN-24530-
+	variacionesMarco=$CReloj$varImprimirPaginaUsada$varImprimirFallo$varImprimirSiguiente #Conjunto de las variaciones sobre el texto. 
 	if [[ ${memoria[$procFinalizadoOEjecutando]} -ge 3 ]]; then
 		if [[ $seleccionAlgoritmoPaginacion -eq 4 ]]; then
-#EN-24540-
-#EN-24550-
+			punteroPagMarco=${ResuPaginaOrdinalAcumulado[$procFinalizadoOEjecutando,$posAbCentroReal,$reloj]} #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso. Se busca el ordinal usado en ese instante porque sería el utilizado para la búsqueda de los coeficientes M en todos los marcos al ser el mayor número.
+			datoM="-"${coeficienteSegOp[$procFinalizadoOEjecutando,$posAbCentroReal,$punteroPagMarco]} #Contendrá el coeficiente M en algoritmos de Segunda Oportunidad. Se usa el ordinal de la página desde ResuPaginaOrdinalAcumulado() que da el ordinal de la página en un marco en cada instante de reloj.				
 			dato1=" ${paginasEnMemoriaProceso[$posAbCentroReal]}$datoM"
 			TamNum=$(($longCampoDatosReloj - ${#dato1})) #Espacios para tener el número centrado 
 			espaciosfinal="${varhuecos:1:$TamNum}"
@@ -7776,34 +7776,34 @@ function dibujaReloj {
 		fi
 	fi
 	cuadrante=2
-#EN-24560-
+	calcularSobrantes $cuadrante $posSobrante #Se calculan los sobrantes o número de páginas de la vuelta actual ya que dependen de cada cuadrante utilizado para ser restados de las posiciones reales calculadas. 
 	if [[ ${memoria[$procFinalizadoOEjecutando]} -gt 4 ]]; then
-#EN-24570-
-#EN-24580-
+		if [[ $numMarcosOblicuos -gt 0 ]]; then #Con 2 porque tendría que tener de resto 2 para que tuviera dato.
+			posAbDeFinal=$(($posAbDeCalculado + $numMarcosOblicuos - 1)) #-1 para que sólo se ejecute el número justo de oblícuos.
 			if [[ $posAbDeCalculado -le $posAbDeFinal ]]; then
-#EN-24590-
-#EN-24600-
+				for ((ii=$posAbDeFinal; ii>=$posAbDeCalculado; ii--)); do #Se cambia el orden para que los huecosde los oblícuos queden más hacia el centroy y resulten simétricos respecto a la izquierda.
+					counter1=$(($ii - $posAbDeCalculado)) #Se cambia el orden para que los huecosde los oblícuos queden más hacia el centroy y resulten simétricos respecto a la izquierda.
 					posAbDeReal=$(($posCentroDeReal + 1 + $counter1))
-#EN-24610-
-#EN-24620-
-#EN-24630-
+					varImprimirPaginaUsada="" #Variable relacionada con el dato: Subrayado-Siguiente Fallo de Página. Se definirán cuamdo el dato lo exija porque se haya producido un Fallo de Página sobre el marco elegido.
+					varImprimirFallo="" #Negrita-Fallo de Página
+					varImprimirSiguiente="" #Fondo-Marco usado
 					if [[ $varUsado -eq $posAbDeReal ]]; then 
-#EN-24640-
+						varImprimirPaginaUsada="${colorfondo[$procFinalizado % 6]}" #Variable relacionada con el dato: Subrayado-Siguiente Fallo de Página
 					fi
 					if [[ $varFallo -eq $posAbDeReal ]]; then 
-#EN-24650-
+						varImprimirFallo="\e[1m" #Variable relacionada con el dato: Negrita-Fallo de Página
 					fi
 					if [[ $varSiguiente -eq $posAbDeReal ]]; then 
-#EN-24660-
+						varImprimirSiguiente="\e[4m" #Variable relacionada con el dato: Fondo-Marco usado
 					fi
-#EN-24670-
+					variacionesMarco=$CReloj$varImprimirPaginaUsada$varImprimirFallo$varImprimirSiguiente #Conjunto de las variaciones sobre el texto. 
 					if [[ ${memoria[$procFinalizadoOEjecutando]} -gt $posAbDeReal ]]; then
 						if [[ ${paginasEnMemoriaProceso[$posAbDeReal]} -ne -1 && ${memoria[$procFinalizadoOEjecutando]} -gt $posAbDeReal ]]; then
 							if [[ $ii -ne $posAbDeFinal ]]; then
 								datoM=""
 								if [[ $seleccionAlgoritmoPaginacion -eq 4 ]]; then
-#EN-24680-
-#EN-24690-
+									punteroPagMarco=${ResuPaginaOrdinalAcumulado[$procFinalizadoOEjecutando,$posAbDeReal,$reloj]} #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso. Se busca el ordinal usado en ese instante porque sería el utilizado para la búsqueda de los coeficientes M en todos los marcos al ser el mayor número.
+									datoM="-"${coeficienteSegOp[$procFinalizadoOEjecutando,$posAbDeReal,$punteroPagMarco]} #Contendrá el coeficiente M en algoritmos de Segunda Oportunidad. Se usa el ordinal de la página desde ResuPaginaOrdinalAcumulado() que da el ordinal de la página en un marco en cada instante de reloj.				
 								fi
 								dato1="${paginasEnMemoriaProceso[$posAbDeReal]}$datoM"
 								TamNum=$(($longCampoDatosReloj - ${#dato1})) #Espacios laterales 
@@ -7814,8 +7814,8 @@ function dibujaReloj {
 							elif [[ $ii -eq $posAbDeFinal ]] && [[ $cuadrante -le $posSobrante || $posSobrante -eq 0 ]]; then
 								datoM=""
 								if [[ $seleccionAlgoritmoPaginacion -eq 4 ]]; then
-#EN-24700-
-#EN-24710-
+									punteroPagMarco=${ResuPaginaOrdinalAcumulado[$procFinalizadoOEjecutando,$posAbDeReal,$reloj]} #Resumen - Índices: (proceso, marco, reloj). Dato: Ordinal de la Página en la serie de páginas a ejecutar (ejecución) de un proceso, que ocupa cada Marco en cada unidad de Tiempo. Se acumulan los datos de todos los marcos del proceso. Se busca el ordinal usado en ese instante porque sería el utilizado para la búsqueda de los coeficientes M en todos los marcos al ser el mayor número.
+									datoM="-"${coeficienteSegOp[$procFinalizadoOEjecutando,$posAbDeReal,$punteroPagMarco]} #Contendrá el coeficiente M en algoritmos de Segunda Oportunidad. Se usa el ordinal de la página desde ResuPaginaOrdinalAcumulado() que da el ordinal de la página en un marco en cada instante de reloj.				
 								fi
 								dato1="${paginasEnMemoriaProceso[$posAbDeReal]}$datoM"
 								TamNum=$(($longCampoDatosReloj - ${#dato1})) #Espacios laterales 
@@ -7857,7 +7857,7 @@ function dibujaReloj {
 		linea5Color="$linea5Color $espaciosfinalIni " 
 	fi
 
-#EN-24720-
+	# IMPRIMIR LAS 5 LÍNEAS DEL DIAGRAMA DEL RELOJ (COLOR y BN a pantalla y ficheros)
 	echo -e "$NC$filaAlgPagFrecUsoRecTituloBN" | tee -a $informeConColorTotal $informeSinColorTotal
 	echo -e "$NC$filaAlgPagFrecUsoRecNotas1BN" | tee -a $informeConColorTotal $informeSinColorTotal
 	echo -e "$NC$filaAlgPagFrecUsoRecNotas2BN" | tee -a $informeConColorTotal $informeSinColorTotal
@@ -7872,10 +7872,10 @@ function dibujaReloj {
 	echo -e "$linea4BN" >> $informeSinColorTotal
 	echo -e "$linea5BN" >> $informeSinColorTotal
 
-#EN-24730-
+} #Fin de dibujaReloj()
 
 ####################################################################################
-#EN-24740-
+# Sinopsis: Se calculan los sobrantes o número de páginas de la vuelta actual ya que dependen de cada cuadrante utilizado para ser restados de las posiciones reales calculadas. 
 ####################################################################################
 function calcularSobrantes {
 	sobrantes=0
@@ -7894,10 +7894,10 @@ function calcularSobrantes {
 ####################################################################################
 # Funciones para la entrada de datos ###############################################
 ####################################################################################
-#EN-24750-
+# Sinopsis: Permite introducir las opciones generales de la memoria por teclado
 ####################################################################################
 function entradaMemoriaTeclado {
-#EN-24760-
+	#Pedir el número de marcos de memoria del sistema
 	echo -ne "$cian Introduzca el número de marcos de memoria del sistema:  $NC" | tee -a $informeConColorTotal  
 	echo " Introduzca el número de marcos de memoria del sistema:"  >> $informeSinColorTotal
 	read mem_num_marcos
@@ -7921,7 +7921,7 @@ function entradaMemoriaTeclado {
 		echo $mem_num_marcos >> $informeConColorTotal
 		echo $mem_num_marcos >> $informeSinColorTotal
 	done
-#EN-24770-
+	#Pedir el número de direcciones de cada marco de memoria del sistema
 	echo -ne "$cian Introduzca el número de direcciones de cada marco de memoria del sistema:  $NC" | tee -a $informeConColorTotal  
 	echo " Introduzca el número de direcciones de cada marco de memoria del sistema:"  >> $informeSinColorTotal
 	read mem_direcciones
@@ -7946,7 +7946,7 @@ function entradaMemoriaTeclado {
 		echo $mem_direcciones >> $informeSinColorTotal
 	done
 
-#EN-24780-
+	#Pedir el mínimo y máximo del rango de prioridades de los procesos y el tipo de prioridad a ejecutar (Mayor o Menor)
 	echo -ne "$cian Introduzca el mínimo del rango de prioridades de los procesos:  $NC" | tee -a $informeConColorTotal  
 	echo " Introduzca el mínimo del rango de prioridades de los procesos:"  >> $informeSinColorTotal
 	read PriomInicial
@@ -7957,11 +7957,11 @@ function entradaMemoriaTeclado {
 	read PrioMInicial
 	echo $PrioMInicial >> $informeConColorTotal
 	echo $PrioMInicial >> $informeSinColorTotal
-#EN-24790-
-#EN-24800-
+	tratarRangoPrioridadesDirecta $PriomInicial $PrioMInicial #Determina si el rango es de menor a mayor y si no lo es, lo modifica para convertir el problema con las prioridades invertidas, porque el código sólo resuelve ese caso.
+	prio_menor=$PriomFinal #Sobre este rango se calculan los datos de las prioridades de los procesos, prioridades que no deberían pedirse al usuario.
 	prio_mayor=$PrioMFinal
 
-#EN-24810-
+	#Pedir el quantum de Round-Robin
 	echo -ne "$cian Introduzca el quantum de Round-Robin:  $NC" | tee -a $informeConColorTotal  
 	echo " Introduzca el quantum de Round-Robin:"  >> $informeSinColorTotal
 	read quantum
@@ -7986,10 +7986,10 @@ function entradaMemoriaTeclado {
 		echo $quantum >> $informeSinColorTotal
 	done
 
-#EN-24820-
-#EN-24830-
-#EN-24840-
-#EN-24850-
+	#Pedir el tamaño maximo de memoria fragmentada para que haya reubicacion
+	reub=1 #Se inicializa para que no se considere la reubicabilidad si no está definida en la elección inicial.
+	if [[ $reubicabilidadNo0Si1 -eq "1" ]]; then #R/NR
+		#Pedir el tamaño de la variable de reubicación $reubicabilidadNo0Si1 -eq 0
 		echo -ne "$cian Introduzca el tamaño maximo de memoria para que haya reubicacion:  $NC" | tee -a $informeConColorTotal  
 		echo " Introduzca el tamaño maximo de memoria para que haya reubicacion:"  >> $informeSinColorTotal
 		read reub
@@ -8020,30 +8020,30 @@ function entradaMemoriaTeclado {
 		echo $reub >> $informeSinColorTotal
 	fi
 	
-#EN-24860-
-#EN-24870-
+	mem_total_direcciones=$(($mem_num_marcos * $mem_direcciones)) #Direcciones totales de memoria.
+	mem_num_marcos=$mem_num_marcos #Número de marcos totales de memoria.
 	variableReubicar=$reub
 
-#EN-24880-
+	# salida de datos introducidos sobre la memoria para que el usuario pueda ver lo que esta introducciendo y volcado de los mismos en ficheros auxiliares
 	echo ""
-#EN-24890-
-#EN-24900-
-#EN-24910-
-#EN-24920-
-#EN-24930-
+	echo -e "MarcosMemoria" "\n$mem_num_marcos" "\nDireccionesMarco" "\n$mem_direcciones" > $nomFicheroDatos #Se meten los datos de las particiones en otro fichero escogido
+	echo -e "PrioridadMenor" "\n$PriomInicial" "\nPrioridadMayor" "\n$PrioMInicial" "\nTipoPrioridad" "\n$PrioR" >> $nomFicheroDatos #Se meten los datos de las particiones en otro fichero escogido
+	echo -e "VariableReubicar" "\n$reub" "\nQuantum" "\n$quantum" >> $nomFicheroDatos #Se meten los datos de las particiones en otro fichero escogido
+#    clear
+} #Fin de entradaMemoriaTeclado()                
 
 ####################################################################################
-#EN-24940-
+# Sinopsis: Permite introducir los procesos por teclado.
 ####################################################################################
 function entradaProcesosTeclado {
-#EN-24950-
+	p=0 #Número ordinal de proceso
 	masprocesos="s"
-#EN-24960-
+	echo -e "Tll nMar Prio Direcciones" >> $nomFicheroDatos #Se meten los textos correspondientes a los datos en el fichero escogido
 	while [[ $masprocesos == "s" ]]; do 
-#EN-24970-
-#EN-24980-
-#EN-24990-
-#EN-25000-
+#        clear
+		nprocesos=$((p + 1)) #Para ser equivalente al nuevo programa. Se aconseja quitar la variable $p y estandarizar las variables a usar ??????????.
+		#Bloque para introducción del resto de datos del proceso
+		echo -ne $NORMAL"\n Tiempo de llegada del proceso $p: " | tee -a $informeConColorTotal #Se introduce el tiempo de llegada asociado a cada proceso.
 		echo -ne $NORMAL"\n Tiempo de llegada del proceso $p: " >> $informeSinColorTotal
 		read llegada[$p]
 		until [[ ${llegada[$p]} -ge 0 ]]; do
@@ -8054,7 +8054,7 @@ function entradaProcesosTeclado {
 			read llegada[$p]
 		done
 				
-#EN-25010-
+		echo -ne $NORMAL"\n Número de marcos de memoria asociados al proceso $p: " | tee -a $informeConColorTotal #Se introduce la memoria asociada a cada proceso.
 		echo -ne $NORMAL"\n Número de marcos de memoria asociados al proceso $p: " >>$informeSinColorTotal
 		read memoria[$p]
 		while [[ ${memoria[$p]} -le 0 || ${memoria[$p]} -gt $mem_num_marcos ]]; do
@@ -8066,7 +8066,7 @@ function entradaProcesosTeclado {
 		done
 
 		if [[ $seleccionMenuAlgoritmoGestionProcesos -eq 4 ]]; then
-#EN-25020-
+			echo -ne $NORMAL"\n Prioridad asociada al proceso $p: " | tee -a $informeConColorTotal #Se introduce la prioridad asociada a cada proceso.
 			echo -ne $NORMAL"\n Prioridad asociada asociados al proceso $p: " >>$informeSinColorTotal
 			read prioProc[$p]
 			while [[ ${prioProc[$p]} -le $PriomFinal || ${prioProc[$p]} -gt $PrioMFinal ]]; do
@@ -8079,10 +8079,10 @@ function entradaProcesosTeclado {
 		fi
 
 		ejecucion[$p]=0
-#EN-25030-
+		numOrdinalPagTeclado=0 #Número ordinal de dirección/página definidas
 		paginasTeclado=""
 		varPaginasTeclado=""
-#EN-25040-
+		while [[ $paginasTeclado != "n" ]]; do #Se introducen las direcciones asociadas a cada proceso.
 			echo -e "\n Escribe la dirección $numOrdinalPagTeclado (si introduces una n acabará la introducción de direcciones)\n\n  --> " | tee -a $informeConColorTotal $informeSinColorTotal
 			read paginasTeclado
 			if [[ $paginasTeclado != "n" ]]; then
@@ -8100,25 +8100,25 @@ function entradaProcesosTeclado {
 						read -p " Introduce de nuevo la dirección $numOrdinalPagTeclado: " directions[$p,$numOrdinalPagTeclado]
 					done
 				fi
-#EN-25050-
-#EN-25060-
+#				directions[$p,$numOrdinalPagTeclado]=$paginasTeclado
+				transformapag directions[$p,$numOrdinalPagTeclado] $numOrdinalPagTeclado #let pagTransformadas[$2]=`expr $1/$mem_direcciones`
 				varPaginasTeclado=$varPaginasTeclado"$paginasTeclado "
 				paginasDefinidasTotal[$p,$numOrdinalPagTeclado]=${pagTransformadas[$numOrdinalPagTeclado]} 
 				ejecucion[$p]=$(expr ${ejecucion[$p]} + 1)
-#EN-25070-
+				tiempoEjecucion[$p]=${ejecucion[$p]} #Para ser equivalente al nuevo programa
 				numOrdinalPagTeclado=$(expr $numOrdinalPagTeclado + 1)
 			fi
 		done
 
-#EN-25080-
+		#Salida de datos introducidos sobre procesos para que el usuario pueda ver lo que esta introducciendo y volcado de los mismos en ficheros auxiliares
 		echo ""
-#EN-25090-
-#EN-25100-
-#EN-25110-
+		echo -e "${llegada[$p]}" "${memoria[$p]}" "${prioProc[$p]}" "$varPaginasTeclado" >> $nomFicheroDatos #Se meten los datos de las particiones en otro fichero escogido
+#        clear 
+		ordenarDatosEntradaFicheros #Se ordenan los datos por tiempo de llegada a medida que se van itroduciendo. También crea los bit de Modificados para cuando se utilicen los algoritmos basados en clases.
 
 		echo -e $NORMAL"\n\n Ref Tll Tej nMar Dir-Pag" | tee -a $informeConColorTotal
 		echo -e "\n\n Ref Tll Tej nMar Dir-Pag" >> $informeSinColorTotal
-#EN-25120-
+		entradaProcesosTecladoDatosPantalla #Función para mostrar los datos   
 		echo -e "\n" | tee -a $informeConColorTotal
 		echo -e "\n" >> $informeSinColorTotal
 		echo -ne $NORMAL"\n ¿Quieres más procesos? s/n " | tee -a $informeConColorTotal
@@ -8133,20 +8133,20 @@ function entradaProcesosTeclado {
 			echo "$masprocesos" >>$informeConColorTotal
 			echo "$masprocesos" >>$informeSinColorTotal
 		done
-#EN-25130-
+		p=$(expr $p + 1) #incremento el contador
 	done
-#EN-25140-
+	if [[ $preguntaDondeGuardarDatosManuales -eq 1 ]]; then #Se guardan los datos introducidos en el fichero de última ejecución
 		cp $ficheroDatosDefault $ficheroDatosAnteriorEjecucion
 	else
 		cp $nomFicheroDatos $ficheroDatosAnteriorEjecucion
 	fi
-#EN-25150-
+} #Fin de entradaProcesosTeclado()
 
 ####################################################################################
-#EN-25160-
+# Sinopsis: Impresión de los procesos una vez introducidos por teclado o fichero 
 ####################################################################################
 function imprimeprocesos {
-#EN-25170-
+	ordenarDatosEntradaFicheros #Se ordenan los procesos por tiempo de llegada a medida que se van introduciendo.
 	for (( counter = 0; counter <= numprocesos; counter++ )); do
 		if [[ $counter -gt 8 ]]; then
 			let colorjastag[counter]=counter-8;
@@ -8155,38 +8155,38 @@ function imprimeprocesos {
 		fi
 	done
 	echo -e "\n Ref Tll Tej nMar Dirección-Página ------ imprimeprocesos\n" | tee -a $informeConColorTotal $informeSinColorTotal
-#EN-25180-
+	entradaProcesosTecladoDatosPantalla #Resumen inicial de la taba de procesos.
 	echo "" | tee -a $informeConColorTotal $informeSinColorTotal > /dev/null
 	echo "|—————————————————————————————————————————————————————————————————————————|" | tee -a $informeConColorTotal $informeSinColorTotal > /dev/null
 	echo "" | tee -a $informeConColorTotal $informeSinColorTotal > /dev/null
 	echo "" | tee -a $informeConColorTotal $informeSinColorTotal > /dev/null
-#EN-25190-
+} #Fin de imprimeprocesos()
 
 ####################################################################################
-#EN-25200-
+# Sinopsis: Permite visualizar los datos de la memoria/procesos introducidos por teclado.
 ####################################################################################
 function entradaProcesosTecladoDatosPantalla { 
 	multiplicador=0
 	counter2=0
 	counter3=0	
 	for ((counter = 0; counter <= ${#llegada[@]}; counter++)); do #Define los colores de los procesos de forma cíclica. 
-#EN-25210-
+		if [[ $counter-$counter2 -gt 8 ]]; then #Faltaría ajustar los valores de las variables a los colores posibles (6, 8, 9). Pero no es una buena idea porque los colores del texto y fondos no coinciden como se ve en las variables $coloress y $colorfondos...
 			multiplicador=$multiplicador+1
-#EN-25220-
+			counter3=$multiplicador*8; #Para calcular la diferencia ente contadores para determinar cuándo es superior al número de colores usados.
 		fi
 		counter2=$counter-$counter3;
 		let colorjastag[counter]=$counter2+1;
 	done
-#EN-25230-
+	for ((t = 0; t < ${#llegada[@]}; t++)); do
 		echo -ne " ${coloress[$t % 6]}${proceso[$t]}" | tee -a $informeConColorTotal
 		echo -n " ${proceso[$t]}" >>$informeSinColorTotal
-#EN-25240-
+		longitudLlegada=$(($longCampoTablaAncho - ${#llegada[$t]})) 
 		echo -ne "${varhuecos:1:$longitudLlegada}""${coloress[$t % 6]}${llegada[$t]}" | tee -a $informeConColorTotal 
 		echo -n "${varhuecos:1:$longitudLlegada}""${llegada[$t]}" >>$informeSinColorTotal
-#EN-25250-
+		longitudTiempo=$(($longCampoTablaAncho - ${#ejecucion[$t]})) 
 		echo -ne "${varhuecos:1:$longitudTiempo}""${coloress[$t % 6]}${ejecucion[$t]}" | tee -a $informeConColorTotal 
 		echo -n "${varhuecos:1:$longitudTiempo}""${ejecucion[$t]}" >>$informeSinColorTotal            
-#EN-25260-
+		longitudMemoria=$(($longCampoTablaMasAncho - ${#memoria[$t]})) 
 		echo -ne "${varhuecos:1:$longitudMemoria}""${coloress[$t % 6]}${memoria[$t]}" | tee -a $informeConColorTotal 
 		echo -ne "${varhuecos:1:$longitudMemoria}""${memoria[$t]}" >>$informeSinColorTotal
  		DireccionesPaginasPorProceso=""
@@ -8195,36 +8195,36 @@ function entradaProcesosTecladoDatosPantalla {
 		done
 		echo -e "$DireccionesPaginasPorProceso" | tee -a $informeConColorTotal
 	done
-#EN-25270-
+} #Fin de entradaProcesosTecladoDatosPantalla()
 
 #####################################################################################
-#EN-25280-
+# Sinopsis: Permite ordenar los datos sacados desde fichero y de entrada por teclado. 
 ####################################################################################
 function ordenarDatosEntradaFicheros {
-#EN-25290-
-#EN-25300-
+	for ((j = 0; j < ${#llegada[@]}; j++)); do
+		numeroproceso[$j]=$j #Se guarda su número de orden de introducción o lectura en un vector para la función que lo ordena   
 	done
-#EN-25310-
+	for ((j = 0; j < ${#llegada[@]}; j++)); do
 		if [[ $j -ge 9 ]]; then
 			proceso[$j]=$(echo P$(($j + 1)))
 		else
 			proceso[$j]=$(echo P0$(($j + 1)))
 		fi
 	done
-#EN-25320-
+	for (( j = $((${#llegada[@]} - 1)); j >= 0; j-- )); do 
 		for (( i = 0; i < $j; i++ )); do
 			if [[ $((llegada[$i])) -gt $((llegada[$(($i + 1))])) ]]; then
-#EN-25330-
+				aux=${proceso[$(($i + 1))]} #No hace falta borrar aux porque sólo hay un valor, y su valor se machaca en cada redefinición. 
 				proceso[$(($i + 1))]=${proceso[$i]} 
 				proceso[$i]=$aux
 				aux=${llegada[$(($i + 1))]}
 				llegada[$(($i + 1))]=${llegada[$i]}
 				llegada[$i]=$aux
-#EN-25340-
+				aux2="" #Se permutan las páginas
 				for ((counter2=0;counter2<${ejecucion[$(($i + 1))]};counter2++)); do
 					aux2[$counter2]=${paginasDefinidasTotal[$(($i + 1)),$counter2]}
 				done
-#EN-25350-
+				for ((counter2=0;counter2<${ejecucion[$(($i + 1))]};counter2++)); do #Se borran para que no pueda haber valores anteriores residuales.
 					unset paginasDefinidasTotal[$(($i + 1)),$counter2]
 				done
 				for ((counter2=0;counter2<${ejecucion[$i]};counter2++)); do
@@ -8240,11 +8240,11 @@ function ordenarDatosEntradaFicheros {
 					unset aux2[$counter2]
 				done
 
-#EN-25360-
+				aux2="" #Se permutan las direcciones los valores de "Página Modificada", cuando se trabaja con algoritmos basados en Clases, porque se definió en leer_datos_desde_fichero().
 				for ((counter2=0;counter2<${ejecucion[$(($i + 1))]};counter2++)); do
 					aux2[$counter2]=${directions[$(($i + 1)),$counter2]}
 				done
-#EN-25370-
+				for ((counter2=0;counter2<${ejecucion[$(($i + 1))]};counter2++)); do #Se borran para que no pueda haber valores anteriores residuales.
 					unset directions[$(($i + 1)),$counter2]
 				done
 				for ((counter2=0;counter2<${ejecucion[$i]};counter2++)); do
@@ -8260,11 +8260,11 @@ function ordenarDatosEntradaFicheros {
 					unset aux2[$counter2]
 				done
 
-#EN-25380-
+				aux2="" #Se permutan las direcciones los valores de "Página Modificada", cuando se trabaja con algoritmos basados en Clases, porque se definió en leer_datos_desde_fichero().
 				for ((counter2=0;counter2<${ejecucion[$(($i + 1))]};counter2++)); do
 					aux2[$counter2]=${directions_AlgPagFrecUsoRec_pagina_modificada[$(($i + 1)),$counter2,0]}
 				done
-#EN-25390-
+				for ((counter2=0;counter2<${ejecucion[$(($i + 1))]};counter2++)); do #Se borran para que no pueda haber valores anteriores residuales.
 					unset directions_AlgPagFrecUsoRec_pagina_modificada[$(($i + 1)),$counter2,0]
 				done
 				for ((counter2=0;counter2<${ejecucion[$i]};counter2++)); do
@@ -8284,106 +8284,106 @@ function ordenarDatosEntradaFicheros {
 				ejecucion[$(($i + 1))]=${ejecucion[$i]} 
 				ejecucion[$i]=$aux
 				aux=${tiempoEjecucion[$(($i + 1))]}
-#EN-25400-
+				tiempoEjecucion[$(($i + 1))]=${tiempoEjecucion[$i]} #Se permutan los valores de esta variable auxiliar porque se definió en leer_datos_desde_fichero().
 				tiempoEjecucion[$i]=$aux
 				aux=${memoria[$(($i + 1))]}
 				memoria[$(($i + 1))]=${memoria[$i]} 
 				memoria[$i]=$aux
 				aux=${prioProc[$(($i + 1))]}
-#EN-25410-
+				prioProc[$(($i + 1))]=${prioProc[$i]} #En caso de usar el algoritmo basado en Prioridades...
 				prioProc[$i]=$aux
 			fi
 		done
 	done
-#EN-25420-
-#EN-25430-
+	for ((j = 0; j < ${#llegada[@]}; j++)); do
+		numeroproceso[$j]=$j #Se guarda su número de orden de introducción o lectura en un vector para la función que lo ordena   
 	done
-#EN-25440-
+} #Fin de ordenarDatosEntradaFicheros()
 
 ####################################################################################
-#EN-25450-
+# Sinopsis: Pregunta en qué fichero guardar los rangos para la opción 8.
 ####################################################################################
 function entradaMemoriaRangosFichero_op_cuatro_Previo {
-#EN-25460-
-#EN-25470-
-#EN-25480-
-#EN-25490-
+#    clear
+	preguntaDondeGuardarRangosManuales #Resuelve los nombres de los ficheros de rangos
+	preguntaDondeGuardarDatosManuales #Resuelve los nombres de los ficheros de datos
+} #Fin de entradaMemoriaRangosFichero_op_cuatro_Previo()
 
 ####################################################################################
-#EN-25500-
-#EN-25510-
+# Sinopsis: Se piden y tratan los mínimos y máximos de los rangos, calculando los valores aleatorios y los datos 
+# con los que se trabajará para la opción 4. 
 ####################################################################################
 function entradaMemoriaRangosFichero_op_cuatro { 
-#EN-25520-
-#EN-25530-
+	#---Llamada a funciones para rangos-------------
+	datos_numero_marcos_memoria #Se asigna la memoria aleatoriamente       
 	calcDatoAleatorioGeneral $MIN_RANGE_MARCOS $MAX_RANGE_MARCOS
-#EN-25540-
-#EN-25550-
+	mem_num_marcos=$datoAleatorioGeneral #Entre 1 y este máximo de rango será desde donde se caculen los datos de la memoria asociada a cada proceso.
+	datos_numero_direcciones_marco #Se asigna la memoria aleatoriamente       
 	calcDatoAleatorioGeneral $MIN_RANGE_DIRECCIONES $MAX_RANGE_DIRECCIONES
 	mem_direcciones=$datoAleatorioGeneral
-#EN-25560-
+	numDireccionesTotales_max=$(($mem_num_marcos * $mem_direcciones)) #Se comparará este valor con las direcciones definidas, ya que las direcciones deben ser menores en el caso de memoria No Virtual.
 
-#EN-25570-
+	datos_prio_menor #Se asigna el mínimo del rango de prioridad aleatoriamente       
 	MIN_RANGE_prio_menorInicial=${prio_menor_min}
 	MAX_RANGE_prio_menorInicial=${prio_menor_max}
-#EN-25580-
+	tratarRangoPrioridadesDirecta $MIN_RANGE_prio_menorInicial $MAX_RANGE_prio_menorInicial #Determina si el rango es de menor a mayor y si no lo es, lo modifica para convertir el problema con las prioridades invertidas, porque el código sólo resuelve ese caso.
 	MIN_RANGE_prio_menor=$PriomFinal
 	MAX_RANGE_prio_menor=$PrioMFinal
 	calcDatoAleatorioGeneral $MIN_RANGE_prio_menor $MAX_RANGE_prio_menor
 	prio_menorInicial=$datoAleatorioGeneral
-#EN-25590-
+	datos_prio_mayor #Se asigna el máximo del rango de prioridad aleatoriamente       
 	MIN_RANGE_prio_mayorInicial=${prio_mayor_min}
 	MAX_RANGE_prio_mayorInicial=${prio_mayor_max}
-#EN-25600-
+	tratarRangoPrioridadesDirecta $MIN_RANGE_prio_mayorInicial $MAX_RANGE_prio_mayorInicial #Determina si el rango es de menor a mayor y si no lo es, lo modifica para convertir el problema con las prioridades invertidas, porque el código sólo resuelve ese caso.
 	MIN_RANGE_prio_mayor=$PriomFinal
 	MAX_RANGE_prio_mayor=$PrioMFinal
 	calcDatoAleatorioGeneral $MIN_RANGE_prio_mayor $MAX_RANGE_prio_mayor
 	prio_mayorInicial=$datoAleatorioGeneral
 	prio_menor_min=$prio_menor_minInicial
 	prio_menor_max=$prio_menor_maxInicial
-#EN-25610-
+	tratarRangoPrioridadesDirecta $prio_menorInicial $prio_mayorInicial #Se invierten los valores si el mayor es menor que el mayor.
 	prio_menor=$PriomFinal
 	prio_mayor=$PrioMFinal
-#EN-25620-
+	datos_tamano_reubicacion #Se asigna la reubicaciónaleatoriamente     
 	calcDatoAleatorioGeneral $MIN_RANGE_REUB $MAX_RANGE_REUB
 	reub=$datoAleatorioGeneral
-#EN-25630-
+	datos_numero_programas #Se asigna el número de procesos aleatoriamente 
 	calcDatoAleatorioGeneral $MIN_RANGE_NPROC $MAX_RANGE_NPROC
 	n_prog=$datoAleatorioGeneral
-#EN-25640-
+	#--------------------------------------------- En algunos casos no hace falta calcularlo porque se calculará por cada proceso. 
 	datos_tiempo_llegada    
 	datos_tiempo_ejecucion 
-#EN-25650-
+	#---------------------------------------------
 #    datos_tamano_marcos_procesos #Esta función no se usará como tampoco se usó datos_tamano_marcos_procesos_amplio(), dado que se usará como rango un subconjunto de [1,$mem_num_marcos] para que, si es posible, salgan valores significativamente menores al máximo.
 	calcDatoAleatorioGeneral 1 $mem_num_marcos 
 	MIN_RANGE_tamano_marcos_procInicial=$datoAleatorioGeneral
 	calcDatoAleatorioGeneral $tamano_marcos_proc_minInicial $tamano_marcos_proc_maxInicial 
 	MAX_RANGE_tamano_marcos_procInicial=$datoAleatorioGeneral
-#EN-25660-
+	tratarRangoPrioridadesDirecta $MIN_RANGE_tamano_marcos_procInicial $MAX_RANGE_tamano_marcos_procInicial #Determina si el rango es de menor a mayor y si no lo es, lo modifica para convertir el problema con las prioridades invertidas, porque el código sólo resuelve ese caso.
 	MIN_RANGE_tamano_marcos_proc=$PriomFinal
 	MAX_RANGE_tamano_marcos_proc=$PrioMFinal 
-#EN-25670-
+	#---------------------------------------------
 	datos_prio_proc
-#EN-25680-
+	#---------------------------------------------
 	datos_quantum         
 	calcDatoAleatorioGeneral $MIN_RANGE_quantum $MAX_RANGE_quantum
 	quantum=$datoAleatorioGeneral
-#EN-25690-
+	#--------------------------------------------- El resto no hace falta calcularlo porque se calculará por cada proceso. 
 	datos_tamano_direcciones_procesos          
-#EN-25700-
-#EN-25710-
+	#---------------------------------------------
+#    clear   
 	for (( p=0; p<$n_prog; p++)); do     
-#EN-25720-
-#EN-25730-
-#EN-25740-
-#EN-25750-
-#EN-25760-
+		entradaMemoriaRangosFichero_op_cuatro_cinco_seis_Comun #Se calculan los valores aleatorios y los datos con los que se trabajará para las opciones 4, 5 y 6. 
+		entradaMemoriaRangosFichero_op_cuatro_Post_1 #Guarda los datos en los ficheros que correspondan
+	done #cierre del until
+	entradaMemoriaRangosFichero_op_cuatro_Post_2 #Copia los ficheros Default/Último
+} #Fin de entradaMemoriaRangosFichero_op_cuatro()
 
 ####################################################################################
-#EN-25770-
+# Sinopsis: Se guardarán los datos en los ficheros que corresponda para la opción 4
 #################################################################################### 
 function entradaMemoriaRangosFichero_op_cuatro_Post_1 {
-#EN-25780-
+	if [[ $p -eq 1 ]]; then #Para imprimir los rangos en el fichero dependiendo si es el fichero anterior o otro
 		echo -e "RangoMarcosMemoria $MIN_RANGE_MARCOS $MAX_RANGE_MARCOS" > $nomFicheroRangos 
 		echo -e "RangoDireccionesMarco $MIN_RANGE_DIRECCIONES $MAX_RANGE_DIRECCIONES" >> $nomFicheroRangos 
 		echo -e "RangoPrioMenor $MIN_RANGE_prio_menor $MAX_RANGE_prio_menor" >> $nomFicheroRangos 
@@ -8396,70 +8396,70 @@ function entradaMemoriaRangosFichero_op_cuatro_Post_1 {
 		echo -e "RangoPrioProc $MIN_RANGE_prio_proc $MAX_RANGE_prio_proc" >> $nomFicheroRangos
 		echo -e "RangoTamanoDireccionesProc $MIN_RANGE_tamano_direcciones_proc $MAX_RANGE_tamano_direcciones_proc" >> $nomFicheroRangos
 		echo -ne "RangoQuantum $MIN_RANGE_quantum $MAX_RANGE_quantum" >> $nomFicheroRangos
-#EN-25790-
-#EN-25800-
-#EN-25810-
+	fi #Cierre if $p -eq 1
+	#No se establece desde fichero sino que se decide en el momento de la ejecución mediante la variable de selección de tipo $seleccionTipoPrioridad.
+	if [[ $seleccionTipoPrioridad -eq 1 ]]; then #M/m
 		PrioR="Mayor"
 	else    
 		PrioR="Menor"                
 	fi              
-#EN-25820-
+	if [[ $p -eq 1 ]]; then #Escribe los datos en el fichero selecionado
 		echo -ne "Marcos totales\n"$mem_num_marcos"\nTamano de pagina\n"$mem_direcciones"\nPrioridad menor\n"$prio_menorInicial\
 		"\nPrioridad mayor\n"$prio_mayorInicial"\nTipo de prioridad\n"$PrioR"\nMinimo para reubicabilidad\n"$reub"\nQuantum\n"$quantum\
 		"\nTll nMar Prio Direcciones/Modificado:\n" > $nomFicheroDatos
 	fi                  
 
-#EN-25830-
+	MIN_RANGE_PAGINA_MODIFICADA=0 #Se usarán para determinar de forma aleatoria si una página es o no modificada al ser ejecutada en los algoritmos NFU y NRU.
 	MAX_RANGE_PAGINA_MODIFICADA=1
-#EN-25840-
-#EN-25850-
-#EN-25860-
-#EN-25870-
+	direccionesAcumuladas="" #Hace que las direcciones sean diferentes en cada proceso.
+	for (( numdir=0; numdir<${ejecucion[$p]}; numdir++)); do #Muestra las direcciones del proceso calculadas de forma aleatoria.
+		directions_AlgPagFrecUsoRec_pagina_modificada[$p,$numdir,0]=$datoAleatorioGeneral  #Se almacena el cálculo aleatorio de si una página es o no modificada al ser ejecutada.
+		calcDatoAleatorioGeneral $MIN_RANGE_PAGINA_MODIFICADA $MAX_RANGE_PAGINA_MODIFICADA  #Se calcula de forma aleatoria si una página es o no modificada al ser ejecutada.
 		direccionesAcumuladas+=`echo -ne " ${directions[$p,$numdir]}-${directions_AlgPagFrecUsoRec_pagina_modificada[$p,$numdir,0]}"`
 	done
 	echo -e ${llegada[$p]} ${memoria[$p]} ${prioProc[$p]} $direccionesAcumuladas >> $nomFicheroDatos
-#EN-25880-
-#EN-25890-
+#    clear
+} #Fin de entradaMemoriaRangosFichero_op_cuatro_Post_1()
 
 ####################################################################################
-#EN-25900-
+# Sinopsis: Se copian los ficheros que correspondan para la opción 4
 ####################################################################################
 function entradaMemoriaRangosFichero_op_cuatro_Post_2 {
-#EN-25910-
+	if [[ -f "$ficheroDatosAnteriorEjecucion" ]]; then #Borra el fichero de datos ultimo y escribe los datos en el fichero
 		rm $ficheroDatosAnteriorEjecucion
 	fi
-#EN-25920-
+	if [[ -f "$ficheroRangosAnteriorEjecucion" ]]; then #Borra el fichero de datos ultimo y escribe los rangos en el fichero
 		rm $ficheroRangosAnteriorEjecucion
 	fi
-#EN-25930-
-#EN-25940-
-#EN-25950-
+	cp $nomFicheroDatos $ficheroDatosAnteriorEjecucion  #Copia los ficheros Default/Último       
+	cp $nomFicheroRangos $ficheroRangosAnteriorEjecucion  #Copia los ficheros Default/Último       
+} #Fin de entradaMemoriaRangosFichero_op_cuatro_Post_2()
 
 ####################################################################################
-#EN-25960-
+# Sinopsis: Pregunta en qué fichero guardar los rangos amplios para la opción 5.
 ####################################################################################
 function entradaMemoriaRangosFichero_op_cinco_Previo {
-#EN-25970-
-#EN-25980-
-#EN-25990-
+#    clear
+	preguntaDondeGuardarDatosManuales #Resuelve los nombres de los ficheros de datos
+} #Fin de entradaMemoriaRangosFichero_op_cinco_Previo()
 
 ####################################################################################
-#EN-26000-
+# Sinopsis: Pregunta en qué fichero guardar los rangos amplios para la opción 6.
 ####################################################################################
 function entradaMemoriaRangosFichero_op_seis_Previo {
-#EN-26010-
-#EN-26020-
+#    clear
+	preguntaDondeGuardarDatosManuales #Resuelve los nombres de los ficheros de datos
 	echo -e "\n\nFicheros existentes:\n$NORMAL" | tee -a $informeConColorTotal
 	echo -e "\n\nFicheros existentes:\n" >> $informeSinColorTotal 
 	files=("./FRangos"/*)
-#EN-26030-
+	for i in "${!files[@]}"; do #Localiza en qué posición encuentra el dato (da la posición, pero no la variable en el array)
 		echo -e "$i) ${files[$i]}" | tee -a $informeConColorTotal
 		echo -e "$i) ${files[$i]}" >> $informeSinColorTotal 
 	done
 	echo -ne "\n$AMARILLO\n\nIntroduce el número correspondiente al fichero elegido: $NORMAL" | tee -a $informeConColorTotal
 	echo -ne "\n\n\nIntroduce el número correspondiente al fichero elegido: " >> $informeSinColorTotal 
 	read -r numeroFichero
-#EN-26040-
+	until [[ "0" -le $numeroFichero && $numeroFichero -lt ${#files[@]} && $numeroFichero -ne "" ]]; do
 		echo -ne "Error en la elección de una opción válida\n\n  --> " | tee -a $informeConColorTotal
 		echo -ne "Error en la elección de una opción válida\n\n  --> " >> $informeSinColorTotal
 		read -r numeroFichero
@@ -8469,16 +8469,16 @@ function entradaMemoriaRangosFichero_op_seis_Previo {
 	echo "$numeroFichero" >> $informeConColorTotal
 	echo "$numeroFichero" >> $informeSinColorTotal
 	ficheroParaLectura="${files[$numeroFichero]}"
-#EN-26050-
-#EN-26060-
+#    clear
+} #Fin de entradaMemoriaRangosFichero_op_seis_Previo()
 
 ####################################################################################
-#EN-26070-
-#EN-26080-
+# Sinopsis: Se tratan los mínimos y máximos de los rangos, calculando los valores aleatorios y los datos 
+# con los que se trabajará para las opciones 5 y 6. 
 ####################################################################################
 function entradaMemoriaRangosFichero_op_cinco_seis {
-#EN-26090-
-#EN-26100-
+#    datos_memoria_tabla
+	#-----------Llamada a funciones para calcular los datos aleatorios dentro de los rangos definidos-------------
 	MIN_RANGE_MARCOS=${memoria_min}
 	MAX_RANGE_MARCOS=${memoria_max}
 	calcDatoAleatorioGeneral $MIN_RANGE_MARCOS $MAX_RANGE_MARCOS
@@ -8487,20 +8487,20 @@ function entradaMemoriaRangosFichero_op_cinco_seis {
 	MAX_RANGE_DIRECCIONES=${direcciones_max}
 	calcDatoAleatorioGeneral $MIN_RANGE_DIRECCIONES $MAX_RANGE_DIRECCIONES
 	mem_direcciones=$datoAleatorioGeneral
-#EN-26110-
+	numDireccionesTotales_max=$(($memoria_max * $direcciones_max)) #Se comparará este valor con las direcciones definidas, ya que las direcciones deben ser menores en el caso de memoria No Virtual.
 
 	MIN_RANGE_prio_menor=${prio_menor_min}
 	MAX_RANGE_prio_menor=${prio_menor_max}
 	calcDatoAleatorioGeneral $MIN_RANGE_prio_menor $MAX_RANGE_prio_menor
-#EN-26120-
+	prio_menorInicial=$datoAleatorioGeneral #*Inicial - Datos a representar
 	MIN_RANGE_prio_mayor=${prio_mayor_min}
 	MAX_RANGE_prio_mayor=${prio_mayor_max}
 	calcDatoAleatorioGeneral $MIN_RANGE_prio_mayor $MAX_RANGE_prio_mayor
-#EN-26130-
-#EN-26140-
+	prio_mayorInicial=$datoAleatorioGeneral #*Inicial - Datos a representar
+	PriomInicial=$prio_menorInicial #Variables con los datos originales usadas en la cabecera de la representación de la tabla
 	PrioMInicial=$prio_mayorInicial
-#EN-26150-
-#EN-26160-
+	tratarRangoPrioridadesDirecta $prio_menorInicial $prio_mayorInicial #Determina si el rango es de menor a mayor y si no lo es, lo modifica para convertir el problema con las prioridades invertidas, porque el código sólo resuelve ese caso.
+	prio_menor=$PriomFinal #Sobre este rango se calculan los datos de las prioridades de los procesos, prioridades que no deberían pedirse al usuario.
 	prio_mayor=$PrioMFinal
 	  
 	MIN_RANGE_REUB=${reubicacion_min}
@@ -8520,46 +8520,46 @@ function entradaMemoriaRangosFichero_op_cinco_seis {
 	MAX_RANGE_llegada=${llegada_max}
 	MIN_RANGE_tiempo_ejec=${tiempo_ejec_min}
 	MAX_RANGE_tiempo_ejec=${tiempo_ejec_max}
-#EN-26170-
-#EN-26180-
-#EN-26190-
+	#---------------------------------------------
+	#No se usará el mismo mecanismo que con los datos anteriores, dado que se usará como rango un subconjunto de [1,$mem_num_marcos] para que, si es posible, salgan valores significativamente menores al máximo.
+	#Tampoco es igual al sistema usado en los rangos amplios por usar dos sistemas diferentes.
 	tamano_marcos_proc_min=1
 	tamano_marcos_proc_max=$mem_num_marcos
 	calcDatoAleatorioGeneral 1 $mem_num_marcos 
 	MIN_RANGE_tamano_marcos_procInicial=$datoAleatorioGeneral
 	calcDatoAleatorioGeneral $tamano_marcos_proc_minInicial $tamano_marcos_proc_maxInicial 
 	MAX_RANGE_tamano_marcos_procInicial=$datoAleatorioGeneral
-#EN-26200-
+	tratarRangoPrioridadesDirecta $MIN_RANGE_tamano_marcos_procInicial $MAX_RANGE_tamano_marcos_procInicial #Determina si el rango es de menor a mayor y si no lo es, lo modifica para convertir el problema con las prioridades invertidas, porque el código sólo resuelve ese caso.
 	MIN_RANGE_tamano_marcos_proc=$PriomFinal
 	MAX_RANGE_tamano_marcos_proc=$PrioMFinal 
-#EN-26210-
+	#---------------------------------------------
 	MIN_RANGE_prio_proc=${prio_proc_min}
 	MAX_RANGE_prio_proc=${prio_proc_max}
 	MIN_RANGE_tamano_direcciones_proc=${tamano_direcciones_proc_min}
 	MAX_RANGE_tamano_direcciones_proc=${tamano_direcciones_proc_max}
  
 	datos_memoria_tabla
-#EN-26220-
+	if [[ $seleccionMenuEnsayos -ne 1 && $seleccionMenuEnsayos -ne 2 && $seleccionMenuEnsayos -ne 3 && $seleccionMenuEnsayos -ne 4 ]]; then #No se ejecuta cuando la selección inicial es la ejecución automática repetitiva.
 		echo -e "\n$NC Pulse enter para continuar..." | tee -a $informeConColorTotal
 		echo -e "\nPulse enter para continuar..." >> $informeSinColorTotal
 		read enter
 		echo -e $enter "\n" >> $informeConColorTotal
 		echo -e $enter "\n" >> $informeSinColorTotal
 	fi
-#EN-26230-
+#    clear   
 	for (( p=0; p<$n_prog; p++)); do     
-#EN-26240-
-#EN-26250-
-#EN-26260-
-#EN-26270-
-#EN-26280-
+		entradaMemoriaRangosFichero_op_cuatro_cinco_seis_Comun #Se calculan los valores aleatorios y los datos con los que se trabajará para las opciones 4, 5 y 6. 
+		entradaMemoriaRangosFichero_op_cinco_seis_Post_1 #Guarda los datos en los ficheros que correspondan        
+	done #cierre del for   
+	entradaMemoriaRangosFichero_op_cinco_seis_Post_2 #Copia los ficheros Default/Último    
+} #Fin de entradaMemoriaRangosFichero_op_cinco_seis()
 
 ####################################################################################
-#EN-26290-
+# Sinopsis: Se guardarán los datos en los ficheros que corresponda para las opciones 5 y 6 
 ####################################################################################
 function entradaMemoriaRangosFichero_op_cinco_seis_Post_1 {
-#EN-26300-
-#EN-26310-
+	#No se establece desde fichero sino que se decide en el momento de la ejecución mediante la variable de selección de tipo $seleccionTipoPrioridad.
+	if [[ $seleccionTipoPrioridad -eq 1 ]]; then #M/m
 		PrioR="Mayor"
 	else    
 		PrioR="Menor"                
@@ -8570,101 +8570,101 @@ function entradaMemoriaRangosFichero_op_cinco_seis_Post_1 {
 		"\nTll nMar Prio Direcciones:\n" > $nomFicheroDatos
 	fi                  
 
-#EN-26320-
-#EN-26330-
+	direccionesAcumuladas="" #Hace que las direcciones sean diferentes en cada proceso.
+	MIN_RANGE_PAGINA_MODIFICADA=0 #Se usarán para determinar de forma aleatoria si una página es o no modificada al ser ejecutada en los algoritmos NFU y NRU.
 	MAX_RANGE_PAGINA_MODIFICADA=1
-#EN-26340-
-#EN-26350-
-#EN-26360-
+	for (( numdir=0; numdir<${ejecucion[$p]}; numdir++)); do #Muestra las direcciones del proceso calculadas de forma aleatoria.
+		calcDatoAleatorioGeneral $MIN_RANGE_PAGINA_MODIFICADA $MAX_RANGE_PAGINA_MODIFICADA  #Se calcula de forma aleatoria si una página es o no modificada al ser ejecutada.
+		directions_AlgPagFrecUsoRec_pagina_modificada[$p,$numdir,0]=$datoAleatorioGeneral  #Se almacena el cálculo aleatorio de si una página es o no modificada al ser ejecutada.
 		direccionesAcumuladas+=`echo -ne " ${directions[$p,$numdir]}-${directions_AlgPagFrecUsoRec_pagina_modificada[$p,$numdir,0]}"`
 	done
 	echo -e ${llegada[$p]} ${memoria[$p]} ${prioProc[$p]} $direccionesAcumuladas >> $nomFicheroDatos
-#EN-26370-
+} #Fin de entradaMemoriaRangosFichero_op_cinco_seis()
 
 ####################################################################################
-#EN-26380-
+# Sinopsis: Se copian los ficheros que correspondan para las opciones 5 y 6
 ####################################################################################
 function entradaMemoriaRangosFichero_op_cinco_seis_Post_2 {
-#EN-26390-
+	#Se borran los últimos ficheros de datos usados, se vuelven a crear y se escriben los datos en los nuevos ficheros.
 	if [[ -f "$ficheroDatosAnteriorEjecucion" ]]; then
 		rm $ficheroDatosAnteriorEjecucion
 	fi
 	if [[ -f "$ficheroRangosAnteriorEjecucion" && $seleccionMenuEleccionEntradaDatos -ne 5 ]]; then
 		rm $ficheroRangosAnteriorEjecucion
 	fi
-#EN-26400-
+	cp $nomFicheroDatos $ficheroDatosAnteriorEjecucion  #Copia los ficheros Default/Último       
 	if [[ $seleccionMenuEleccionEntradaDatos -ne 5 ]]; then
-#EN-26410-
+		cp $nomFicheroRangos $ficheroRangosAnteriorEjecucion  #Copia los ficheros Default/Último       
 	fi
-#EN-26420-
+} #Fin de entradaMemoriaRangosFichero_op_cinco_seis_Post_2()
 
 ####################################################################################
-#EN-26430-
+# Sinopsis: Se calculan los valores aleatorios y los datos con los que se trabajará para las opciones 7, 8 y 9. 
 ####################################################################################
 function entradaMemoriaRangosFichero_op_cuatro_cinco_seis_Comun {                          
-#EN-26440-
+#    clear   
 	variableReubicar=$reub
-#         
+	#----------------Empieza a introducir procesos------------         
 	proc=$(($p-1))
 	if [[ $((p + 1)) -ge 10 ]]; then
 		nombre="P$((p + 1))"
 	else
 		nombre="P0$((p + 1))" 
 	fi
-#EN-26450-
-#EN-26460-
+	proceso[$p]=$nombre; #Se añade el nombre del proceso al vector
+	numeroproceso[$p]=$p #Se guarda su número en un vector para la función que lo ordena
 	calcDatoAleatorioGeneral $MIN_RANGE_llegada $MAX_RANGE_llegada
-#EN-26470-
+	llegada[$p]=$datoAleatorioGeneral #Se añade el tiempo de llegada al vector
 	calcDatoAleatorioGeneral $MIN_RANGE_tiempo_ejec $MAX_RANGE_tiempo_ejec
-#EN-26480-
+	ejecucion[$p]=$datoAleatorioGeneral #Se añade el tiempo de ejecución al vector
 	calcDatoAleatorioGeneral $MIN_RANGE_tamano_marcos_proc $MAX_RANGE_tamano_marcos_proc
-#EN-26490-
+	memoria[$p]=$datoAleatorioGeneral #Se añade el tamaño de ejecución al vector
 	calcDatoAleatorioGeneral $prio_menor $prio_mayor
-#EN-26500-
-#EN-26510-
+	prioProc[$p]=$datoAleatorioGeneral #Se añade la prioridad del proceso al vector
+	prio_proc=$datoAleatorioGeneral #Se crea otra variable para hacer compatible este código con otro código anterior.
 	
-#EN-26520-
-#EN-26530-
-#EN-26540-
+	#Se definen las Direcciones de cada Proceso
+	tiempoEjecucion[$p]=${ejecucion[$p]} #Para ser equivalente al nuevo programa 
+	calcDatoAleatorioGeneral $MIN_RANGE_tamano_direcciones_proc $MAX_RANGE_tamano_direcciones_proc #Primero se calcula el tamaño en direcciones del proceso.
 	tamano_direcciones_proc=$datoAleatorioGeneral
 	for (( numdir = 0; numdir <= ${ejecucion[$p]}; numdir++ )); do
-#EN-26550-
+		calcDatoAleatorioGeneral 1 $tamano_direcciones_proc #Luego se calculan las direcciones aplicando la búsqueda aleatoria hasta el tamaño en direcciones dle proceso precalculado.
 		directions[$p,$numdir]=$datoAleatorioGeneral
-#EN-26560-
+		if [[ $seleccionAlgoritmoPaginacion -eq 0 && ${directions[$p,$numdir]} -gt $(($numDireccionesTotales_max - 1)) ]]; then #$numDireccionesTotales_max viene de leer_rangos_desde_fichero() y se comparará con las direcciones definidas, ya que las direcciones deben ser menores en el caso de memoria No Virtual.
 			echo -e "\n***Error en la lectura de rangos. La dirección de memoria utilizada ("${directions[$p,$numdir]}") está fuera del rango máximo definido por el número de marcos de página ("$(($numDireccionesTotales_max - 1))")."
 			exit 1 
 		fi
-#EN-26570-
+		transformapag directions[$p,$numdir] $numdir #let pagTransformadas[$2]=`expr $1/$mem_direcciones`
 		paginasDefinidasTotal[$p,$numdir]=${pagTransformadas[$numdir]} 
 	done
-#EN-26580-
+} #Fin de entradaMemoriaRangosFichero_op_cuatro_cinco_seis_Comun()
 			
 #################################################################################### 
-#EN-26590-
+# Sinopsis: Pregunta en qué fichero guardar los rangos para la opción 8.
 ####################################################################################
 function entradaMemoriaRangosFichero_op_siete_Previo {
-#EN-26600-
-#EN-26610-
-#EN-26620-
-#EN-26630-
-#EN-26640-
+#    clear 
+	preguntaDondeGuardarRangosAleTManuales #Resuelve los nombres de los ficheros de rangos amplios
+	preguntaDondeGuardarRangosManuales #Resuelve los nombres de los ficheros de rangos
+	preguntaDondeGuardarDatosManuales #Resuelve los nombres de los ficheros de datos
+} #Fin de entradaMemoriaRangosFichero_op_siete_Previo()
 
 ####################################################################################
-#EN-26650-
-#EN-26660-
+# Sinopsis: Se piden y tratan los mínimos y máximos de los rangos para las opciones 7, 8 y 9. El cálculo de los datos 
+# aleatorios con los que se trabajará se hace en entradaMemoriaRangosFichero_op_siete_ocho_nueve_Comun.  
 ####################################################################################
 function entradaMemoriaRangosFichero_op_siete_ocho_nueve { 
 	if [[ $seleccionMenuEleccionEntradaDatos -eq 7 ]]; then   
-#EN-26670-
+		datos_numero_marcos_memoria_amplio  #Llamada a funciones para definir las variables con los límites de los rangos amplios.
 	fi                     
-#EN-26680-
+	calcDatoAleatorioGeneral $memoria_minInicial $memoria_maxInicial #Se definen nuevas variables para redefinir los límites de los subrangos sacados de los rangos amplios. 
 	MIN_RANGE_MARCOSInicial=$datoAleatorioGeneral	
 	calcDatoAleatorioGeneral $memoria_minInicial $memoria_maxInicial 
 	MAX_RANGE_MARCOSInicial=$datoAleatorioGeneral
-#EN-26690-
+	tratarRangoPrioridadesDirecta $MIN_RANGE_MARCOSInicial $MAX_RANGE_MARCOSInicial #Determina si el rango es de menor a mayor y si no lo es, lo modifica para convertir el problema con las prioridades invertidas, porque el código sólo resuelve ese caso.
 	MIN_RANGE_MARCOS=$PriomFinal
 	MAX_RANGE_MARCOS=$PrioMFinal
-#EN-26700-
+	calcDatoAleatorioGeneral $MIN_RANGE_MARCOS $MAX_RANGE_MARCOS #Se calculan los valores que no dependen de los procesos desde los subrangos ya calculados. 
 	mem_num_marcos=$datoAleatorioGeneral
 
 	if [[ $seleccionMenuEleccionEntradaDatos -eq 7 ]]; then   
@@ -8674,50 +8674,50 @@ function entradaMemoriaRangosFichero_op_siete_ocho_nueve {
 	MIN_RANGE_DIRECCIONESInicial=$datoAleatorioGeneral
 	calcDatoAleatorioGeneral $direcciones_minInicial $direcciones_maxInicial 
 	MAX_RANGE_DIRECCIONESInicial=$datoAleatorioGeneral
-#EN-26710-
+	tratarRangoPrioridadesDirecta $MIN_RANGE_DIRECCIONESInicial $MAX_RANGE_DIRECCIONESInicial #Determina si el rango es de menor a mayor y si no lo es, lo modifica para convertir el problema con las prioridades invertidas, porque el código sólo resuelve ese caso.
 	MIN_RANGE_DIRECCIONES=$PriomFinal
 	MAX_RANGE_DIRECCIONES=$PrioMFinal
 	calcDatoAleatorioGeneral $MIN_RANGE_DIRECCIONES $MAX_RANGE_DIRECCIONES
 	mem_direcciones=$datoAleatorioGeneral
-#EN-26720-
+	numDireccionesTotales_max=$(($mem_num_marcos * $mem_direcciones)) #Dato usado para compararlo con la mayor dirección a ejecutar para saber si cabe en memoria No Virtual.
 
 	if [[ $seleccionMenuEleccionEntradaDatos -eq 7 ]]; then   
 		datos_prio_menor_amplio 
 	fi                     
-#EN-26730-
-#EN-26740-
+	tratarRangoPrioridadesDirecta $prio_menor_minInicial $prio_menor_maxInicial #Determina si el rango es de menor a mayor y si no lo es, lo modifica para convertir el problema con las prioridades invertidas, porque el código sólo resuelve ese caso.
+	prio_menor_min=$PriomFinal #Variables con los originales usadas para calcular subrangos y datos finales 
 	prio_menor_max=$PrioMFinal
 	calcDatoAleatorioGeneral $prio_menor_min $prio_menor_max #calcMinPrioPro #Mínimos #Prioridades asociadas a los procesos.
-#EN-26750-
-#EN-26760-
+	MIN_RANGE_prio_menorInicial=$datoAleatorioGeneral  #Desde este rango amplio se calculan los subrangos desde los que calcular el rango desde el que calcular los datos.
+	calcDatoAleatorioGeneral $prio_menor_min $prio_menor_max #calcMaxPrioPro 
 	MAX_RANGE_prio_menorInicial=$datoAleatorioGeneral          
-#EN-26770-
+	tratarRangoPrioridadesDirecta $MIN_RANGE_prio_menorInicial $MAX_RANGE_prio_menorInicial #Determina si el rango es de menor a mayor y si no lo es, lo modifica para convertir el problema con las prioridades invertidas, porque el código sólo resuelve ese caso.
 	MIN_RANGE_prio_menor=$PriomFinal
 	MAX_RANGE_prio_menor=$PrioMFinal
 	calcDatoAleatorioGeneral $MIN_RANGE_prio_menor $MAX_RANGE_prio_menor #calcMem #Datos generales
-#EN-26780-
+	prio_menorInicial=$datoAleatorioGeneral #Desde este subrango se calcula el rango desde el que calcular los datos.
 
 	if [[ $seleccionMenuEleccionEntradaDatos -eq 7 ]]; then   
 		datos_prio_mayor_amplio 
 	fi                     
-#EN-26790-
+	tratarRangoPrioridadesDirecta $prio_mayor_minInicial $prio_mayor_maxInicial #Determina si el rango es de menor a mayor y si no lo es, lo modifica para convertir el problema con las prioridades invertidas, porque el código sólo resuelve ese caso.
 	prio_mayor_min=$PriomFinal
 	prio_mayor_max=$PrioMFinal
 	calcDatoAleatorioGeneral $prio_mayor_min $prio_mayor_max #calcMinPrioPro #Mínimos #Prioridades asociadas a los procesos.
 	MIN_RANGE_prio_mayorInicial=$datoAleatorioGeneral
-#EN-26800-
+	calcDatoAleatorioGeneral $prio_mayor_min $prio_mayor_max #calcMaxPrioPro 
 	MAX_RANGE_prio_mayorInicial=$datoAleatorioGeneral          
-#EN-26810-
+	tratarRangoPrioridadesDirecta $MIN_RANGE_prio_mayorInicial $MAX_RANGE_prio_mayorInicial #Determina si el rango es de menor a mayor y si no lo es, lo modifica para convertir el problema con las prioridades invertidas, porque el código sólo resuelve ese caso.
 	MIN_RANGE_prio_mayor=$PriomFinal
 	MAX_RANGE_prio_mayor=$PrioMFinal
 	calcDatoAleatorioGeneral $MIN_RANGE_prio_mayor $MAX_RANGE_prio_mayor #calcMem #Datos generales
 	prio_mayorInicial=$datoAleatorioGeneral
 
-#EN-26820-
-#EN-26830-
+	tratarRangoPrioridadesDirecta $prio_menorInicial $prio_mayorInicial #Determina si el rango es de menor a mayor y si no lo es, lo modifica para convertir el problema con las prioridades invertidas, porque el código sólo resuelve ese caso.
+	prio_menor=$PriomFinal #Desde este rango se calculan los datos.
 	prio_mayor=$PrioMFinal
 
-#EN-26840-
+	PriomInicial=$prio_menorInicial #Variables con los datos originales usadas en la cabecera de la representación de la tabla
 	PrioMInicial=$prio_mayorInicial
 
 	if [[ $seleccionMenuEleccionEntradaDatos -eq 7 ]]; then   
@@ -8727,7 +8727,7 @@ function entradaMemoriaRangosFichero_op_siete_ocho_nueve {
 	MIN_RANGE_REUBInicial=$datoAleatorioGeneral
 	calcDatoAleatorioGeneral $reubicacion_minInicial $reubicacion_maxInicial 
 	MAX_RANGE_REUBInicial=$datoAleatorioGeneral
-#EN-26850-
+	tratarRangoPrioridadesDirecta $MIN_RANGE_REUBInicial $MAX_RANGE_REUBInicial #Determina si el rango es de menor a mayor y si no lo es, lo modifica para convertir el problema con las prioridades invertidas, porque el código sólo resuelve ese caso.
 	MIN_RANGE_REUB=$PriomFinal
 	MAX_RANGE_REUB=$PrioMFinal
 	calcDatoAleatorioGeneral $MIN_RANGE_REUB $MAX_RANGE_REUB
@@ -8740,7 +8740,7 @@ function entradaMemoriaRangosFichero_op_siete_ocho_nueve {
 	MIN_RANGE_NPROCInicial=$datoAleatorioGeneral
 	calcDatoAleatorioGeneral $programas_minInicial $programas_maxInicial 
 	MAX_RANGE_NPROCInicial=$datoAleatorioGeneral
-#EN-26860-
+	tratarRangoPrioridadesDirecta $MIN_RANGE_NPROCInicial $MAX_RANGE_NPROCInicial #Determina si el rango es de menor a mayor y si no lo es, lo modifica para convertir el problema con las prioridades invertidas, porque el código sólo resuelve ese caso.
 	MIN_RANGE_NPROC=$PriomFinal
 	MAX_RANGE_NPROC=$PrioMFinal
 	calcDatoAleatorioGeneral $MIN_RANGE_NPROC $MAX_RANGE_NPROC
@@ -8753,7 +8753,7 @@ function entradaMemoriaRangosFichero_op_siete_ocho_nueve {
 	MIN_RANGE_llegadaInicial=$datoAleatorioGeneral
 	calcDatoAleatorioGeneral $llegada_minInicial $llegada_maxInicial 
 	MAX_RANGE_llegadaInicial=$datoAleatorioGeneral
-#EN-26870-
+	tratarRangoPrioridadesDirecta $MIN_RANGE_llegadaInicial $MAX_RANGE_llegadaInicial #Determina si el rango es de menor a mayor y si no lo es, lo modifica para convertir el problema con las prioridades invertidas, porque el código sólo resuelve ese caso.
 	MIN_RANGE_llegada=$PriomFinal
 	MAX_RANGE_llegada=$PrioMFinal
 
@@ -8764,12 +8764,12 @@ function entradaMemoriaRangosFichero_op_siete_ocho_nueve {
 	MIN_RANGE_tiempo_ejecInicial=$datoAleatorioGeneral
 	calcDatoAleatorioGeneral $tiempo_ejec_minInicial $tiempo_ejec_maxInicial 
 	MAX_RANGE_tiempo_ejecInicial=$datoAleatorioGeneral
-#EN-26880-
+	tratarRangoPrioridadesDirecta $MIN_RANGE_tiempo_ejecInicial $MAX_RANGE_tiempo_ejecInicial #Determina si el rango es de menor a mayor y si no lo es, lo modifica para convertir el problema con las prioridades invertidas, porque el código sólo resuelve ese caso.
 	MIN_RANGE_tiempo_ejec=$PriomFinal
 	MAX_RANGE_tiempo_ejec=$PrioMFinal
 	
-#EN-26890-
-#EN-26900-
+	#Los límites se establecen de forma diferente porque no pueden ser mayores que el tamaño de la memoria. 
+	#Tampoco es igual al sistema usado en los rangos reducidos por usar dos sistemas diferentes. Aquí se usa el mínimo como 1 y se calcula el máximo por debajo de otro máximo para que no sean números grandes. 
 	tamano_marcos_proc_minInicial=1 
 	tamano_marcos_proc_maxInicial=$mem_num_marcos
 	MIN_RANGE_tamano_marcos_procInicial=1
@@ -8785,7 +8785,7 @@ function entradaMemoriaRangosFichero_op_siete_ocho_nueve {
 	MIN_RANGE_quantumInicial=$datoAleatorioGeneral
 	calcDatoAleatorioGeneral $quantum_minInicial $quantum_maxInicial 
 	MAX_RANGE_quantumInicial=$datoAleatorioGeneral
-#EN-26910-
+	tratarRangoPrioridadesDirecta $MIN_RANGE_quantumInicial $MAX_RANGE_quantumInicial #Determina si el rango es de menor a mayor y si no lo es, lo modifica para convertir el problema con las prioridades invertidas, porque el código sólo resuelve ese caso.
 	MIN_RANGE_quantum=$PriomFinal
 	MAX_RANGE_quantum=$PrioMFinal
 	calcDatoAleatorioGeneral $MIN_RANGE_quantum $MAX_RANGE_quantum
@@ -8798,29 +8798,29 @@ function entradaMemoriaRangosFichero_op_siete_ocho_nueve {
 	MIN_RANGE_tamano_direcciones_procInicial=$datoAleatorioGeneral
 	calcDatoAleatorioGeneral $tamano_direcciones_proc_minInicial $tamano_direcciones_proc_maxInicial 
 	MAX_RANGE_tamano_direcciones_procInicial=$datoAleatorioGeneral
-#EN-26920-
+	tratarRangoPrioridadesDirecta $MIN_RANGE_tamano_direcciones_procInicial $MAX_RANGE_tamano_direcciones_procInicial #Determina si el rango es de menor a mayor y si no lo es, lo modifica para convertir el problema con las prioridades invertidas, porque el código sólo resuelve ese caso.
 	MIN_RANGE_tamano_direcciones_proc=$PriomFinal
 	MAX_RANGE_tamano_direcciones_proc=$PrioMFinal    
-# 
-#EN-26930-
+	#------------------------------------------------------ 
+	datos_amplio_memoria_tabla #Se imprime una tabla con los datos de los rangos introducidos, los subrangos y los valores calculables.
 
-#EN-26940-
+#    clear
 	p=0
 	until [[ $p -eq $n_prog ]]; do  
-#EN-26950-
-#EN-26960-
-#EN-26970-
-#EN-26980-
-#EN-26990-
-#EN-27000-
-#EN-27010-
+		entradaMemoriaRangosFichero_op_siete_ocho_nueve_Comun #Se calculan los valores aleatorios y los datos con los que se trabajará para las opciones 7, 8 y 9. 
+		entradaMemoriaRangosFichero_op_siete_ocho_nueve_Post_1 #Guarda los datos en los ficheros que correspondan
+#        clear
+		p=`expr $p + 1` #Se incrementa el contador
+	done #cierre del do del while $pro=="S"
+	entradaMemoriaRangosFichero_op_siete_ocho_nueve_Post_2 #Copia los ficheros Default/Último
+} #Fin de entradaMemoriaRangosFichero_op_siete_ocho_nueve()
 
 ####################################################################################
-#EN-27020-
+# Sinopsis: Se guardarán los datos en los ficheros que corresponda para la opción 4
 ####################################################################################
 function entradaMemoriaRangosFichero_op_siete_ocho_nueve_Post_1 { 
-#EN-27030-
-#EN-27040-
+	#No se establece desde fichero sino que se decide en el momento de la ejecución mediante la variable de selección de tipo $seleccionTipoPrioridad.
+	if [[ $seleccionTipoPrioridad -eq 1 ]]; then #M/m
 		PrioR="Mayor"
 	else    
 		PrioR="Menor"                
@@ -8831,17 +8831,17 @@ function entradaMemoriaRangosFichero_op_siete_ocho_nueve_Post_1 {
 		"\nTll nMar Prio Direcciones:\n" > $nomFicheroDatos
 	fi                  
 
-#EN-27050-
-#EN-27060-
+	direccionesAcumuladas="" #Hace que las direcciones sean diferentes en cada proceso.
+	MIN_RANGE_PAGINA_MODIFICADA=0 #Se usarán para determinar de forma aleatoria si una página es o no modificada al ser ejecutada en los algoritmos NFU y NRU.
 	MAX_RANGE_PAGINA_MODIFICADA=1
-#EN-27070-
-#EN-27080-
-#EN-27090-
+	for (( numdir=0; numdir<${ejecucion[$p]}; numdir++)); do #Muestra las direcciones del proceso calculadas de forma aleatoria.
+		calcDatoAleatorioGeneral $MIN_RANGE_PAGINA_MODIFICADA $MAX_RANGE_PAGINA_MODIFICADA  #Se calcula de forma aleatoria si una página es o no modificada al ser ejecutada.
+		directions_AlgPagFrecUsoRec_pagina_modificada[$p,$numdir,0]=$datoAleatorioGeneral  #Se almacena el cálculo aleatorio de si una página es o no modificada al ser ejecutada.
 		direccionesAcumuladas+=`echo -ne " ${directions[$p,$numdir]}-${directions_AlgPagFrecUsoRec_pagina_modificada[$p,$numdir,0]}"`
 	done
 	echo -e ${llegada[$p]} ${memoria[$p]} ${prioProc[$p]} $direccionesAcumuladas >> $nomFicheroDatos
 
-#EN-27100-
+	if [[ $p -eq 1 ]]; then #Escribe los rangos en el fichero de rangos selecionado (RangosAleTotalDefault.txt, o el elegido por el usuario). 
 		if [[ -f "$nomFicheroRangos" ]]; then
 			rm $nomFicheroRangos
 		fi 
@@ -8857,8 +8857,8 @@ function entradaMemoriaRangosFichero_op_siete_ocho_nueve_Post_1 {
 		echo -e "RangoPrioProc $prio_menorInicial $prio_mayorInicial" >> $nomFicheroRangos
 		echo -e "RangoTamanoDireccionesProc $MIN_RANGE_tamano_direcciones_proc $MAX_RANGE_tamano_direcciones_proc" >> $nomFicheroRangos
 		echo -ne "RangoQuantum $MIN_RANGE_quantum $MAX_RANGE_quantum" >> $nomFicheroRangos
-#EN-27110-
-#EN-27120-
+	fi #Cierre if $p -eq 1 
+	if [[ $p -eq 1 ]]; then #Escribe los rangos en el fichero de rangos amplios selecionado 
 		if [[ -f "$nomFicheroRangosAleT" ]]; then 
 			rm $nomFicheroRangosAleT
 		fi
@@ -8874,49 +8874,49 @@ function entradaMemoriaRangosFichero_op_siete_ocho_nueve_Post_1 {
 		echo -e "RangoPrioProc $prio_menorInicial $prio_mayorInicial" >> $nomFicheroRangosAleT
 		echo -e "RangoTamanoDireccionesProc $tamano_direcciones_proc_min $tamano_direcciones_proc_max" >> $nomFicheroRangosAleT
 		echo -ne "RangoQuantum $quantum_min $quantum_max" >> $nomFicheroRangosAleT
-#EN-27130-
-#EN-27140-
+	fi #Cierre if $p -eq 1
+} #Fin de entradaMemoriaRangosFichero_op_siete_Post_1()
 
 ####################################################################################
-#EN-27150-
+# Sinopsis: Se copian los ficheros que correspondan para la opción 4
 ####################################################################################
 function entradaMemoriaRangosFichero_op_siete_ocho_nueve_Post_2 { 
-#EN-27160-
+	if [[ -f "$ficheroDatosAnteriorEjecucion" ]]; then #Borra el fichero de datos ultimo y escribe los datos en el fichero
 		rm $ficheroDatosAnteriorEjecucion
 	fi
-#EN-27170-
+	if [[ -f "$ficheroRangosAnteriorEjecucion" ]]; then #Borra el fichero de datos ultimo y escribe los rangos en el fichero
 		rm $ficheroRangosAnteriorEjecucion
 	fi
 	cp $nomFicheroDatos $ficheroDatosAnteriorEjecucion
 	cp $nomFicheroRangos $ficheroRangosAnteriorEjecucion
-#EN-27180-
-#EN-27190-
+	if [[ $seleccionMenuEleccionEntradaDatos -ne 8 ]]; then #Actualiza el fichero de rangos amplios de última ejecución (RangosAleTotalLast.txt) como copia del fichero utilizado para los rangos amplios (RangosAleTotalDefault.txt, o el elegido por el usuario).
+		if [[ -f "$ficheroRangosAleTotalAnteriorEjecucion" ]]; then #Borra el fichero de datos ultimo y escribe los rangos amplios en el fichero
 			rm $ficheroRangosAleTotalAnteriorEjecucion
 		fi
 		cp $nomFicheroRangosAleT $ficheroRangosAleTotalAnteriorEjecucion        
 	fi
-#EN-27200-
+} #Fin de entradaMemoriaRangosFichero_op_siete_Post_2()
 		   
 ####################################################################################
-#EN-27210-
+# Sinopsis: Pregunta en qué fichero guardar los rangos para la opción 8.
 ####################################################################################
 function entradaMemoriaRangosFichero_op_ocho_Previo {
-#EN-27220-
-#EN-27230-
-#EN-27240-
-#EN-27250-
+#    clear
+	preguntaDondeGuardarRangosManuales #Resuelve los nombres de los ficheros de rangos
+	preguntaDondeGuardarDatosManuales #Resuelve los nombres de los ficheros de datos
+} #Fin de entradaMemoriaRangosFichero_op_ocho_Previo()
 
 ####################################################################################
-#EN-27260-
+# Sinopsis: Pregunta en qué fichero guardar los rangos amplios para la opción 9.
 ####################################################################################
 function entradaMemoriaRangosFichero_op_nueve_Previo {
-#EN-27270-
-#EN-27280-
-#EN-27290-
+#    clear
+	preguntaDondeGuardarRangosManuales #Resuelve los nombres de los ficheros de rangos
+	preguntaDondeGuardarDatosManuales #Resuelve los nombres de los ficheros de datos
 	echo -e "\n\nFicheros existentes:\n$NORMAL" | tee -a $informeConColorTotal
 	echo -e "\n\nFicheros existentes:\n" >> $informeSinColorTotal  
 	files=("./FRangosAleT"/*)
-#EN-27300-
+	for i in "${!files[@]}"; do #Localiza en qué posición encuentra el dato (da la posición, pero no la variable en el array)
 #    for i in "${files[@]}"; do #Define el dato, pero no en qué posción se encuentra.
 		echo -e "$i) ${files[$i]}" | tee -a $informeConColorTotal
 		echo -e "$i) ${files[$i]}" >> $informeSinColorTotal  
@@ -8924,7 +8924,7 @@ function entradaMemoriaRangosFichero_op_nueve_Previo {
 	echo -e "\n$AMARILLO\n\nIntroduce el número correspondiente al fichero elegido: $NORMAL" | tee -a $informeConColorTotal
 	echo -e "\n\n\nIntroduce el número correspondiente al fichero elegido: " >> $informeSinColorTotal 
 	read -r numeroFichero
-#EN-27310-
+	until [[ "0" -le $numeroFichero && $numeroFichero -lt ${#files[@]} && $numeroFichero -ne "" ]]; do
 		echo -ne "Error en la elección de una opción válida\n\n  --> " | tee -a $informeConColorTotal
 		echo -ne "Error en la elección de una opción válida\n\n  --> " >> $informeSinColorTotal
 		read -r numeroFichero
@@ -8934,16 +8934,16 @@ function entradaMemoriaRangosFichero_op_nueve_Previo {
 	echo "$numeroFichero" >> $informeConColorTotal
 	echo "$numeroFichero" >> $informeSinColorTotal
 	ficheroParaLectura="${files[$numeroFichero]}"
-#EN-27320-
-#EN-27330-
+#    clear
+} #Fin de entradaMemoriaRangosFichero_op_nueve_Previo()
 
 ####################################################################################
-#EN-27340-
+# Sinopsis: Se calculan los valores aleatorios y los datos con los que se trabajará para las opciones 7, 8 y 9. 
 ####################################################################################
 function entradaMemoriaRangosFichero_op_siete_ocho_nueve_Comun {                          
-#EN-27350-
+#    clear   
 	variableReubicar=$reub
-#            
+	#------------------------------Empieza a introducir procesos--------------------            
 	if [[ $p -eq 0 ]] ; then
 		if [[ -f $informeConColorTotal ]] ; then
 			if [[ $seleccionMenuPreguntaDondeGuardarDatosManuales == "1" ]] ; then
@@ -8964,74 +8964,74 @@ function entradaMemoriaRangosFichero_op_siete_ocho_nueve_Comun {
 	else
 		nombre="P0$((p + 1))" 
 	fi
-#EN-27360-
-#EN-27370-
-#EN-27380-
-#EN-27390-
-#EN-27400-
+	proceso[$p]=$nombre; #Se añade a el vector ese nombre
+	numeroproceso[$p]=$p #Se guarda su número en un vector para la función que lo ordena
+	llegada[$p]=$((RANDOM % (MAX_RANGE_llegada - MIN_RANGE_llegada + 1) + MIN_RANGE_llegada)) # Generar un número aleatorio dentro del rango
+	ejecucion[$p]=$((RANDOM % (MAX_RANGE_tiempo_ejec - MIN_RANGE_tiempo_ejec + 1) + MIN_RANGE_tiempo_ejec)) # Generar un número aleatorio dentro del rango
+	memoria[$p]=$((RANDOM % (MAX_RANGE_tamano_marcos_proc - MIN_RANGE_tamano_marcos_proc + 1) + MIN_RANGE_tamano_marcos_proc)) # Generar un número aleatorio dentro del rango
 
 	calcDatoAleatorioGeneral $prio_menor $prio_mayor
 	prioProc[$p]=$datoAleatorioGeneral #Se añade el tamaño de ejecución al vector #Sobra uno
-#EN-27410-
+	prio_proc=$datoAleatorioGeneral #Se añade el tamaño de ejecución al vector
 
-#EN-27420-
-#EN-27430-
-#EN-27440-
+	#Se definen las Direcciones de cada Proceso
+	tiempoEjecucion[$p]=${ejecucion[$p]} #Para ser equivalente al nuevo programa
+	calcDatoAleatorioGeneral $MIN_RANGE_tamano_direcciones_proc $MAX_RANGE_tamano_direcciones_proc #Primero se calcula el tamaño en direcciones del proceso.
 	tamano_direcciones_proc=$datoAleatorioGeneral
 	for (( numdir = 0; numdir <= ${ejecucion[$p]}; numdir++ )); do
-#EN-27450-
+		calcDatoAleatorioGeneral 1 $tamano_direcciones_proc #Luego se calculan las direcciones aplicando la búsqueda aleatoria hasta el tamaño en direcciones dle proceso precalculado.
 		directions[$p,$numdir]=$datoAleatorioGeneral
-#EN-27460-
+		if [[ $seleccionAlgoritmoPaginacion -eq 0 && ${directions[$p,$numdir]} -gt $(($numDireccionesTotales_max - 1)) ]]; then #$numDireccionesTotales_max viene de leer_rangos_desde_fichero() y se comparará con las direcciones definidas, ya que las direcciones deben ser menores en el caso de memoria No Virtual.
 			echo -e "\n***Error en la lectura de rangos amplios. La dirección de memoria utilizada ("${directions[$p,$numdir]}") está fuera del rango máximo definido por el número de marcos de página ("$(($numDireccionesTotales_max - 1))")."
 			exit 1
 		fi
-#EN-27470-
+		transformapag directions[$p,$numdir] $numdir #let pagTransformadas[$2]=`expr $1/$mem_direcciones`
 		paginasDefinidasTotal[$p,$numdir]=${pagTransformadas[$numdir]} 
 	done
-#EN-27480-
+} #Fin de entradaMemoriaRangosFichero_op_siete_ocho_nueve_Comun()
 
 ####################################################################################
-#EN-27490-
+# Sinopsis: Calcula los datos de la tabla resumen de procesos en cada volcado
 ####################################################################################
-#EN-27500-
-#EN-27510-
+function ajusteFinalTiemposEsperaEjecucionRestante { #ESTADO DE CADA PROCESO EN EL TIEMPO ACTUAL Y HALLAR LAS VARIABLES.
+	for (( i=0; i<$nprocesos; i++ )); do #Modificamos los valores de los arrays, restando de lo que quede
 		if [[ ${enejecucion[$i]} -eq 1 ]]; then  
 			temp_rej[$i]=`expr ${temp_rej[$i]} - 1`
-#EN-27520-
+			temp_ret[$i]=`expr ${temp_ret[$i]} + 1` #Se suman para evitar que en el último segundo de ejecución no se sume el segundo de retorno
 		fi
-#EN-27530-
+		if [[ ${encola[$i]} -eq 1 && ${bloqueados[$i]} -eq 1 ]] ; then #estado[$i]="Bloqueado" - En espera
 			temp_wait[$i]=`expr ${temp_wait[$i]} + 1`
 			temp_ret[$i]=`expr ${temp_ret[$i]} + 1`
 		fi
-#EN-27540-
+		if [[ ${enmemoria[$i]} -eq 1 && ${enejecucion[$i]} -eq 1 ]] ; then #estado[$i]="En ejecucion"
 			temp_wait[$i]=`expr ${temp_wait[$i]} + 0`
-#EN-27550-
+		elif [[ ${enmemoria[$i]} -eq 1 && ${enpausa[$i]} -eq 1 ]] ; then #estado[$i]="En pausa" - En pausa
 			temp_wait[$i]=`expr ${temp_wait[$i]} + 1`
 			temp_ret[$i]=`expr ${temp_ret[$i]} + 1`
-#EN-27560-
+		elif [[ ${enmemoria[$i]} -eq 1 ]] ; then #estado[$i]="En memoria"
 			temp_wait[$i]=`expr ${temp_wait[$i]} + 1`
 			temp_ret[$i]=`expr ${temp_ret[$i]} + 1`
 		fi
-#EN-27570-
-#EN-27580-
-#EN-27590-
+	done #Si ha terminado, no se hace nada. Y si no ha llegado, su tiempo de espera es "-"
+	for (( i=0; i<$nprocesos; i++ )); do #Se ponen todas las posiciones del vector enejecucion a 0, se establecerá qué proceso está a 1 en cada ciclo del programa.
+		bloqueados[$i]=0 #Se desbloquean todos y se establecerán los procesos bloqueados en cada ciclo.
 	done
-#EN-27600-
-#EN-27610-
+	reloj=`expr $reloj + 1` # Se incrementa el reloj
+} #Final de los cálculos para dibujar la banda de tiempos - ajusteFinalTiemposEsperaEjecucionRestante
 
 ####################################################################################
-#EN-27620-
+# Sinopsis: Se muestran los eventos sucedidos, sobre la tabla resumen.
 ####################################################################################
 function mostrarEventos {
-#EN-27630-
-#EN-27640-
-#EN-27650-
+#    clear
+	evento=0 #Inicializo evento
+	#Se muestran los datos sobre las indicaciones del evento que ha sucedido
 	Dato1=""
 	Dato2=""
 	Dato3=""
-#EN-27660-
+	if [[ $seleccionMenuAlgoritmoGestionProcesos -eq 0 ]]; then #Paginado pero No Virtual
 		algoritmoSeleccionado="FCFS-PaginaciónNoVirtual-"
-#EN-27670-
+	elif [[ $seleccionMenuAlgoritmoGestionProcesos -eq 1 ]]; then #FCFS/SJF/SRPT
 		algoritmoSeleccionado="FCFS-Paginación-"
 	elif [[ $seleccionMenuAlgoritmoGestionProcesos -eq 2 ]]; then    
 		algoritmoSeleccionado="SJF-Paginación-"
@@ -9039,12 +9039,12 @@ function mostrarEventos {
 		algoritmoSeleccionado="SRPT-Paginación-" 
 	elif [[ $seleccionMenuAlgoritmoGestionProcesos -eq 4 ]]; then    
 		algoritmoSeleccionado="Prioridades-"    
-#EN-27680-
+		if [[ $seleccionTipoPrioridad -eq 1 ]]; then #M/m
 			algoritmoSeleccionado+="Mayor-"
 		else    
 			algoritmoSeleccionado+="Menor-"                
 		fi              
-#EN-27690-
+		if [[ $seleccionMenuApropiatividad -eq 1 ]]; then #M/m
 			algoritmoSeleccionado+="NoApropiativo-Paginación-"
 		else    
 			algoritmoSeleccionado+="Apropiativo-Paginación-"                
@@ -9089,12 +9089,12 @@ function mostrarEventos {
 	elif [[ $seleccionAlgoritmoPaginacion -eq 17 ]]; then    
 		algoritmoPaginacionSeleccionado="NRU/Clases/LRU-"                
 	fi
-#EN-27700-
+	if [[ $continuidadNo0Si1 -eq 0 ]]; then #C/NC
 		continuidadSeleccionado="NC-"
 	else    
 		continuidadSeleccionado="C-"                
 	fi
-#EN-27710-
+	if [[ $reubicabilidadNo0Si1 -eq 0 ]]; then #R/NR
 		reubicabilidadSeleccionado="NR"
 	else    
 		reubicabilidadSeleccionado="R" 
@@ -9106,46 +9106,46 @@ function mostrarEventos {
 	echo " $algoritmoPaginacionContinuidadReubicabilidadSeleccionado" >> ./$informeSinColorTotal
 	echo -e $NC" Reloj="$reloj" Num.Marcos="$mem_num_marcos" Mem.Libre="$mem_libre" Num.Direcciones/Marco="$mem_direcciones$Dato1$Dato2$Dato3 | tee -a $informeConColorTotal
 	echo -e " Reloj="$reloj" Mem.Total="$mem_num_marcos" Mem.Libre="$mem_libre" Num.Direcciones/Marco="$mem_direcciones$Dato1$Dato2$Dato3 >> $informeSinColorTotal
-#EN-27720-
+	#Se muestra el evento que ha sucedido       
 	for ((l=0 ;l<nprocesos; l++)); do
 		if [[ ${avisosalida[$l]} -eq 1 ]]; then
 			echo -e " El proceso$NC ${varC[$l]}${proceso[$l]}$NC ha salido de memoria." | tee -a $informeConColorTotal
 			echo -e " El proceso ${proceso[$l]} ha salido de memoria." >> $informeSinColorTotal
-#EN-27730-
+			avisosalida[$l]=0 #Se borra el uno para que no se vuelva a imprimir 
 		fi
 	done
 	for ((l=0 ;l<nprocesos; l++)); do
 		if [[ ${avisollegada[$l]} -eq 1 ]]; then
 			echo -e " El proceso$NC ${varC[$l]}${proceso[$l]}$NC ha llegado al sistema." | tee -a $informeConColorTotal
 			echo -e " El proceso ${proceso[$l]} ha llegado al sitema." >> $informeSinColorTotal
-#EN-27740-
+			avisollegada[$l]=0 #Se borra el uno para que no se vuelva a imprimir 
 		fi
 	done
 	for ((l=0 ;l<nprocesos; l++)); do
 		if [[ ${avisoentrada[$l]} -eq 1 ]]; then
 			echo -e " El proceso$NC ${varC[$l]}${proceso[$l]}$NC ha entrado de memoria. " | tee -a $informeConColorTotal
 			echo -e " El proceso ${proceso[$l]} ha entrado en memoria." >> $informeSinColorTotal
-#EN-27750-
+			avisoentrada[$l]=0 #Se borra el uno para que no se vuelva a imprimir 
 		fi
 	done
 	for ((l=0 ;l<nprocesos; l++)); do
 		if [[ ${avisoEntradaCPU[$l]} -eq 1 ]]; then
 			echo -e " El proceso$NC ${varC[$l]}${proceso[$l]}$NC ha entrado en CPU. " | tee -a $informeConColorTotal
 			echo -e " El proceso ${proceso[$l]} ha entrado en CPU." >> $informeSinColorTotal
-#EN-27760-
+			avisoEntradaCPU[$l]=0 #Se borra el uno para que no se vuelva a imprimir 
 		fi
 	done
 	for ((l=0 ;l<nprocesos; l++)); do
 		if [[ ${avisoPausa[$l]} -eq 1 ]]; then
 			echo -e " El proceso$NC ${varC[$l]}${proceso[$l]}$NC ha quedado en pausa. " | tee -a $informeConColorTotal
 			echo -e " El proceso ${proceso[$l]} ha quedado en pausa." >> $informeSinColorTotal
-#EN-27770-
+			avisoPausa[$l]=0 #Se borra el uno para que no se vuelva a imprimir 
 		fi
 	done
-#EN-27780-
+} #Fin de mostrarEventos() - Final de mostrar los eventos sucedidos - mostrarEventos
 
 ####################################################################################
-#EN-27790-
+# Sinopsis: Prepara e imprime la tabla resumen de procesos en cada volcado - SIN CUADRO
 ####################################################################################
 function dibujarTablaDatos {
 	mem_aux=$[ $mem_num_marcos -1 ]
@@ -9153,7 +9153,7 @@ function dibujarTablaDatos {
 	k=0
 	for (( i=0; i<$nprocesos; i++ )); do
 		if [[ ${enmemoria[$i]} -eq 1 ]]; then
-#EN-27800-
+			guardados[$j]=$i #Se guardan en cada posición el número del proceso correspondiente 
 			coloresAux[$k]=${coloress[$i % 6]} 
 			j=`expr $j + 1`
 		fi
@@ -9161,7 +9161,7 @@ function dibujarTablaDatos {
 	done
 	j=0
 	k=0
-#EN-27810-
+	#CALCULAR LOS DATOS A REPRESENTAR.
 	cont=0
 	for (( i=0; i<$nprocesos; i++ )); do
 		if [[ ${enmemoria[$i]} -eq 1 ]]; then
@@ -9179,24 +9179,24 @@ function dibujarTablaDatos {
 				pos_aux=${pos_final[$i]}
 			fi
 		fi
-#EN-27820-
+		if [[ ${estad[$i]} -eq 0 ]]; then #Fuera del Sistema
 			inicio2[$i]="-"
 			final2[$i]="-" 
 			temp_wait[$i]="-"
 			temp_ret[$i]="-"
 			temp_rej[$i]="-"
 			estado[$i]="Fuera del Sistema"
-#EN-27830-
+		elif [[ ${estad[$i]} -eq 1 ]]; then #En Espera
 			inicio2[$i]="-"
 			final2[$i]="-"
 			estado[$i]="En espera"
-#EN-27840-
+		elif [[ ${estad[$i]} -eq 2 ]]; then #En Memoria
 			estado[$i]="En memoria"
-#EN-27850-
+		elif [[ ${estad[$i]} -eq 3 ]]; then #En Ejecucion
 			estado[$i]="En ejecución"
-#EN-27860-
+		elif [[ ${estad[$i]} -eq 4 ]]; then #En Pausa
 			estado[$i]="En pausa"
-#EN-27870-
+		elif [[ ${estad[$i]} -eq 5 ]]; then #Finalizado
 			inicio2[$i]="-"
 			final2[$i]="-" 
 			temp_rej[$i]="-"
@@ -9205,24 +9205,24 @@ function dibujarTablaDatos {
 			varC[$i]=${coloress[$i % 6]}
 	done
 
-#EN-27880-
-#EN-27890-
-#EN-27900-
-#EN-27910-
+	#REPRESENTAR LOS DATOS
+	#Se ajusta a parte el vector de memoria inicial y final NO CONTINUA para CUADRAR (he comentado lo que cuadraba lo de antes)(modificación 2020)
+	#Ajuste para la memoria no continua en un auxiliar (se imprime el auxiliar)
+	#Se copia los normales al auxiliar
 	inicialNCaux=("${inicialNC[@]}")
 	finalNCaux=("${finalNC[@]}")
  	datos4=""
-#EN-27920-
+	if [[ $seleccionAlgoritmoPaginacion -eq 10 || $seleccionAlgoritmoPaginacion -eq 11 || $seleccionAlgoritmoPaginacion -eq 16 || $seleccionAlgoritmoPaginacion -eq 17 ]]; then #Si han sido usadas, se subrayan
 		datos4="-Modificación"
 	fi
 
-#EN-27930-
+	if [[ $seleccionMenuAlgoritmoGestionProcesos -eq 4 ]]; then #Para Prioridades
 		echo -e " Ref Tll Tej Mem Pri TEsp Tret Trej Mini Mfin Estado            Direcciones-Página$datos4   " | tee -a $informeConColorTotal   
 		echo -e " ────────────────────────────────────────────────────────────────────────────────────────────" | tee -a $informeConColorTotal
 		echo -e " Ref Tll Tej Mem Pri TEsp Tret Trej Mini Mfin Estado            Direcciones-Página$datos4   " >> $informeSinColorTotal
 		echo -e " ────────────────────────────────────────────────────────────────────────────────────────────" >> $informeSinColorTotal
-#EN-27940-
-#EN-27950-
+		m=0 #Se aplica el $m a memoria inicial y memoria final (los auxiliares que son los que se imprimen en el volcado)
+		for (( i=0; i<$nprocesos; i++ )) ; do  #Se usa m porque i recorre los procesos y m controla las unidades usadas por cada proceso, normalmente 0 o 1, y también las unidades de los n trozos de memoria asociados a cada proceso. 
 			echo -ne " ${varC[$i]}${proceso[$i]}$NC"\
 			"$(imprimirEspaciosEstrechos ${#llegada[$i]})${varC[$i]}${llegada[$i]}$NC" "$(imprimirEspaciosEstrechos ${#ejecucion[$i]})${varC[$i]}${ejecucion[$i]}$NC"\
 			"$(imprimirEspaciosEstrechos ${#memoria[$i]})${varC[$i]}${memoria[$i]}$NC" "$(imprimirEspaciosEstrechos ${#prioProc[$i]})${varC[$i]}${prioProc[$i]}$NC"\
@@ -9230,13 +9230,13 @@ function dibujarTablaDatos {
 			"$(imprimirEspaciosAnchos ${#temp_rej[$i]})${varC[$i]}${temp_rej[$i]}$NC" "$(imprimirEspaciosAnchos ${#inicialNCaux[$m]})${varC[$i]}${inicialNCaux[$m]}$NC"\
 			"$(imprimirEspaciosAnchos ${#finalNCaux[$m]})${varC[$i]}${finalNCaux[$m]}$NC" "${varC[$i]}${estado[$i]}""$(imprimirEspaciosMuyAnchos ${#estado[$i]})$NC " | tee -a $informeConColorTotal
 			DireccionesPaginasPorProceso=""
-#EN-27960-
+			varImprimirPaginaUsada="\e[4m" #Subrayado
 			datos4=""
 			for ((counter2=0;counter2<${ejecucion[$i]};counter2++)); do
 				if [[ $seleccionAlgoritmoPaginacion -eq 10 || $seleccionAlgoritmoPaginacion -eq 11 || $seleccionAlgoritmoPaginacion -eq 16 || $seleccionAlgoritmoPaginacion -eq 17 ]]; then 
 					datos4="-"${directions_AlgPagFrecUsoRec_pagina_modificada[$i,$counter2,0]}
 				fi
-#EN-27970-
+				if [[ ${numeroPaginasUsadasProceso[$i]} -gt $counter2 ]]; then #Si han sido usadas, se subrayan
 					kk=" $varImprimirPaginaUsada${directions[$i,$counter2]}-${paginasDefinidasTotal[$i,$counter2]}$datos4$NC"
 					DireccionesPaginasPorProceso=$DireccionesPaginasPorProceso" ${varC[$i]}$varImprimirPaginaUsada${directions[$i,$counter2]}-${paginasDefinidasTotal[$i,$counter2]}$datos4$NC"
 				else
@@ -9261,35 +9261,35 @@ function dibujarTablaDatos {
 			echo -e $DireccionesPaginasPorProceso >> $informeSinColorTotal
 			
 			m=$((m+1))
-#EN-27980-
-#EN-27990-
-#EN-28000-
-#EN-28010-
-#EN-28020-
+			for (( b=1; b<${bloques[$i]}; b++ )) ; do  #Recorre el número de bloques en los que se fragmenta un proceso
+				echo -ne "                                $(imprimirEspaciosAnchos ${#inicialNCaux[$m]})${varC[$i]}${inicialNCaux[$m]}$NC " | tee -a $informeConColorTotal
+				echo -e "$(imprimirEspaciosAnchos ${#finalNCaux[$m]})${varC[$i]}${finalNCaux[$m]}$NC                  " | tee -a $informeConColorTotal
+				echo -ne "                                $(imprimirEspaciosAnchosBN ${#inicialNCaux[$m]})${inicialNCaux[$m]} " >> $informeSinColorTotal
+				echo -e "$(imprimirEspaciosAnchosBN ${#finalNCaux[$m]})${finalNCaux[$m]}                   " >> $informeSinColorTotal
 				m=$((m+1))
 			done
 		done
-#EN-28030-
+	elif [[ $seleccionMenuAlgoritmoGestionProcesos -eq 5 ]]; then #Para Round-Robin 
 		echo -e " Ref Tll Tej Mem TEsp Tret Trej Mini Mfin Estado            Direcciones-Página$datos4   " | tee -a $informeConColorTotal   
 		echo -e " ────────────────────────────────────────────────────────────────────────────────────────" | tee -a $informeConColorTotal
 		echo -e " Ref Tll Tej Mem TEsp Tret Trej Mini Mfin Estado            Direcciones-Página$datos4   " >> $informeSinColorTotal
 		echo -e " ────────────────────────────────────────────────────────────────────────────────────────" >> $informeSinColorTotal
-#EN-28040-
-#EN-28050-
+		m=0 #Se aplica el $m a memoria inicial y memoria final (los auxiliares que son los que se imprimen en el volcado)
+		for (( i=0; i<$nprocesos; i++ )) ; do  #Se usa m porque i recorre los procesos y m controla las unidades usadas por cada proceso, normalmente 0 o 1, y también las unidades de los n trozos de memoria asociados a cada proceso. 
 			echo -ne " ${varC[$i]}${proceso[$i]}$NC"\
 			"$(imprimirEspaciosEstrechos ${#llegada[$i]})${varC[$i]}${llegada[$i]}$NC" "$(imprimirEspaciosEstrechos ${#ejecucion[$i]})${varC[$i]}${ejecucion[$i]}$NC"\
 			"$(imprimirEspaciosEstrechos ${#memoria[$i]})${varC[$i]}${memoria[$i]}$NC" "$(imprimirEspaciosAnchos ${#temp_wait[$i]})${varC[$i]}${temp_wait[$i]}$NC"\
 			"$(imprimirEspaciosAnchos ${#temp_ret[$i]})${varC[$i]}${temp_ret[$i]}$NC" "$(imprimirEspaciosAnchos ${#temp_rej[$i]})${varC[$i]}${temp_rej[$i]}$NC"\
 			"$(imprimirEspaciosAnchos ${#inicialNCaux[$m]})${varC[$i]}${inicialNCaux[$m]}$NC" "$(imprimirEspaciosAnchos ${#finalNCaux[$m]})${varC[$i]}${finalNCaux[$m]}$NC"\
-#EN-28060-
+			"${varC[$i]}${estado[$i]}""$(imprimirEspaciosMuyAnchos ${#estado[$i]})$NC " | tee -a $informeConColorTotal
 			DireccionesPaginasPorProceso=""
-#EN-28070-
+			varImprimirPaginaUsada="\e[4m" #Subrayado
 			datos4=""
 			for ((counter2=0;counter2<${ejecucion[$i]};counter2++)); do
 				if [[ $seleccionAlgoritmoPaginacion -eq 10 || $seleccionAlgoritmoPaginacion -eq 11 || $seleccionAlgoritmoPaginacion -eq 16 || $seleccionAlgoritmoPaginacion -eq 17 ]]; then 
 					datos4="-"${directions_AlgPagFrecUsoRec_pagina_modificada[$i,$counter2,0]}
 				fi
-#EN-28080-
+				if [[ ${numeroPaginasUsadasProceso[$i]} -gt $counter2 ]]; then #Si han sido usadas, se subrayan
 					kk=" $varImprimirPaginaUsada${directions[$i,$counter2]}-${paginasDefinidasTotal[$i,$counter2]}$datos4$NC"
 					DireccionesPaginasPorProceso=$DireccionesPaginasPorProceso" ${varC[$i]}$varImprimirPaginaUsada${directions[$i,$counter2]}-${paginasDefinidasTotal[$i,$counter2]}$datos4$NC"
 				else
@@ -9303,7 +9303,7 @@ function dibujarTablaDatos {
 			"$(imprimirEspaciosEstrechosBN ${#memoria[$i]})${memoria[$i]}" "$(imprimirEspaciosAnchosBN ${#temp_wait[$i]})${temp_wait[$i]}"\
 			"$(imprimirEspaciosAnchosBN ${#temp_ret[$i]})${temp_ret[$i]}" "$(imprimirEspaciosAnchosBN ${#temp_rej[$i]})${temp_rej[$i]}"\
 			"$(imprimirEspaciosAnchosBN ${#inicialNCaux[$m]})${inicialNCaux[$m]}" "$(imprimirEspaciosAnchosBN ${#finalNCaux[$m]})${finalNCaux[$m]}"\
-#EN-28090-
+			"${estado[$i]}""$(imprimirEspaciosMuyAnchosBN ${#estado[$i]}) " >> $informeSinColorTotal
 			DireccionesPaginasPorProceso=""
 			datos4=""
 			for ((counter2=0;counter2<${ejecucion[$i]};counter2++)); do
@@ -9315,35 +9315,35 @@ function dibujarTablaDatos {
 			echo -e $DireccionesPaginasPorProceso >> $informeSinColorTotal
 			
 			m=$((m+1))
-#EN-28100-
-#EN-28110-
-#EN-28120-
-#EN-28130-
-#EN-28140-
+			for (( b=1; b<${bloques[$i]}; b++ )) ; do #Recorre el número de bloques en los que se fragmenta un proceso
+				echo -ne "                                $(imprimirEspaciosAnchos ${#inicialNCaux[$m]})${varC[$i]}${inicialNCaux[$m]}$NC " | tee -a $informeConColorTotal
+				echo -e "$(imprimirEspaciosAnchos ${#finalNCaux[$m]})${varC[$i]}${finalNCaux[$m]}$NC                  " | tee -a $informeConColorTotal
+				echo -ne "                                $(imprimirEspaciosAnchosBN ${#inicialNCaux[$m]})${inicialNCaux[$m]} " >> $informeSinColorTotal
+				echo -e "$(imprimirEspaciosAnchosBN ${#finalNCaux[$m]})${finalNCaux[$m]}                   " >> $informeSinColorTotal
 				m=$((m+1))
 			done
 		done
-#EN-28150-
+	else #Para FCFS/SJF/SRPT 
 		echo -e " Ref Tll Tej Mem TEsp Tret Trej Mini Mfin Estado            Direcciones-Página$datos4   " | tee -a $informeConColorTotal   
 		echo -e " ────────────────────────────────────────────────────────────────────────────────────────" | tee -a $informeConColorTotal
 		echo -e " Ref Tll Tej Mem TEsp Tret Trej Mini Mfin Estado            Direcciones-Página$datos4   " >> $informeSinColorTotal
 		echo -e " ────────────────────────────────────────────────────────────────────────────────────────" >> $informeSinColorTotal
-#EN-28160-
-#EN-28170-
+		m=0 #Se aplica el $m a memoria inicial y memoria final (los auxiliares que son los que se imprimen en el volcado)
+		for (( i=0; i<$nprocesos; i++ )) ; do  #Se usa m porque i recorre los procesos y m controla las unidades usadas por cada proceso, normalmente 0 o 1, y también las unidades de los n trozos de memoria asociados a cada proceso. 
 			echo -ne " ${varC[$i]}${proceso[$i]}$NC"\
 			"$(imprimirEspaciosEstrechos ${#llegada[$i]})${varC[$i]}${llegada[$i]}$NC" "$(imprimirEspaciosEstrechos ${#ejecucion[$i]})${varC[$i]}${ejecucion[$i]}$NC"\
 			"$(imprimirEspaciosEstrechos ${#memoria[$i]})${varC[$i]}${memoria[$i]}$NC" "$(imprimirEspaciosAnchos ${#temp_wait[$i]})${varC[$i]}${temp_wait[$i]}$NC"\
 			"$(imprimirEspaciosAnchos ${#temp_ret[$i]})${varC[$i]}${temp_ret[$i]}$NC" "$(imprimirEspaciosAnchos ${#temp_rej[$i]})${varC[$i]}${temp_rej[$i]}$NC"\
 			"$(imprimirEspaciosAnchos ${#inicialNCaux[$m]})${varC[$i]}${inicialNCaux[$m]}$NC" "$(imprimirEspaciosAnchos ${#finalNCaux[$m]})${varC[$i]}${finalNCaux[$m]}$NC"\
-#EN-28180-
+			"${varC[$i]}${estado[$i]}""$(imprimirEspaciosMuyAnchos ${#estado[$i]})$NC " | tee -a $informeConColorTotal
 			DireccionesPaginasPorProceso=""
-#EN-28190-
+			varImprimirPaginaUsada="\e[4m" #Subrayado
 			datos4=""
 			for ((counter2=0;counter2<${ejecucion[$i]};counter2++)); do
 				if [[ $seleccionAlgoritmoPaginacion -eq 10 || $seleccionAlgoritmoPaginacion -eq 11 || $seleccionAlgoritmoPaginacion -eq 16 || $seleccionAlgoritmoPaginacion -eq 17 ]]; then 
 					datos4="-"${directions_AlgPagFrecUsoRec_pagina_modificada[$i,$counter2,0]}
 				fi
-#EN-28200-
+				if [[ ${numeroPaginasUsadasProceso[$i]} -gt $counter2 ]]; then #Si han sido usadas, se subrayan
 					kk=" $varImprimirPaginaUsada${directions[$i,$counter2]}-${paginasDefinidasTotal[$i,$counter2]}$datos4$NC"
 					DireccionesPaginasPorProceso=$DireccionesPaginasPorProceso" ${varC[$i]}$varImprimirPaginaUsada${directions[$i,$counter2]}-${paginasDefinidasTotal[$i,$counter2]}$datos4$NC"
 				else
@@ -9357,7 +9357,7 @@ function dibujarTablaDatos {
 			"$(imprimirEspaciosEstrechosBN ${#memoria[$i]})${memoria[$i]}" "$(imprimirEspaciosAnchosBN ${#temp_wait[$i]})${temp_wait[$i]}"\
 			"$(imprimirEspaciosAnchosBN ${#temp_ret[$i]})${temp_ret[$i]}" "$(imprimirEspaciosAnchosBN ${#temp_rej[$i]})${temp_rej[$i]}"\
 			"$(imprimirEspaciosAnchosBN ${#inicialNCaux[$m]})${inicialNCaux[$m]}" "$(imprimirEspaciosAnchosBN ${#finalNCaux[$m]})${finalNCaux[$m]}"\
-#EN-28210-
+			"${estado[$i]}""$(imprimirEspaciosMuyAnchosBN ${#estado[$i]}) " >> $informeSinColorTotal
 			DireccionesPaginasPorProceso=""
 			datos4=""
 			for ((counter2=0;counter2<${ejecucion[$i]};counter2++)); do
@@ -9369,17 +9369,17 @@ function dibujarTablaDatos {
 			echo -e $DireccionesPaginasPorProceso >> $informeSinColorTotal
 			
 			m=$((m+1))
-#EN-28220-
-#EN-28230-
-#EN-28240-
-#EN-28250-
-#EN-28260-
+			for (( b=1; b<${bloques[$i]}; b++ )) ; do #Recorre el número de bloques en los que se fragmenta un proceso
+				echo -ne "                                $(imprimirEspaciosAnchos ${#inicialNCaux[$m]})${varC[$i]}${inicialNCaux[$m]}$NC " | tee -a $informeConColorTotal
+				echo -e "$(imprimirEspaciosAnchos ${#finalNCaux[$m]})${varC[$i]}${finalNCaux[$m]}$NC                  " | tee -a $informeConColorTotal
+				echo -ne "                                $(imprimirEspaciosAnchosBN ${#inicialNCaux[$m]})${inicialNCaux[$m]} " >> $informeSinColorTotal
+				echo -e "$(imprimirEspaciosAnchosBN ${#finalNCaux[$m]})${finalNCaux[$m]}                   " >> $informeSinColorTotal
 				m=$((m+1))
 			done
 		done
 	fi
 
-#EN-28270-
+	#CALCULAR Y REPRESENTAR LOS PROMEDIOS
 	dividir=0
 	for (( i=0; i<nprocesos; i++ )) ; do
 		if [[ ${estad[$i]} -ne 0 ]] ; then 
@@ -9393,24 +9393,24 @@ function dibujarTablaDatos {
 
 	for (( i=0; i<nprocesos; i++ )); do
 		tam=${memoria[$i]};
-#EN-28280-
-#EN-28290-
-#EN-28300-
-#EN-28310-
-#EN-28320-
+		if [[ ${estad[$i]} -ne 0 && $tam -le $mem_num_marcos ]]; then #Si el tamaño del proceso es menor o igual que el de memoria
+			suma_espera=$(($suma_espera + ${temp_wait[$i]})) #suma para sacar su promedio
+			promedio_espera=$(echo "scale=2; $suma_espera/$dividir" | bc)  #promedio
+			suma_retorno=$(($suma_retorno + ${temp_ret[$i]})) #suma para sacar su promedio
+			promedio_retorno=$(echo "scale=2; $suma_retorno/$dividir" | bc) #promedio
 		fi
 	done
 	var_uno=1
 	echo -e "$NC T. espera medio: $promedio_espera\t      T. retorno medio: $promedio_retorno$NC" | tee -a $informeConColorTotal 
 	echo -e " T. espera medio: $promedio_espera\t       T. retorno medio: $promedio_retorno" >> ./$informeSinColorTotal
-#EN-28330-
+} #Fin de dibujarTablaDatos() - Final de dibujar la banda de tiempos - dibujarTablaDatos
 
 ####################################################################################
-#EN-28340-
+# Sinopsis: Sacar procesos terminados de memoria y actualizar variables de la Banda de Memoria.
 ####################################################################################
 function calculosActualizarVariablesBandaMemoria {
-#EN-28350-
-#EN-28360-
+	#Sucesión: sacar procesos, actualizar variables de memoria guardadoMemoria y tamanoGuardadoMemoria
+	for (( po=0; po<$nprocesos; po++ )); do #Se libera espacio en memoria de los procesos recien terminados. 
 		if [[ ${enmemoria[$po]} == 0 && ${escrito[$po]} == 1 ]]; then 
 			for (( ra=0; ra<$mem_num_marcos; ra++ )); do
 				if [[ ${unidMemOcupadas[$ra]} == $po ]]; then
@@ -9420,9 +9420,9 @@ function calculosActualizarVariablesBandaMemoria {
 			escrito[$po]=0
 		fi
 	done
-#EN-28370-
+	for (( po=0; po<$nprocesos; po++ )); do #Si los procesos ya no están en memoria se eliminan de la variable guardadoMemoria.
 		if [[ ${enmemoria[$po]} -ne 1 ]]; then 
-#EN-28380-
+			for (( i=0; i<${#guardadoMemoria[@]} ; i++ )); do 
 				if [[ ${guardadoMemoria[$i]} -eq $po ]]; then
 					unset guardadoMemoria[$i]
 					unset tamanoGuardadoMemoria[$i]
@@ -9430,61 +9430,61 @@ function calculosActualizarVariablesBandaMemoria {
 			done
 		fi
 	done
-#EN-28390-
-#EN-28400-
-#EN-28410-
+	guardadoMemoria=( "${guardadoMemoria[@]}" ) #Se eliminan los huecos vacíos que genera el unset
+	tamanoGuardadoMemoria=( "${tamanoGuardadoMemoria[@]}" ) #Se eliminan los huecos vacíos que genera el unset
+} #Fin de calculosActualizarVariablesBandaMemoria()
 
 ####################################################################################
-#EN-28420-
+# Sinopsis: Se realizan los cálculos necesarios para la impresión de la banda de memoria en los volcados.
 ####################################################################################
 function calculosReubicarYMeterProcesosBandaMemoria {
-#EN-28430-
+	#Sucesión: Se genera una lista secuencial de procesos en guardadoMemoria y tamanoGuardadoMemoria, se comprueba si hay espacio suficiente en la memoria dependiendo de la continuidad y reubicabilidad definidas, y si lo hay, se mete el proceso.
 	if [[ $mem_libre -gt 0 ]]; then 
-#EN-28440-
+		if [[ $reubicarReubicabilidad -eq 1 || $reubicarContinuidad -eq 1 ]]; then #Si hay que reubicar, se hace.
 			for (( gm=0 ; gm<${#tamanoGuardadoMemoria[@]} ; gm++ )); do #Se reubican los procesos existentes en la memoria en el mismo orden.
-#EN-28450-
+				ud=0 #ud contador que guarda las unidades que se van guardando (ud < total)
 				ra=0
-#EN-28460-
-#EN-28470-
+				while [[ $ud -lt ${tamanoGuardadoMemoria[$gm]} ]]; do  #Se reescriben todos los números de proceso en unidMemOcupadasAux (menor y no menor o igual, ya que se empieza en 0) 
+					if [[ ${unidMemOcupadasAux[$ra]} == "_" ]]; then #Se introduce el proceso que ocupa la posición de memoria.
 						unidMemOcupadasAux[$ra]=${guardadoMemoria[$gm]}  
 						ud=$((ud+1))
 					fi
-#EN-28480-
+					escrito[${guardadoMemoria[$gm]}]=1 #Se marca que ya se ha escrito en memoria.
 					ra=$((ra+1))
 				 done
 			done
-#EN-28490-
-#EN-28500-
+			unidMemOcupadas=("${unidMemOcupadasAux[@]}") #Se copia la memoria auxiliar a la original para que se después se escriba en memoria.
+			#Notificamos que se ha reubicado.
 			echo -e " La memoria ha sido reubicada." $NC | tee -a $informeConColorTotal
 			echo -e " La memoria ha sido reubicada." >> $informeSinColorTotal
 		fi
 	fi
-#EN-28510-
+} #Fin de calculosReubicarYMeterProcesosBandaMemoria()
 
 ####################################################################################
-#EN-28520-
+# Sinopsis: Determina si el rango es de menor a mayor y si no lo es, lo modifica para convertir el problema con las prioridades invertidas, porque el código sólo resuelve ese caso.
 ####################################################################################
 function tratarRangoPrioridadesDirecta {
-#EN-28530-
+	invertirDatoPrioridadesInversa=0 #Será 1 cuando se determine un rango de prioridades cuyo mínimo sea mayor que su máximo.
 	if [[ $1 -gt $2 ]]; then 
 		aux=$1
 		PriomFinal=$2
 		PrioMFinal=$aux
-#EN-28540-
+		invertirDatoPrioridadesInversa=1 #Será 1 cuando se determine un rango de prioridades cuyo mínimo sea mayor que su máximo.
 	else
 		PriomFinal=$1
 		PrioMFinal=$2
 	fi
-#EN-28550-
+} #Fin de calculosReubicarYMeterProcesosBandaMemoria()
 
 ######################################################################
-#EN-28560-
-#EN-28570-
+# Sinopsis: Guardar los procesos que van entrando en memoria de forma secuencial en la variable guardadoMemoria 
+# y sus tamaños en tamanoGuardadoMemoria   
 #######################################################################
 function crearListaSecuencialProcesosAlEntrarMemoria {
-#EN-28580-
-#EN-28590-
-#EN-28600-
+	unset guardadoMemoria #Vaciamos el array anterior
+	unset tamanoGuardadoMemoria #Vaciamos el array anterior
+	for (( ra=0; ra<$mem_num_marcos; ra++ )); do #Determinará qué procesos están en memoria.
 		if [[ ${unidMemOcupadas[$ra]} != "_" ]]; then
 			numeroProbar=${unidMemOcupadas[$ra]}
 			permiso=1
@@ -9493,38 +9493,38 @@ function crearListaSecuencialProcesosAlEntrarMemoria {
 					permiso=0
 				fi
 			done
-#EN-28610-
-#EN-28620-
-#EN-28630-
+			if [[ $permiso -eq 1 ]]; then #Permiso es la variable que permite meter un proceso en memoria porque haya espacio suficiente.
+				guardadoMemoria=("${guardadoMemoria[@]}" "$numeroProbar") #Guarda el número de proceso que va a meter en memoria.
+				tamanoGuardadoMemoria=("${tamanoGuardadoMemoria[@]}" "${memoria[$numeroProbar]}") #Guarda el tamaño del proceso que va a meter en memoria.
 				permiso=0
 			fi
 		fi
 	done
-#EN-28640-
+} #Fin de crearListaSecuencialProcesosAlEntrarMemoria()
 
 #######################################################################
-#EN-28650-
+# Sinopsis: Comprueba que cada hueco en memoria no es mayor que la variable definida, para decidir si se reubica. 
 #######################################################################
 function comprobacionSiguienteProcesoParaReubicar {
-#EN-28660-
-#EN-28670-
+	#Sucesión: Se determina qué proceso es el siguiente en entrar en memoria, y dependiendo de la continuidad y reubicabilidad definidas, se establece si hay espacio en memoria. 
+	noCabe0Cabe1=1 #Variable para no permitir meter procesos en memoria bajo ciertas condiciones relacionadas con la continuidad. 
 	encontradoHuecoMuyReducido=0
 	primeraUnidadFuturoProcesoSinreubicar=-1
 	raInicioProceso=-1
-#EN-28680-
-#EN-28690-
+	reubicarReubicabilidad=0 #En caso de ser memoria no continua, si hay un hueco demasiado pequeño, y se va a usar como parte de la memoria a usar.
+	reubicarContinuidad=0 #En caso de ser memoria continua, si no hay un hueco suficientemente grande en el que quepa pero sí en la suma de todos ellos.
 	contadorReubicar=-1
 	contadorReubicarTotal=0
 	siguienteProcesoAMeter=-1
-#EN-28700-
-#EN-28710-
+	for (( po=0; po<$nprocesos; po++ )) ; do #Metemos un proceso y comprobamos si hay que reubicar 
+		if [[ ${enmemoria[$po]} -eq 1 && ${escrito[$po]} -eq 0 ]]; then #Si está para entrar en memoria y no está dentro se mete, y si ya está dentro se ignora.
 			siguienteProcesoAMeter=$po
 			break
 		fi 
 	done
 	if [[ $siguienteProcesoAMeter -eq -1 ]]; then
-#EN-28720-
-#EN-28730-
+		for (( po=0; po<$nprocesos; po++ )) ; do #Metemos un proceso y comprobamos si hay que reubicar 
+			if [[ ${encola[$po]} -eq 1 && ${enmemoria[$po]} -eq 0 && ${escrito[$po]} -eq 0 ]]; then #Si está para entrar en memoria y no está dentro se mete, y si ya está dentro se ignora.
 				siguienteProcesoAMeter=$po
 				break
 			fi 
@@ -9533,20 +9533,20 @@ function comprobacionSiguienteProcesoParaReubicar {
 	if [[ $mem_libre -gt 0 ]]; then
 		for (( ra=0; ra<$mem_num_marcos; ra++ )); do
 			if [[ ${unidMemOcupadas[$ra]} == "_" && siguienteProcesoAMeter -gt -1 ]]; then
-#EN-28740-
+				if [[ $contadorReubicar -eq -1 ]]; then #Se designa la primera unidad sobre la que meter el proceso si entrara en memoria continua.
 					contadorReubicar=0
 					raInicioProceso=$ra
 				fi
 				contadorReubicar=$((contadorReubicar + 1))
 				contadorReubicarTotal=$((contadorReubicarTotal + 1))
 				if [[ $contadorReubicar -ge ${memoria[$siguienteProcesoAMeter]} && $continuidadNo0Si1 -eq 1 && $primeraUnidadFuturoProcesoSinreubicar -eq -1 ]]; then 
-#EN-28750-
+					#8 - Si cabe en un único hueco en memoria continua.
 					primeraUnidadFuturoProcesoSinreubicar=$raInicioProceso               
 					break
 				fi
 			elif [[ ${unidMemOcupadas[$ra]} != "_" && siguienteProcesoAMeter -ne -1 ]]; then
 				if [[ $contadorReubicar -ne -1 && $contadorReubicar -le $variableReubicar && $reubicabilidadNo0Si1 -eq 1 ]]; then 
-#EN-28760-
+					#Si encuentra un hueco demasiado pequeño mientras busca hueco suficiente y puede caber en la totalidad de los huecos, en memoria no continua.
 					encontradoHuecoMuyReducido=1
 				fi
 				contadorReubicar=-1
@@ -9554,89 +9554,89 @@ function comprobacionSiguienteProcesoParaReubicar {
 		done
 #        if [[ $contadorReubicarTotal -lt ${memoria[$siguienteProcesoAMeter]} ]]; then #No necesario 
 #            #1 - 3 - 6 - 9 - No cabe - Ya se considera cuando se resta el tamaño de memoria del proceso a introducir (memoria[$siguienteProcesoAMeter]) de la memoria libre (mem_libre) y comprueba >=0 en comprobacionSiguienteProcesoParaMeterMemoria()
-#EN-28770-
-#EN-28780-
-#EN-28790-
-#EN-28800-
+#            noCabe0Cabe1=0 
+#            reubicarContinuidad=0
+#            reubicarReubicabilidad=0
+#        fi
 #        if [[ $primeraUnidadFuturoProcesoSinreubicar -eq -1 && $encontradoHuecoMuyReducido -eq 0 && $contadorReubicarTotal -gt ${memoria[$siguienteProcesoAMeter]} && $continuidadNo0Si1 -eq 0 && $reubicabilidadNo0Si1 -eq 0 ]]; then #No necesario
 #            #2 - Lo meterá en memoria a trozos.
-#EN-28810-
-#EN-28820-
-#EN-28830-
-#EN-28840-
+#            noCabe0Cabe1=1
+#            reubicarContinuidad=0
+#            reubicarReubicabilidad=0
+#        fi
 #        if [[ $contadorReubicarTotal -lt ${memoria[$siguienteProcesoAMeter]} && $encontradoHuecoMuyReducido -eq 0 && $continuidadNo0Si1 -eq 0 && $reubicabilidadNo0Si1 -eq 1 ]]; then #No necesario
 #            #4 - 
-#EN-28850-
-#EN-28860-
-#EN-28870-
-#EN-28880-
+#            noCabe0Cabe1=1
+#            reubicarContinuidad=0
+#            reubicarReubicabilidad=0
+#        fi
 #        if [[ $contadorReubicarTotal -lt ${memoria[$siguienteProcesoAMeter]} && $primeraUnidadFuturoProcesoSinreubicar -ne -1 && $continuidadNo0Si1 -eq 1 && $reubicabilidadNo0Si1 -eq 0 ]]; then #No necesario
 #            #7 - 
-#EN-28890-
-#EN-28900-
-#EN-28910-
-#EN-28920-
+#            noCabe0Cabe1=0 - No cabe - Ya se considera cuando se resta el tamaño de memoria del proceso a introducir (memoria[$siguienteProcesoAMeter]) de la memoria libre (mem_libre) y comprueba >=0 en comprobacionSiguienteProcesoParaMeterMemoria()
+#            reubicarContinuidad=0
+#            reubicarReubicabilidad=0
+#        fi
 #        if [[ $primeraUnidadFuturoProcesoSinreubicar -ne -1  && $continuidadNo0Si1 -eq 1 && $reubicabilidadNo0Si1 -eq 0]]; then #No necesario
 #            #8 - 
-#EN-28930-
-#EN-28940-
-#EN-28950-
-#EN-28960-
+#            noCabe0Cabe1=1
+#            reubicarContinuidad=0
+#            reubicarReubicabilidad=0
+#        fi
 #        if [[ $primeraUnidadFuturoProcesoSinreubicar -ne -1 && $encontradoHuecoMuyReducido -eq 0 && $continuidadNo0Si1 -eq 1 && $reubicabilidadNo0Si1 -eq 1 ]]; then #No necesario
 #            #10 - 
-#EN-28970-
-#EN-28980-
-#EN-28990-
-#EN-29000-
+#            noCabe0Cabe1=1
+#            reubicarContinuidad=0
+#            reubicarReubicabilidad=0
+#        fi
 		if [[ $primeraUnidadFuturoProcesoSinreubicar -eq -1 && $contadorReubicarTotal -ge ${memoria[$siguienteProcesoAMeter]} && $encontradoHuecoMuyReducido -eq 1 && $continuidadNo0Si1 -eq 0 && $reubicabilidadNo0Si1 -eq 1 ]]; then 
-#EN-29010-
+			reubicarReubicabilidad=1 #5 - Si encuentra un hueco demasiado pequeño mientras busca hueco suficiente y puede caber en un hueco, en memoria no continua.
 		fi
 		if [[ $primeraUnidadFuturoProcesoSinreubicar -gt -1 && $encontradoHuecoMuyReducido -eq 1 && $reubicabilidadNo0Si1 -eq 1 ]]; then 
-#EN-29020-
-#EN-29030-
-#EN-29040-
+			reubicarReubicabilidad=0 #11 - Si encuentra un hueco demasiado pequeño mientras busca hueco suficiente y puede caber en un hueco, en memoria no continua.
+		fi #No haría falta, porque se metería, pero se considera. Y en caso de encontradoHuecoMuyReducido=0 ta,bién lo metería.
+		if [[ $siguienteProcesoAMeter != -1 ]]; then #
 			if [[ $primeraUnidadFuturoProcesoSinreubicar -eq -1 && $contadorReubicarTotal -ge ${memoria[$siguienteProcesoAMeter]} && $continuidadNo0Si1 -eq 1 && $reubicabilidadNo0Si1 -eq 1 ]] ; then
-#EN-29050-
+				reubicarContinuidad=1 #12 - Si no cabe en un único hueco, pero sí en la suma de ellos, en memoria continua.
 			fi
 		fi
-#EN-29060-
+		if [[ $siguienteProcesoAMeter != -1 ]]; then #
 			if [[ $primeraUnidadFuturoProcesoSinreubicar -eq -1 && $contadorReubicarTotal -ge ${memoria[$siguienteProcesoAMeter]} && $continuidadNo0Si1 -eq 1 && $reubicabilidadNo0Si1 -eq 0 ]] ; then
-#EN-29070-
+				noCabe0Cabe1=0 #8 - Si no cabe en un único hueco, pero sí en la suma de ellos, en memoria continua.
 			fi
 		fi
 	else
 		noCabe0Cabe1=0
 	fi
-#EN-29080-
-#EN-29090-
-#EN-29100-
-#EN-29110-
-#EN-29120-
-#EN-29130-
-#EN-29140-
-#EN-29150-
-#EN-29160-
-#EN-29170-
-#EN-29180-
-#EN-29190-
-#EN-29200-
-#EN-29210-
-#EN-29220-
-#EN-29230-
-#EN-29240-
-#EN-29250-
-#EN-29260-
+	#Memoria No Continua
+		#Memoria No Reubicable
+			#1 - Si no cabe entre todos los huecos, no lo meterá en memoria.
+			#2 - OK - Si cabe entre todos los huecos, lo meterá en memoria a trozos.
+		#Memoria Reubicable
+			#3 - Si no cabe entre todos los huecos, no reubica, ni lo meterá en memoria.
+			#4 - OK - Si cabe entre todos los huecos, y mientras busca no encuentra un hueco demasiado pequeño, no reubica y lo meterá en memoria a trozos.
+			#5 - Hecho - Si cabe entre todos los huecos, y mientras busca encuentra un hueco demasiado pequeño, reubica y lo meterá en memoria.
+	#Memoria Continua
+		#Memoria No Reubicable
+			#6 - Si no cabe entre todos los huecos, no lo meterá en memoria.
+			#7 - OK - Si cabe entre todos los huecos, pero no cabe en un único hueco, no lo meterá en memoria.
+			#8 - Hecho - Si cabe en un único hueco, lo meterá en memoria.
+		#Memoria Reubicable
+			#9 - Si no cabe entre todos los huecos, no reubica, ni lo meterá en memoria.
+			#10 - OK - Si cabe en un único hueco, y mientras busca no encuentra un hueco demasiado pequeño, no reubica y lo meterá en memoria.
+			#11 - Hecho - Si cabe en un único hueco, y mientras busca encuentra un hueco demasiado pequeño, reubica y lo meterá en memoria.
+			#12 - Hecho - Si cabe entre todos los huecos, pero no en un único hueco, reubica y lo meterá en memoria.
+} #Fin de comprobacionSiguienteProcesoParaReubicar()
 
 #######################################################################
-#EN-29270-
+# Sinopsis: Comprueba que cada hueco en memoria es suficiente para meter un proceso en memoria. 
 #######################################################################
 function comprobacionSiguienteProcesoParaMeterMemoria {
 	if [[ $mem_libre -gt 0 && reubicarReubicabilidad -ne 1 && reubicarContinuidad -ne 1 ]]; then
 		mem_libreTemp=$mem_libre
-#EN-29280-
-#EN-29290-
-#EN-29300-
-#EN-29310-
+		primeraUnidadFuturoProcesoSinreubicar=-1 #No se debería definir porque es un valor arrastrado desde la comprobación en comprobacionSiguienteProcesoParaReubicar()
+		#El for se resuelve con i=$po de la línea anterior a la llamada de la función. 
+		if [[ ${encola[$i]} -eq 1 && ${enmemoria[$i]} -eq 0 ]]; then #Si están en cola pero no en memoria (en espera)
+			noCabe0Cabe1=1 #Variable para no permitir meter procesos en memoria bajo ciertas condiciones relacionadas con la continuidad. 
 			encontradoHuecoMuyReducido=0
 			raInicioProceso=-1
 			contadorMeterMemoria=-1
@@ -9646,33 +9646,33 @@ function comprobacionSiguienteProcesoParaMeterMemoria {
 				noCabe0Cabe1=1
 				for (( ra=0; ra<$mem_num_marcos; ra++ )); do
 					if [[ ${unidMemOcupadas[$ra]} == "_" && siguienteProcesoAMeter -gt -1 ]]; then
-#EN-29320-
+						if [[ $contadorMeterMemoria -eq -1 ]]; then #Se designa la primera unidad sobre la que meter el proceso si entrara en memoria continua.
 							contadorMeterMemoria=0
 							raInicioProceso=$ra
 						fi
 						contadorMeterMemoria=$((contadorMeterMemoria + 1))
 						contadorMeterMemoriaTotal=$((contadorMeterMemoriaTotal + 1))
 						if [[ $contadorMeterMemoria -ge ${memoria[$siguienteProcesoAMeter]} && $continuidadNo0Si1 -eq 1 && $primeraUnidadFuturoProcesoSinreubicar -eq -1 ]]; then 
-#EN-29330-
+							#8 - Si cabe en un único hueco en memoria continua.
 							primeraUnidadFuturoProcesoSinreubicar=$raInicioProceso               
 						fi
 					elif [[ ${unidMemOcupadas[$ra]} != "_" && siguienteProcesoAMeter -ne -1 ]]; then
 						if [[ $contadorMeterMemoria -ne -1 && $contadorMeterMemoria -le $variableReubicar && $reubicabilidadNo0Si1 -eq 1 ]]; then 
-#EN-29340-
+							#Si encuentra un hueco demasiado pequeño mientras busca hueco suficiente y puede caber en la totalidad de los huecos, en memoria no continua.
 							encontradoHuecoMuyReducido=1
 						fi
 						contadorMeterMemoria=-1
 					fi
 				done
-#EN-29350-
+				if [[ $siguienteProcesoAMeter != -1 ]]; then #
 					if [[ $primeraUnidadFuturoProcesoSinreubicar -eq -1 && $contadorMeterMemoriaTotal -ge ${memoria[$siguienteProcesoAMeter]} && $continuidadNo0Si1 -eq 1 && $reubicabilidadNo0Si1 -eq 0 ]] ; then
-#EN-29360-
+						noCabe0Cabe1=0 #8 - Si no cabe en un único hueco, pero sí en la suma de ellos, en memoria continua.
 					fi
 					if [[ $siguienteProcesoAMeter != -1 && $primeraUnidadFuturoProcesoSinreubicar -eq -1 && $contadorMeterMemoriaTotal -ge ${memoria[$siguienteProcesoAMeter]} && $continuidadNo0Si1 -eq 1 && $reubicabilidadNo0Si1 -eq 0 ]] ; then
-#EN-29370-
+						noCabe0Cabe1=0 #8 - Si no cabe en un único hueco, pero sí en la suma de ellos, en memoria continua.
 					fi
 				fi
-#EN-29380-
+				#Este if es fundamental para generar las excepciones sobres si se reubica o no, y sobre la unidad de memoria donde empezar a meter el proceso.
 				if [[ $primeraUnidadFuturoProcesoSinreubicar -ne -1 ||
 				$primeraUnidadFuturoProcesoSinreubicar -eq -1 && $contadorMeterMemoriaTotal -ge ${memoria[$siguienteProcesoAMeter]} && $encontradoHuecoMuyReducido -eq 1 && $continuidadNo0Si1 -eq 0 && $reubicabilidadNo0Si1 -eq 1 ||
 				$primeraUnidadFuturoProcesoSinreubicar -gt -1 && $encontradoHuecoMuyReducido -eq 1 && $reubicabilidadNo0Si1 -eq 1 ||
@@ -9697,187 +9697,187 @@ function comprobacionSiguienteProcesoParaMeterMemoria {
 	else 
 		noCabe0Cabe1=0
 	fi
-#EN-29390-
+	for (( j=$i; j<$nprocesos; j++ )); do #Bucle para bloquear los procesos
 		bloqueados[$j]=1
 	done
-#EN-29400-
-#EN-29410-
-#EN-29420-
-#EN-29430-
-#EN-29440-
-#EN-29450-
-#EN-29460-
-#EN-29470-
-#EN-29480-
-#EN-29490-
-#EN-29500-
-#EN-29510-
-#EN-29520-
-#EN-29530-
-#EN-29540-
-#EN-29550-
-#EN-29560-
-#EN-29570-
-#EN-29580-
+	#Memoria No Continua
+		#Memoria No Reubicable
+			#1 - Si no cabe entre todos los huecos, no lo meterá en memoria.
+			#2 - OK - Si cabe entre todos los huecos, lo meterá en memoria a trozos.
+		#Memoria Reubicable
+			#3 - Si no cabe entre todos los huecos, no reubica, ni lo meterá en memoria.
+			#4 - OK - Si cabe entre todos los huecos, y mientras busca no encuentra un hueco demasiado pequeño, no reubica y lo meterá en memoria a trozos.
+			#5 - Hecho - Si cabe entre todos los huecos, y mientras busca encuentra un hueco demasiado pequeño, reubica y lo meterá en memoria.
+	#Memoria Continua
+		#Memoria No Reubicable
+			#6 - Si no cabe entre todos los huecos, no lo meterá en memoria.
+			#7 - OK - Si cabe entre todos los huecos, pero no cabe en un único hueco, no lo meterá en memoria.
+			#8 - Hecho - Si cabe en un único hueco, lo meterá en memoria.
+		#Memoria Reubicable
+			#9 - Si no cabe entre todos los huecos, no reubica, ni lo meterá en memoria.
+			#10 - OK - Si cabe en un único hueco, y mientras busca no encuentra un hueco demasiado pequeño, no reubica y lo meterá en memoria.
+			#11 - Hecho - Si cabe en un único hueco, y mientras busca encuentra un hueco demasiado pequeño, reubica y lo meterá en memoria.
+			#12 - Hecho - Si cabe entre todos los huecos, pero no en un único hueco, reubica y lo meterá en memoria.
+} #Fin de comprobacionSiguienteProcesoParaMeterMemoria()
 
 ####################################################################################
-#EN-29590-
+# Sinopsis: Se realizan los cálculos necesarios para la impresión de la banda de memoria en los volcados.
 ####################################################################################
 function meterProcesosBandaMemoria {
-#EN-29600-
+	if [[ $noCabe0Cabe1 -eq 1 && ${enmemoria[$po]} == 1 && ${escrito[$po]} == 0 ]]; then #Si está para entrar en memoria, y no está dentro se mete, y si ya está dentro se ignora.
 		ud=0
 		ra=0
-#EN-29610-
+		if [[ $primeraUnidadFuturoProcesoSinreubicar -ne -1 ]]; then #Esto permite la continuidad en memoria al necesitar un tramo continuo de memoria y haberlo conseguido.
 			ra=$primeraUnidadFuturoProcesoSinreubicar
 		fi
-#EN-29620-
+		while [[ $ud -lt ${memoria[($po)]} ]]; do  #Esto permite la no continuidad en memoria al no necesitar un tramo continuo de memoria.
 			if [[ ${unidMemOcupadas[$ra]} == "_" ]]; then
 				unidMemOcupadas[$ra]=$po
 				ud=$((ud+1))
 				mem_libre=$((mem_libre - 1))
 			fi
-#EN-29630-
-#EN-29640-
-#EN-29650-
-#EN-29660-
+			encola[$po]=0 #Este proceso ya sólo estará en memoria, ejecutandose o habrá acabado
+			escrito[$po]=1 #Se marca que ya está en memoria.
+			ResuPunteroMarcoSiguienteFalloPagAcumulado[$po,$reloj]=0 #El ordinal del marco sobre el que se hará el primer fallo de página cuando se introduce un proceso en memoria, siempre será 0 por ser su primer marco libre.
+			indiceResuPaginaAcumulado[$po]=$reloj #Se define el primer instante a contemplar en cada proceso como el $reloj ya que será el instante en el que entra en memoria, y por tanto, el primer instante a referenciar para cada proceso.
 			ra=$((ra+1))
 		done
 	fi
-#EN-29670-
+} #Fin de meterProcesosBandaMemoria()
 
 ####################################################################################
-#EN-29680-
+# Sinopsis: Se preparan las líneas para la impresión de la banda de memoria en los volcados - NO Continua y Reubicabilidad.
 ####################################################################################
 function calculosPrepararLineasImpresionBandaMemoria {
-#EN-29690-
-#EN-29700-
+	#Sucesión: Crear las tres líneas de la banda de memoria y se generan los bloques que componen la memoria usada por cada proceso en memoria.
+	#Se calcula la línea de nombres - Línea 1
 	arribaMemoriaNC="   |"
 	arribaMemoriaNCb="   |"
-#EN-29710-
+	#Si el proceso está en la barra y no está nombrado se escribe. Si está nombrado se llena de _ para que el siguiente coincida con la línea de memoria.
 	for (( ra=0; ra<$mem_num_marcos; ra++ )); do
-#EN-29720-
+		#Si la posición de memoria no está escrita, añades dígitos para completar los caracteres de la unidad, y la escribes.
 		for (( po=0; po<$nprocesos; po++ )); do
 			if [[ $ra -eq 0 && ${unidMemOcupadas[$ra]} == $po ]]; then 
-#EN-29730-
-#EN-29740-
+				arribaMemoriaNC=$arribaMemoriaNC${coloress[$po % 6]}"${proceso[$po]}""${varhuecos:1:$(($digitosUnidad - ${#proceso[$po]}))}"$NC
+				arribaMemoriaNCb=$arribaMemoriaNCb"${proceso[$po]}""${varhuecos:1:$(($digitosUnidad - ${#proceso[$po]}))}"
 			fi
-#EN-29750-
-#EN-29760-
-#EN-29770-
-#EN-29780-
+			if [[ $ra -ne 0 && ${unidMemOcupadas[$((ra-1))]} != $po && ${unidMemOcupadas[$ra]} == $po ]]; then #Si en una posición hay un proceso y antes algo distinto lo nombras
+				arribaMemoriaNC=$arribaMemoriaNC${coloress[$po % 6]}"${proceso[$po]}""${varhuecos:1:$(($digitosUnidad - ${#proceso[$po]}))}"$NC
+				arribaMemoriaNCb=$arribaMemoriaNCb"${proceso[$po]}""${varhuecos:1:$(($digitosUnidad - ${#proceso[$po]}))}"
+			elif [[ $ra -ne 0 && ${unidMemOcupadas[$((ra-1))]} == $po && ${unidMemOcupadas[$ra]} == $po ]]; then #Si es un proceso pero no es inicio pones barras bajas
 				arribaMemoriaNC=$arribaMemoriaNC${coloress[$po % 6]}"${varhuecos:1:$digitosUnidad}"$NC
 				arribaMemoriaNCb=$arribaMemoriaNCb"${varhuecos:1:$digitosUnidad}"
 			fi
 		done
-#EN-29790-
+		#Si es una barra baja (blanco) se llena de _ para seguir alineando.
 		if [[ ${unidMemOcupadas[$ra]} == '_' ]]; then 
 			arribaMemoriaNC=$arribaMemoriaNC"${varhuecos:1:$digitosUnidad}"$NC
 			arribaMemoriaNCb=$arribaMemoriaNCb"${varhuecos:1:$digitosUnidad}"
 		fi
 	done
 
-#EN-29800-
-#EN-29810-
+	#Se calcula la línea de banda - Línea 2
+	unset coloresPartesMemoria #Lo vaciamos ya que cada volcado es diferente. Añadimos valores cada vez que se imprima un bloque
 	barraMemoriaNC="BM |"
-#EN-29820-
-#EN-29830-
+	barraMemoriaNCbPantalla="BM |" #Para el color se usa esta variable ya que se cuentan los caracteres por línea y no se puede hacer con las secuencias de escape. Además se hace con "█" negros cuando no están siendo usados.
+	barraMemoriaNCbFichero="BM |" #Para el fichero de blanco y negro se usa esta variable ya que se cuentan los caracteres por línea y no se puede hacer con las secuencias de escape. Además se hace con "-" cuando no están siendo usados. 
 	coloresPartesMemoria=(" ${coloresPartesMemoria[@]}" "${coloress[97]}" "${coloress[97]}" "${coloress[97]}")
-#EN-29840-
-#EN-29850-
+	for (( ra=0; ra<$mem_num_marcos; ra++ )); do #En $ra (recorre array) siempre va a haber o un proceso o una barra baja
+		if [[ ${unidMemOcupadas[$ra]} != '_' ]] ; then #Se guarda el número de un proceso
 			barraMemoriaNC=$barraMemoriaNC${coloress[${unidMemOcupadas[$ra]} % 6]}"${varfondos:1:$digitosUnidad}"$NC
 			barraMemoriaNCbPantalla=$barraMemoriaNCbPantalla"${varfondos:1:$digitosUnidad}"
 		fi
-#EN-29860-
+		if [[ ${unidMemOcupadas[$ra]} == '_' ]]; then #Imprimir 3 blancos si hay una _
 			barraMemoriaNC=$barraMemoriaNC" "${coloress[97]}"${varfondos:1:$digitosUnidad}"$NC
 			barraMemoriaNCbPantalla=$barraMemoriaNCbPantalla"${varfondos:1:$digitosUnidad}"
 		fi
 	done
 
-#EN-29870-
+	#Se calcula la línea que escriba la posición de memoria - Línea 3
 	abajoMemoriaNC="   |"
 	abajoMemoriaNCb="   |"
 	for (( ra=0; ra<$mem_num_marcos; ra++ )); do
-#EN-29880-
-#EN-29890-
+		#Al final se escriben las unidades de comienzo de los procesos:
+		#Si la posición de memoria está o no escrita, se escribe el 0 y se añaden dígitos para completar los caracteres de la unidad.
 		if [[ $ra -eq 0 ]] ; then 
-#EN-29900-
-#EN-29910-
+			abajoMemoriaNC=$abajoMemoriaNC"${varhuecos:1:$(($digitosUnidad - ${#ra}))}"${coloress[$po % 6]}"$ra"$NC
+			abajoMemoriaNCb=$abajoMemoriaNCb"${varhuecos:1:$(($digitosUnidad - ${#ra}))}""$ra"
 		fi
 		for (( po=0; po<$nprocesos; po++ )); do
-#EN-29920-
+			#Si la posición de memoria no está escrita, añades dígitos para completar los caracteres de la unidad, y la escribes.
 			if [[ $ra -ne 0 && ${unidMemOcupadas[$((ra-1))]} != $po  && ${unidMemOcupadas[$ra]} == $po ]] ; then 
-#EN-29930-
-#EN-29940-
-#EN-29950-
+				abajoMemoriaNC=$abajoMemoriaNC"${varhuecos:1:$(($digitosUnidad - ${#ra}))}"${coloress[$po % 6]}"$ra"$NC
+				abajoMemoriaNCb=$abajoMemoriaNCb"${varhuecos:1:$(($digitosUnidad - ${#ra}))}""$ra"
+			#Si la posición ya está escrita se añaden huecos para las siguientes unidades
 			elif [[ $ra -ne 0 && ${unidMemOcupadas[$((ra-1))]} == $po  && ${unidMemOcupadas[$ra]} == $po ]] ; then 
 				abajoMemoriaNC=$abajoMemoriaNC"${varhuecos:1:$digitosUnidad}"$NC
 				abajoMemoriaNCb=$abajoMemoriaNCb"${varhuecos:1:$digitosUnidad}"
 			fi
 		done
-#EN-29960-
-#EN-29970-
+		#Se escribe la posición de los primeros blancos de la misma manera salvo el 0 que ya está escrito.
+		#Si la posición de memoria no está escrita se escribe y se añaden dos dígitos en blanco (completar 3 caract).
 		if [[ $ra -ne 0 && ${unidMemOcupadas[$((ra-1))]} != "_" && ${unidMemOcupadas[$ra]} == "_" ]] ; then 
-#EN-29980-
-#EN-29990-
-#EN-30000-
-#EN-30010-
+			abajoMemoriaNC=$abajoMemoriaNC"${varhuecos:1:$(($digitosUnidad - ${#ra}))}"${coloress[97]}"$ra"$NC
+			abajoMemoriaNCb=$abajoMemoriaNCb"${varhuecos:1:$(($digitosUnidad - ${#ra}))}""$ra"
+		#Posición ya escrita huecos SALVO en caso de que sea la posición 0 (que se escribe siempre si está vacía aunque el último hueco tenga algo).
+		elif [[ $ra -ne 0 && ${unidMemOcupadas[$((ra-1))]} == "_" && ${unidMemOcupadas[$ra]} == "_" ]] ; then #Si es un proceso pero no es inicio pones barras bajas
 			abajoMemoriaNC=$abajoMemoriaNC"${varhuecos:1:$digitosUnidad}"$NC
 			abajoMemoriaNCb=$abajoMemoriaNCb"${varhuecos:1:$digitosUnidad}"
 		fi
 	done
 	
-#EN-30020-
-#EN-30030-
-#EN-30040-
+	#Se calcula el número de bloques en los que se fragmentan los procesos.
+	if [[ ${unidMemOcupadas[0]} != "_" ]] ; then #Se determina is hay un proceso en la primera unidad de memoria y qué proceso es, y se define como primer bloque.
+		bloques[$((unidMemOcupadas[0]))]=1 #Determina el número de bloques en los que se fragmenta un proceso
 	fi
 	for (( ra=1; ra<$mem_num_marcos; ra++ )); do
-#EN-30050-
-#EN-30060-
+		if [[ ${unidMemOcupadas[$ra]} != "_" && ${unidMemOcupadas[$ra]} != ${unidMemOcupadas[$((ra - 1))]} ]] ; then #menor
+			bloques[$((unidMemOcupadas[$ra]))]=$((bloques[$((unidMemOcupadas[$ra]))] + 1))  #Determina el número de bloques en los que se fragmenta un proceso
 		fi
 	done
-#EN-30070-
-#EN-30080-
+	#Se cuenta el número de datos que tienen que tener los arrays posición inicial/final. Si bloques de algo equivale a 0 o 1, se suma 1. Si no, se suma el número de bloques.
+	for (( i=0; i<$nprocesos; i++ )) ; do #El array de bloques tiene el mismo número de posiciones que el de procesos.
 		if [[ ${bloques[$i]} -le 1 ]]; then #Una por proceso, esté o no en memoria, y una más por cada bloque añadido más allá del primero.  #Recorre el número de bloques en los que se fragmenta un proceso
-#EN-30090-
+			nposiciones=$((nposiciones+1)) #Número de procesos
 		else 
-#EN-30100-
+			nposiciones=$((nposiciones+${bloques[$i]})) #Número de bloques por proceso cuando tenga bloques
 		fi
 	done
-#EN-30110-
+	for (( i=0; i<$nposiciones; i++ )); do #Se inicializan a 0 (Sin bloques)
 		inicialNC[$i]=0
 		finalNC[$i]=0
 	done
-#EN-30120-
+	#Se rellena
 	main=0
 	mafi=0
 	for (( po=0 ; po<$nprocesos; po++ )); do
-#EN-30130-
+		if [[ ${bloques[$po]} -eq 0 ]]; then #Si sólo está en un bloque
 			inicialNC[$main]="-"
 			main=$((main+1))
 			finalNC[$mafi]="-"
 			mafi=$((mafi+1))
-#EN-30140-
+		elif [[ ${bloques[$po]} -ne 0 ]]; then #Si hay más bloques del proceso
 			contadori=0
 			contadorf=0
-#EN-30150-
+			while [[ $contadori -lt ${bloques[($po)]} &&  $contadorf -lt ${bloques[($po)]} ]]; do #recorre el número de bloques en los que se fragmenta un proceso
 				for (( ra=0; ra<$mem_num_marcos ; ra++ )) ; do
-#EN-30160-
-#EN-30170-
+					if [[ $ra -eq 0  && ${unidMemOcupadas[$ra]} == $po ]] ; then #El primero es un caso especial
+						inicialNC[$main]=$ra #Si el proceso entra en memoria, guarda la unidad de inicio    
 						main=$((main+1))
 						contadori=$((contadori+1))
 					fi
 					if [[ $ra -ne 0  &&  ${unidMemOcupadas[$((ra - 1))]} != $po && ${unidMemOcupadas[$ra]} == $po ]] ; then
-#EN-30180-
+						inicialNC[$main]=$ra #Si el proceso entra en memoria, guarda la unidad de inicio    
 						main=$((main+1))
 						contadori=$((contadori+1))
 					fi
 					if [[ $ra -ne 0  &&  $ra -ne $((mem_num_marcos-1)) && ${unidMemOcupadas[$ra]} == $po && ${unidMemOcupadas[$((ra + 1))]} != $po ]] ; then
-#EN-30190-
+						finalNC[$mafi]=$ra #Si el proceso entra en memoria, guarda la unidad de final
 						mafi=$((mafi+1))
 						contadorf=$((contadorf+1))
 					fi
-#EN-30200-
-#EN-30210-
+					if [[ $ra -eq $((mem_num_marcos-1)) && ${unidMemOcupadas[$ra]} == $po ]]; then #El último es un caso especial
+						finalNC[$mafi]=$ra #Si el proceso entra en memoria, guarda la unidad de final aunque no haya terminado el proceso. No debería ya que hubiera tenido que empezar en el primer hueco y le habría cabido.
 						mafi=$((mafi+1))
 						contadorf=$((contadorf+1))
 					fi
@@ -9885,40 +9885,40 @@ function calculosPrepararLineasImpresionBandaMemoria {
 			done
 		fi
 	done
-#EN-30220-
+} #Final de preparar líneas para Banda de Memoria - calculosPrepararLineasImpresionBandaMemoria()
 
 ####################################################################################
-#EN-30230-
+# Sinopsis: Genera la Banda de Memoria y la muestra en pantalla/informe 
 ####################################################################################
-#EN-30240-
-#EN-30250-
+function dibujarBandaMemoria { #Nueva versión y más simplificada, pero tiene 100 líneas más que la versión original (dibujarBandaMemoriaORI)
+	terminal2=`tput cols` #Ancho del terminal para adecuar el ancho de líneas a cada volcado
 
-#EN-30260-
-#EN-30270-
+	# GENERACIÓN STRING DE PROCESOS (Línea 1 de la Banda de Memoria) 
+	nn=0 #Número de línea de la banda
 	bandaProcesos=("    |")
 	bandaProcesosColor=("$NORMAL    |")
 	numCaracteres2=5
-#EN-30280-
-#EN-30290-
-#EN-30300-
-#EN-30310-
-#EN-30320-
+	xx=0 # Variable que indica si se ha añadido un proceso a la banda (1).
+	for ((ii=0;ii<${#unidMemOcupadas[@]};ii++)); do
+		if [[ ${unidMemOcupadas[$ii]} != "_" ]]; then #El proceso está en memoria y se imprimirá
+			if [[ $(($numCaracteres2 + $digitosUnidad + 1)) -gt $terminal2 ]]; then #El texto no cabe en la terminal
+				nn=$(($nn + 1)) # Se pasa a la siguiente línea
 				bandaProcesos[$nn]="     "
 				bandaProcesosColor[$nn]="     "
 				numCaracteres2=5
 			fi
-#EN-30330-
+			if [[ $ii -ne 0 && $xx -eq 1 && ${proceso[$((${unidMemOcupadas[$ii]}))]} != ${proceso[$((${unidMemOcupadas[$((ii - 1))]}))]} ]]; then # El texto no cabe en la terminal
 				xx=0
 			fi
-#EN-30340-
-#EN-30350-
+			if [[ $xx -eq 0 ]]; then #Se añade el proceso a la banda
+				espaciosfinal=${varhuecos:1:$(($digitosUnidad - ${#proceso[$((${unidMemOcupadas[$ii]}))]}))}
 				bandaProcesos[$nn]+=`echo -e "${proceso[$((${unidMemOcupadas[$ii]}))]}""$espaciosfinal"`
 				bandaProcesosColor[$nn]+=`echo -e "${coloress[${unidMemOcupadas[$ii]} % 6]}${proceso[$((${unidMemOcupadas[$ii]}))]}""$NORMAL$espaciosfinal"`
 				numCaracteres2=$(($numCaracteres2 + $digitosUnidad))
 				xx=1
 			else
-#EN-30360-
-#EN-30370-
+				if [[ $(($numCaracteres2 + $digitosUnidad + 1)) -gt $terminal2 ]]; then #El texto no cabe en la terminal
+					nn=$(($nn + 1)) #Se pasa a la siguiente línea
 					bandaProcesos[$nn]="     "
 					bandaProcesosColor[$nn]="     "
 					numCaracteres2=5
@@ -9937,8 +9937,8 @@ function calculosPrepararLineasImpresionBandaMemoria {
 			fi
 		else
 			xx=0
-#EN-30380-
-#EN-30390-
+			if [[ $(($numCaracteres2 + $digitosUnidad + 1)) -gt $terminal2 ]]; then #El texto no cabe en la terminal
+				nn=$(($nn + 1)) #Se pasa a la siguiente línea
 				bandaProcesos[$nn]="     "
 				bandaProcesosColor[$nn]="     "
 				numCaracteres2=5
@@ -9949,9 +9949,9 @@ function calculosPrepararLineasImpresionBandaMemoria {
 			numCaracteres2=$(($numCaracteres2 + $digitosUnidad))
 		fi
 	done
-#EN-30400-
+	#Añadir final de banda
 	if [[ $(($numCaracteres2 + 5 + ${#mem_num_marcos} + 1)) -gt $terminal2 ]]; then #El texto no cabe en la terminal
-#EN-30410-
+		nn=$(($nn + 1)) #Se pasa a la siguiente línea
 		bandaProcesos[$nn]="     "
 		bandaProcesosColor[$nn]="     "
 		numCaracteres2=5
@@ -9959,8 +9959,8 @@ function calculosPrepararLineasImpresionBandaMemoria {
 	bandaProcesos[$nn]+=`echo -e "|"`
 	bandaProcesosColor[$nn]+=`echo -e "$NORMAL|"`
 
-#EN-30420-
-#EN-30430-
+	# GENERACIÓN STRING DE MEMORIA (Línea 2 de la Banda de Memoria)
+	nn=0 #Línea de la banda
 	bandaMemoria=(" BM |")
 	bandaMemoriaColor=("$NORMAL BM |")
 	numCaracteres2=5
@@ -9969,28 +9969,28 @@ function calculosPrepararLineasImpresionBandaMemoria {
 	asteriscosAMeter=${varasteriscos:1:$digitosUnidad}
 	fondosAMeter=${varfondos:1:$digitosUnidad}
 	sumaTotalMemoria=0
-#EN-30440-
+	xx=0 #Variable que indica si se ha añadido un proceso a la banda
 	for (( i=0; i<$nprocesos; i++)); do 
-#EN-30450-
+		numMarcosDibujadosPorProceso[$i]=0 #Número de Marcos en Memoria con Páginas ya dibujadas de cada Proceso para el resumen de Banda.
 	done
 			
-#EN-30460-
-#EN-30470-
-#EN-30480-
-#EN-30490-
+	for ((ii=0;ii<${#unidMemOcupadas[@]};ii++)); do
+		if [[ ${unidMemOcupadas[$ii]} != "_" ]]; then #El proceso está en memoria y se imprimirá
+			if [[ $(($numCaracteres2 + $digitosUnidad + 1)) -gt $terminal2 ]]; then #El texto no cabe en la terminal
+				nn=$(($nn + 1)) #Se pasa a la siguiente línea
 				bandaMemoria[$nn]="     "
 				bandaMemoriaColor[$nn]="     "
 				numCaracteres2=5
 			fi
-#EN-30500-
+			espaciosfinal=${varhuecos:1:$(($digitosUnidad - ${#paginasEnMemoriaTotal[${unidMemOcupadas[$ii]},${numMarcosDibujadosPorProceso[${unidMemOcupadas[$ii]}]}]}))}
 			if [[ ${#paginasEnMemoriaTotal[${unidMemOcupadas[$ii]},${numMarcosDibujadosPorProceso[${unidMemOcupadas[$ii]}]}]} -eq 0 ]]; then #Si no hay página se mete asterisco en BN.
-#EN-30510-
-#EN-30520-
-#EN-30530-
+				espaciosasteriscofinal=${varhuecos:1:$(($digitosUnidad - 1 - ${#paginasEnMemoriaTotal[${unidMemOcupadas[$ii]},${numMarcosDibujadosPorProceso[${unidMemOcupadas[$ii]}]}]}))}"*"
+			else  #Y si hay página se mete espacios y el número.
+				espaciosasteriscofinal=${varhuecos:1:$(($digitosUnidad - ${#paginasEnMemoriaTotal[${unidMemOcupadas[$ii]},${numMarcosDibujadosPorProceso[${unidMemOcupadas[$ii]}]}]}))}
 			fi
 			bandaMemoria[$nn]+=`echo -e "$espaciosasteriscofinal${paginasEnMemoriaTotal[${unidMemOcupadas[$ii]},${numMarcosDibujadosPorProceso[${unidMemOcupadas[$ii]}]}]}"`
 			bandaMemoriaColor[$nn]+=`echo -e "$NC${colorfondo[${unidMemOcupadas[$ii]} % 6]}$espaciosfinal${paginasEnMemoriaTotal[${unidMemOcupadas[$ii]},${numMarcosDibujadosPorProceso[${unidMemOcupadas[$ii]}]}]}$NC"`
-#EN-30540-
+			((numMarcosDibujadosPorProceso[${unidMemOcupadas[$ii]}]++)) #Número de Marcos con Páginas ya dibujadas de cada Proceso.
 			numCaracteres2=$(($numCaracteres2 + $digitosUnidad))
 			if [[ $ii -ne 0 ]]; then
 				if [[ ${unidMemOcupadas[$((ii - 1))]} !=  "_" ]]; then 
@@ -9999,57 +9999,57 @@ function calculosPrepararLineasImpresionBandaMemoria {
 					fi
 				fi
 			fi
-#EN-30550-
+		else #El proceso no está en memoria y no puede representarse en la Banda de Memoria.
 			xx=0
-#EN-30560-
-#EN-30570-
+			if [[ $(($numCaracteres2 + $digitosUnidad + 1)) -gt $terminal2 ]]; then #El texto no cabe en la terminal
+				nn=$(($nn + 1)) #Se pasa a la siguiente línea
 				bandaMemoria[$nn]="     "
 				bandaMemoriaColor[$nn]="     "
 				numCaracteres2=5
 			fi
-#EN-30580-
+			espaciosguionfinal=${varhuecos:1:$(($digitosUnidad - 1 - ${#paginasEnMemoriaTotal[${unidMemOcupadas[$ii]},${numMarcosDibujadosPorProceso[${unidMemOcupadas[$ii]}]}]}))}"-"
 			bandaMemoria[$nn]+=`echo -e "$espaciosguionfinal"`
 			bandaMemoriaColor[$nn]+=`echo -e "$NC$fondosAMeter$NC"`
 			numCaracteres2=$(($numCaracteres2 + $digitosUnidad))
 		fi
 	done
 
-#EN-30590-
+	#Añadir final de banda 
 	if [[ $(($numCaracteres2 + 5 + ${#mem_num_marcos} + 1)) -gt $terminal2 ]]; then #El texto no cabe en la terminal
-#EN-30600-
+		nn=$(($nn + 1)) #Se pasa a la siguiente línea
 		bandaMemoria[$nn]="     "
 		bandaMemoriaColor[$nn]=$NORMAL"     "
 		numCaracteres2=5
 	fi
-#EN-30610-
-#EN-30620-
+	bandaMemoria[$nn]+=`echo -e "|M: $mem_num_marcos"` # TODO: CAMBIAR NÚMERO DE MEMORIA
+	bandaMemoriaColor[$nn]+=`echo -e "$NORMAL|M: $mem_num_marcos"` # TODO: CAMBIAR NÚMERO DE MEMORIA
 
-#EN-30630-
-#EN-30640-
+	# GENERACIÓN STRING DE POSICIÓN DE MEMORIA (Línea 3 de la Banda de Memoria)  
+	nn=0 # Línea de la banda
 	bandaPosicion=("    |")
 	bandaPosicionColor=("$NORMAL    |")
 	numCaracteres2=5
-#EN-30650-
-#EN-30660-
-#EN-30670-
-#EN-30680-
-#EN-30690-
+	xx=0 #Variable que indica si se ha añadido un proceso a la banda
+	for ((ii=0;ii<${#unidMemOcupadas[@]};ii++)); do
+		if [[ ${unidMemOcupadas[$ii]} != "_" ]]; then #El proceso está en memoria y se imprimirá
+			if [[ $(($numCaracteres2 + $digitosUnidad + 1)) -gt $terminal2 ]]; then # El texto no cabe en la terminal
+				nn=$(($nn + 1)) # Se pasa a la siguiente línea
 				bandaPosicion[$nn]="     "
 				bandaPosicionColor[$nn]="     "
 				numCaracteres2=5
 			fi
-#EN-30700-
+			if [[ $ii -ne 0 && $xx -eq 1 && ${proceso[$((${unidMemOcupadas[$ii]}))]} != ${proceso[$((${unidMemOcupadas[$((ii - 1))]}))]} ]]; then # El texto no cabe en la terminal
 				xx=0
 			fi
-#EN-30710-
-#EN-30720-
+			if [[ $xx -eq 0 ]]; then #Se añade el proceso a la banda
+				espaciosfinal=${varhuecos:1:$(($digitosUnidad - ${#ii}))}
 				bandaPosicion[$nn]+=`echo -e "$espaciosfinal""$ii"`
 				bandaPosicionColor[$nn]+=`echo -e "$NORMAL$espaciosfinal""$ii"`
 				numCaracteres2=$(($numCaracteres2 + $digitosUnidad))
 				xx=1
 			else
-#EN-30730-
-#EN-30740-
+				if [[ $(($numCaracteres2 + $digitosUnidad + 1)) -gt $terminal2 ]]; then #El texto no cabe en la terminal
+					nn=$(($nn + 1)) #Se pasa a la siguiente línea
 					bandaPosicion[$nn]="     "
 					bandaPosicionColor[$nn]="     "
 					numCaracteres2=5
@@ -10068,15 +10068,15 @@ function calculosPrepararLineasImpresionBandaMemoria {
 			fi
 		else
 			xx=0
-#EN-30750-
-#EN-30760-
+			if [[ $(($numCaracteres2 + $digitosUnidad + 1)) -gt $terminal2 ]]; then #El texto no cabe en la terminal
+				nn=$(($nn + 1)) #Se pasa a la siguiente línea
 				bandaPosicion[$nn]="     "
 				bandaPosicionColor[$nn]="     "
 				numCaracteres2=5
 			fi
 			if [[ $ii -ne 0 ]]; then
 				if [[ ${unidMemOcupadas[$((ii - 1))]} != "_" ]]; then
-#EN-30770-
+					espaciosfinal=${varhuecos:1:$(($digitosUnidad - ${#ii}))}
 					bandaPosicion[$nn]+=`echo -e "$espaciosfinal""$ii"`
 					bandaPosicionColor[$nn]+=`echo -e "$NORMAL$espaciosfinal""$ii"`
 				else
@@ -10085,16 +10085,16 @@ function calculosPrepararLineasImpresionBandaMemoria {
 					bandaPosicionColor[$nn]+=`echo -e "$NORMAL$espaciosfinal"`
 				fi
 			else
-#EN-30780-
+				espaciosfinal=${varhuecos:1:$(($digitosUnidad - ${#ii}))}
 				bandaPosicion[$nn]+=`echo -e "$espaciosfinal""$ii"`
 				bandaPosicionColor[$nn]+=`echo -e "$NORMAL$espaciosfinal""$ii"`
 			fi
 			numCaracteres2=$(($numCaracteres2 + $digitosUnidad))
 		fi
 	done
-#EN-30790-
+	#Añadir final de banda
 	if [[ $(($numCaracteres2 + 5 + ${#mem_num_marcos} + 1)) -gt $terminal2 ]]; then #El texto no cabe en la terminal
-#EN-30800-
+		nn=$(($nn + 1)) # Se pasa a la siguiente línea
 		bandaPosicion[$nn]="     "
 		bandaPosicionColor[$nn]="$NORMAL     "
 		numCaracteres2=5
@@ -10102,8 +10102,8 @@ function calculosPrepararLineasImpresionBandaMemoria {
 	bandaPosicion[$nn]+=`echo -e "|"`
 	bandaPosicionColor[$nn]+=`echo -e "$NORMAL|"`
 
-#EN-30810-
-#EN-30820-
+	# IMPRIMIR LAS 3 LÍNEAS DE LA BANDA DE MEMORIA (COLOR y BN a pantalla y ficheros)
+	for (( jj = 0; jj < ${#bandaProcesos[@]}; jj++ )); do
 		echo -e "${bandaProcesosColor[$jj]}" | tee -a $informeConColorTotal
 		echo -e "${bandaMemoriaColor[$jj]}" | tee -a $informeConColorTotal
 		echo -e "${bandaPosicionColor[$jj]}\n" | tee -a $informeConColorTotal
@@ -10112,47 +10112,47 @@ function calculosPrepararLineasImpresionBandaMemoria {
 		echo -e "${bandaPosicion[$jj]}\n" >> $informeSinColorTotal
 	done
  
-#EN-30830-
-#EN-30840-
-#EN-30850-
+	#Tras mostrar el resumen de la Banda de Memoria, se inicializan las variables usadas.
+	#Se inicializa la auxiliar usada para la reubicación de la memoria.
+	for (( ca=0; ca<(mem_num_marcos); ca++)); do #Se borran los datos del auxiliar.
 		unidMemOcupadasAux[$ca]="_"
 	done
-#EN-30860-
-#EN-30870-
+	#Se inicializan los bloques donde se introducirán los datos de los procesos.
+	for (( ca=0; ca<($nprocesos) ; ca++)); do #Se borran los datos del auxiliar. Determina el número de bloques en los que se fragmenta un proceso
 		 bloques[$ca]=0
 	done
-#EN-30880-
+	#Se inicializa la variable que contendrá el número de bloques de cada proceso.
 	nposiciones=0
-#EN-30890-
+	#Se inicializan las posiciones iniciales y finales de los bloques asociados a cada proceso, para borrar elementos innecesarios
 	for (( i=0; i<$nposiciones; i++ )) ; do
 		 inicialNCmodelo[$i]=0
 	done
 	for (( i=0; i<$nposiciones; i++ )) ; do 
 		 finalNCmodelo[$i]=0
 	done
-#EN-30900-
+} #Fin de la nueva versión de dibujarBandaMemoria()
 
 ####################################################################################
-#EN-30910-
+# Sinopsis: Prepara la banda de tiempos de procesos en cada volcado - PRUEBA DE COPIAR LÍNEA A lÍNEA
 ####################################################################################
 function calculosImpresionBandaTiempos { 
-#EN-30920-
-#EN-30930-
-#EN-30940-
-#EN-30950-
+	#Sucesión: Crear las tres líneas de la banda de tiempo y se generan los bloques que componen la memoria usada por cada proceso en memoria.
+	#Nota: Todas las que acaben en "b" (o "baux) significa que es la versión en blanco y negro (también en la memoria).
+	#Se trabaja simultaneamente con la línea en b/n, en color, y con el array coloresPartesTiempo (o memoria) que guarda el color de cada caracter del terminal.
+	#dibujasNC es el array que guarda cúantas unidades quedan por dibujar de un proceso
 		
-#EN-30960-
-#EN-30970-
-#EN-30980-
+	#A... Primero. Se trata la entrada por separado hasta que entre el primer proceso
+	#En T=0 se pone el "rótulo".
+	colsTerminal=$((`tput cols`-5)) #Determina el número de caracteres a inmprimir en cada línea.
 	arribatiempoNC_0="    |"
 	arribatiempoNCb_0="    |"
 	tiempoNC_0=" BT |"
 	tiempoNCb_0=" BT |"
 	abajotiempoNC_0="    |"
 	abajotiempoNCb_0="    |"
-#EN-30990-
-#EN-31000-
-#EN-31010-
+	tiempodibujado=0 #Unidades ya incluidas en las variables tiempoNC_0,...
+	#Primero se meten blancos en tiempoNC_0,... hasta la legada del primer proceso, si lo hay.
+	if [[ $reloj -eq 0 && $reloj -lt ${llegada[0]} ]]; then #En el caso en que el primer proceso entre más tarde que 0, se introducen blancos iniciales en tiempoNC_0,....
 		arribatiempoNC=$arribatiempoNC_0"${varhuecos:1:$(($digitosUnidad))}"$NC 
 		arribatiempoNCb=$arribatiempoNCb_0"${varhuecos:1:$(($digitosUnidad))}"
 		tiempoNC=$tiempoNC_0"${varhuecos:1:$(($digitosUnidad))}"$NC 
@@ -10160,20 +10160,20 @@ function calculosImpresionBandaTiempos {
 		abajotiempoNC=$abajotiempoNC_0"${varhuecos:1:$(($digitosUnidad - 1))}0"$NC
 		abajotiempoNCb=$abajotiempoNCb_0"${varhuecos:1:$(($digitosUnidad - 1))}0"
 	fi
-#EN-31020-
+	if [[ $reloj -ne 0 && $(($reloj - $tiempodibujado)) -gt 0  ]]; then #Hasta que se alcance reloj dibujar blancos en tiempoNC_0,....
 		for (( i=0 ; i<$(($reloj)) ; i++ )) ; do
 			if [[ $tiempodibujado -eq 0 ]]; then
 				arribatiempoNC=$arribatiempoNC_0"${varhuecos:1:$(($digitosUnidad))}""${coloress[$i % 6]}"
 				arribatiempoNCb=$arribatiempoNCb_0"${varhuecos:1:$(($digitosUnidad))}"
-#EN-31030-
+				tiempoNC=$tiempoNC_0"$NORMAL${varfondos:1:$(($digitosUnidad))}" #Representa los fondos con su color correspondiente
 				tiempoNCb=$tiempoNCb_0"${varguiones:1:$(($digitosUnidad))}"
 				abajotiempoNC=$abajotiempoNC_0"${varhuecos:1:$(($digitosUnidad - 1))}0"
 				abajotiempoNCb=$abajotiempoNCb_0"${varhuecos:1:$(($digitosUnidad - 1))}0"
 				tiempodibujado=$(($tiempodibujado + 1))
-#EN-31040-
+			else #En el caso en que el primer proceso entre más tarde que 0 (dibujar blancos iniciales de la barra todos de golpe).
 				arribatiempoNC=$arribatiempoNC"${varhuecos:1:$(($digitosUnidad))}""${coloress[$i % 6]}"
 				arribatiempoNCb=$arribatiempoNCb"${varhuecos:1:$(($digitosUnidad))}"
-#EN-31050-
+				tiempoNC=$tiempoNC"$NC${varfondos:1:$(($digitosUnidad))}" #Representa los fondos con su color correspondiente
 				tiempoNCb=$tiempoNCb"${varguiones:1:$(($digitosUnidad))}"
 				abajotiempoNC=$abajotiempoNC"${varhuecos:1:$(($digitosUnidad))}"
 				abajotiempoNCb=$abajotiempoNCb"${varhuecos:1:$(($digitosUnidad))}"
@@ -10182,19 +10182,19 @@ function calculosImpresionBandaTiempos {
 		done
 	fi
 	
-#EN-31060-
-#EN-31070-
-#EN-31080-
-#EN-31090-
-#EN-31100-
-#EN-31110-
+	#B... Segundo: A partir de la representación del primer proceso, si lo hay, se dibuja el resto de procesos de forma normal, añadiendo sus nombres y unidades.
+		#1.Dibujar los procesos finalizados - Si está nombrado y no se ha empezado a dibujar
+		#2.Añadir el rótulo del último proceso si hace falta y se marca como nombrado (entra en ejecución pero no hay que dibujar nada).        
+	#1. Proceso finalizado que NO se ha acabado de dibujar. Hay que dibujar meter nombres (línea 1) y unidades (línea 3). 
+	if [[ $hayproanterior -eq 1 && ${estad[$proanterior]} -eq 5 && ${dibujasNC[$proanterior]} -gt 0 ]]; then #Que haya, que esté acabado (no él mismo) y que quede por dibujar:
+		#Si se ha nombrado (nomtiempo()=1) y no se ha empezado a dibujar (valor en dibujasNC() como en tejecucion()) 
 		if [[ ${nomtiempo[$proanterior]} == 1 && ${dibujasNC[$proanterior]} -eq ${tejecucion[$proanterior]} ]]; then 
-#EN-31120-
-#EN-31130-
+		#Si se ha marcado como terminado y no se ha empezado a dibujar 
+			contad=$((${dibujasNC[$proanterior]}-1)) #Ponemos espacios para cuadrar, tantos como unidades de la barra se dibujen, menos 1 (ese 1 es poe empezar a contar desde 0)
 			for (( i=0 ; i<$contad; i++ )); do
 				arribatiempoNC=$arribatiempoNC"${varhuecos:1:$(($digitosUnidad))}"$NC
 				arribatiempoNCb=$arribatiempoNCb"${varhuecos:1:$(($digitosUnidad))}""222"
-#EN-31140-
+				tiempoNC=$tiempoNC${coloress[$proanterior % 6]}"${varfondos:1:$(($digitosUnidad))}"$NC #Cambiados a varfondos
 				tiempoNCb=$tiempoNCb"${varguiones:1:$(($digitosUnidad))}"
 				abajotiempoNC=$abajotiempoNC"${varhuecos:1:$(($digitosUnidad))}"$NC
 				abajotiempoNCb=$abajotiempoNCb"${varhuecos:1:$(($digitosUnidad))}"
@@ -10203,81 +10203,81 @@ function calculosImpresionBandaTiempos {
 			done
 			dibujasNC[$proanterior]=0
 		fi 
-#EN-31150-
-#EN-31160-
+	fi #Fin de los procesos terminados pendientes de imprimir en la banda de tiempo
+	#2.Se añade el nombre del último proceso que entra en ejecución y se marca como nombrado (entra en ejecución pero no hay que dibujar nada).
 	for (( po=0; po<$nprocesos; po++)) ; do
 		if ( [[ $tiempodibujado -eq $reloj && ${dibujasNC[$po]} -eq ${tejecucion[$po]} && ${estad[$po]} -eq 3 ]] ) ; then 
 			arribatiempoNC=$arribatiempoNC"${coloress[$po % 6]}${proceso[$po]}""${varhuecos:1:$(($digitosUnidad - ${proceso[$po]}))}"$NC
 			arribatiempoNCb=$arribatiempoNCb"${proceso[$po]}""${varhuecos:1:$(($digitosUnidad - ${proceso[$po]}))}"
-#EN-31170-
+			tiempoNC=$tiempoNC"${varhuecos:1:$(($digitosUnidad))}"$NC #Propuesto meter varfondos
 			tiempoNCb=$tiempoNCb"${varhuecos:1:$(($digitosUnidad))}"
-#EN-31180-
-#EN-31190-
+			abajotiempoNC=$abajotiempoNC"${varhuecos:1:$(($digitosUnidad - ${#reloj}))}""$reloj"$NC
+			abajotiempoNCb=$abajotiempoNCb"${varhuecos:1:$(($digitosUnidad - ${#reloj}))}""$reloj"
 			tiempodibujado=$(($tiempodibujado + 1))
 		fi
-#EN-31200-
+		nomtiempo[$po]=1 #Se marca como nombrado
 	done
-#EN-31210-
+} #Final de los cálculos para la impresión de la banda de memoria de los volcados - calculosImpresionBandaTiempos()
 
 ####################################################################################
-#EN-31220-
-#EN-31230-
+# Sinopsis: Imprime las tres líneas de la banda de tiempo. Permite mostrar el orden de ejecución de los 
+# procesos y su evolución en el tiempo.
 ####################################################################################
 function dibujarBandaTiempos {     
-#EN-31240-
-#EN-31250-
+	sumaParaEspacios=0 # Variable para almacenar la suma total de tiempos de llegada y ejecución
+	sumaParaEspacios=$sumatorio # Número más alto entre la suma los tiempos de llegada y ejecución totales, y la página de mayor número
 	local maxCaracteres=0
 	maxCaracteres=$((${#sumaParaEspacios} + 1)) # Longitud en número de dígitos de cada unidad 
 	if [[ $maxCaracteres -eq 2 ]]; then
-#EN-31260-
+		maxCaracteres=3 # El mínimo de caracteres tiene que ser 3 para que entren los nombres de 
 	fi
-#EN-31270-
-#EN-31280-
+	local terminal=`tput cols` #Ancho del terminal para adecuar el ancho de líneas a cada volcado
+	for ((s = 0; s < ${#proceso[@]}; s++)); do
 		if [[ ${estado[$s]} == "En ejecución" ]]; then
-#EN-31290-
+			procPorUnidadTiempoBT[$reloj]=$s #En cada casilla contiene el número de orden del proceso que se ejecuta en cada instante. Sólo puede haber un proceso en cada instante.
 		fi
 	done
 
-#EN-31300-
+	# GENERACIÓN STRING DE LA BANDA DE TIEMPOS (Línea 1 de la Banda de Tiempos)
 	local bandaProcesos=("    |")
 	local bandaProcesosColor=($NORMAL"    |")
-#EN-31310-
+	local n=0 # Línea de la banda
 	local numCaracteres=5
 	espaciosAMeter=${varhuecos:1:$maxCaracteres}
 	guionesAMeter=${varguiones:1:$maxCaracteres}
 	fondosAMeter=${varfondos:1:$maxCaracteres}
 	for ((k = 0; k <= $reloj; k++)); do
-#EN-31320-
-#EN-31330-
-#EN-31340-
+		if [[ $k -eq 0 ]]; then #Si T=0
+			if [[ ${procPorUnidadTiempoBT[$k]} -ge 0 ]]; then #Si hay proceso en ejecución para T=0
+				local p=${proceso[${procPorUnidadTiempoBT[$k]}]} #Se imprime el nombre del proceso en ejecución en ese instante definido por la posición almacenada en procPorUnidadTiempoBT
 				bandaProcesos[n]+=`printf "%-$(($maxCaracteres))s" $p`
 				bandaProcesosColor[n]+=`printf "${coloress[${procPorUnidadTiempoBT[$k]} % 6]}%-$(($maxCaracteres))s$NORMAL" $p`
-#EN-31350-
+			else #Si no hay proceso en ejecución para T=0
 				bandaInstantes[n]+=`echo -e $espaciosAMeter`
 				bandaInstantesColor[n]+=`echo -e $espaciosAMeter`
 			fi
 			numCaracteres=$(($numCaracteres + $maxCaracteres))
-#EN-31360-
-#EN-31370-
-#EN-31380-
+		else #Si NO T=0
+			if [[ $(($numCaracteres + $maxCaracteres + 1)) -gt $terminal ]]; then # El texto no cabe en la terminal
+				n=$(($n + 1)) # Se pasa a la siguiente línea
 				bandaProcesos[n]="     "
 				bandaProcesosColor[n]="     "
 				numCaracteres=5
 			fi
-#EN-31390-
+			if [[ ${procPorUnidadTiempoBT[$k]} = ${procPorUnidadTiempoBT[$(($k - 1))]} ]]; then #Si se mantiene el mismo proceso en ejecución se imprimen espacios
 				bandaProcesos[n]+=`printf "%$(($maxCaracteres))s" ""`
 				bandaProcesosColor[n]+=`printf "%$(($maxCaracteres))s" ""`
-#EN-31400-
-#EN-31410-
+			else #Si no se mantiene el mismo proceso en ejecución se imprime el nombre del nuevo proceso
+				local p=${proceso[${procPorUnidadTiempoBT[$k]}]} #Se imprime el nombre del proceso en ejecución en ese instante definido por la posición almacenada en procPorUnidadTiempoBT
 				bandaProcesos[n]+=`printf "%-$(($maxCaracteres))s" $p`
 				bandaProcesosColor[n]+=`printf "${coloress[${procPorUnidadTiempoBT[$k]} % 6]}%-$(($maxCaracteres))s$NORMAL" $p`
 			fi
 			numCaracteres=$(($numCaracteres + $maxCaracteres))
 		fi
 	done
-#EN-31420-
-#EN-31430-
-#EN-31440-
+	# Añadir final de banda
+	if [[ $(($numCaracteres + 5 + $maxCaracteres + 1)) -gt $terminal ]]; then # El texto no cabe en la terminal
+		n=$(($n + 1)) # Se pasa a la siguiente línea
 		bandaProcesos[n]="     "
 		bandaProcesosColor[n]="     "
 		numCaracteres=5
@@ -10285,23 +10285,23 @@ function dibujarBandaTiempos {
 	bandaProcesos[n]+=`printf "|    %$(($maxCaracteres))s" ""`
 	bandaProcesosColor[n]+=`printf "|    %$(($maxCaracteres))s" ""`
 
-#EN-31450-
+	# GENERACIÓN STRING DE LA BANDA DE TIEMPOS (Línea 2 de la Banda de Tiempos)
 	local bandaTiempo=(" BT |")
 	local bandaTiempoColor=(" BT |")
-#EN-31460-
+	local n=0 # Línea de la banda
 	local numCaracteres=5
 	for (( i=0; i<$nprocesos; i++)); do 
-#EN-31470-
+		numMarcosDibujadosPorProceso[$i]=0 #Número de Marcos en Memoria con Páginas ya dibujadas de cada Proceso para el resumen de Banda.
 	done
 	for ((k = 0; k <= $reloj; k++)); do
-#EN-31480-
-#EN-31490-
+		if [[ $(($numCaracteres + $maxCaracteres + 1)) -gt $terminal ]]; then # El texto no cabe en la terminal
+			n=$(($n + 1)) # Se pasa a la siguiente línea
 			bandaTiempo[n]="     "
 			bandaTiempoColor[n]="     "
 			numCaracteres=5
 		fi
-#EN-31500-
-#EN-31510-
+		if [[ $k -eq $reloj ]]; then #Si el instante considerado es igual al tiempo actual
+			if [[ procPorUnidadTiempoBT[$k] -eq $topeProcPorUnidadTiempoBT ]]; then #Si no hay proceso en ejecución asociado a ese instante. Vale 0 si no está definido porque la inicialización empieza en posición=1.
 				if [[ $k -eq 0 ]]; then
 					espaciosguionfinal=${varhuecos:1:$(($digitosUnidad - 1))}"-"
 					bandaTiempo[n]+=$espaciosguionfinal
@@ -10310,37 +10310,37 @@ function dibujarBandaTiempos {
 					bandaTiempo[n]+=$espaciosAMeter
 					bandaTiempoColor[n]+=$espaciosAMeter
 				fi
-#EN-31520-
-#EN-31530-
+			else #Si hay proceso en ejecución asociado a ese instante.
+				espaciosfinal=${varhuecos:1:$(($digitosUnidad - ${#paginasDefinidasTotal[${procPorUnidadTiempoBT[$k]},${numMarcosDibujadosPorProceso[${procPorUnidadTiempoBT[$k]}]}]}))}
 				bandaTiempo[n]+=$espaciosfinal${paginasDefinidasTotal[${procPorUnidadTiempoBT[$k]},${numMarcosDibujadosPorProceso[${procPorUnidadTiempoBT[$k]}]}]}
 				bandaTiempoColor[n]+=$espaciosfinal${paginasDefinidasTotal[${procPorUnidadTiempoBT[$k]},${numMarcosDibujadosPorProceso[${procPorUnidadTiempoBT[$k]}]}]}
 			fi
-#EN-31540-
+		elif [[ $k -ne $reloj ]]; then #Si el instante considerado NO es igual al tiempo actual
 			if [[ ${procPorUnidadTiempoBT[$k]} -eq $topeProcPorUnidadTiempoBT ]]; then # || ${procPorUnidadTiempoBT[$k]} = 0 ]]# Si NO hay proceso en ejecución asociado a ese instante. Vale 0 si no está definido porque la inicialización empieza en posición=1.
 				espaciosguionfinal=${varhuecos:1:$(($digitosUnidad - 1))}"-"
 				bandaTiempo[n]+=$espaciosguionfinal
 				bandaTiempoColor[n]+=$fondosAMeter
-#EN-31550-
-#EN-31560-
+			else # Si hay proceso en ejecución asociado a ese instante  
+				espaciosfinal=${varhuecos:1:$(($digitosUnidad - ${#paginasDefinidasTotal[${procPorUnidadTiempoBT[$k]},${numMarcosDibujadosPorProceso[${procPorUnidadTiempoBT[$k]}]}]}))}
 				bandaTiempo[n]+=$espaciosfinal${paginasDefinidasTotal[${procPorUnidadTiempoBT[$k]},${numMarcosDibujadosPorProceso[${procPorUnidadTiempoBT[$k]}]}]}
-#EN-31570-
+				if [[ $k -ne 0 ]]; then #Si NO es T=0
 					bandaTiempoColor[n]+=$NC${colorfondo[${procPorUnidadTiempoBT[$k]} % 6]}$espaciosfinal${paginasDefinidasTotal[${procPorUnidadTiempoBT[$k]},${numMarcosDibujadosPorProceso[${procPorUnidadTiempoBT[$k]}]}]}$NC
-#EN-31580-
-#EN-31590-
+				else #Si es T=0
+					if [[ $reloj -eq 0 ]]; then #Si T=0 no se colorea el fondo 
 						bandaTiempoColor[n]+=$espaciosfinal${paginasDefinidasTotal[${procPorUnidadTiempoBT[$k]},${numMarcosDibujadosPorProceso[${procPorUnidadTiempoBT[$k]}]}]}$NC
-#EN-31600-
+					else #Si T>0 se pintará el fondo del color del proceso en ejecución.
 						bandaTiempoColor[n]+=$NC${colorfondo[${procPorUnidadTiempoBT[$k]} % 6]}$espaciosfinal${paginasDefinidasTotal[${procPorUnidadTiempoBT[$k]},${numMarcosDibujadosPorProceso[${procPorUnidadTiempoBT[$k]}]}]}$NC                    
 					fi
 				fi
-#EN-31610-
+				((numMarcosDibujadosPorProceso[${procPorUnidadTiempoBT[$k]}]++)) #Número de Marcos en Memoria con Páginas ya dibujadas de cada Proceso para el resumen de Banda.
 			fi
 		fi
 		numCaracteres=$(($numCaracteres + $maxCaracteres))
 	done
 
-#EN-31620-
-#EN-31630-
-#EN-31640-
+	# Añadir final de banda
+	if [[ $(($numCaracteres + 5 + $maxCaracteres + 1)) -gt $terminal ]]; then # El texto no cabe en la terminal
+		n=$(($n + 1)) # Se pasa a la siguiente línea
 		bandaTiempo[n]="     "
 		bandaTiempoColor[n]="     "
 		numCaracteres=5
@@ -10348,16 +10348,16 @@ function dibujarBandaTiempos {
 	bandaTiempo[n]+=`printf "|T= %-${maxCaracteres}d" $reloj`
 	bandaTiempoColor[n]+=$NC`printf "|T= %-${maxCaracteres}d" $reloj`
 
-#EN-31650-
+	# GENERACIÓN STRING DE LAS UNIDADES DE LOS INSTANES DE TIEMPO (Línea 3 de la Banda de Tiempos)
 	local bandaInstantes=("    |")
 	local bandaInstantesColor=($NC"    |")
-#EN-31660-
+	local n=0 # Línea de la banda
 	local numCaracteres=5
 	for ((k = 0; k <= $reloj; k++)); do
-#EN-31670-
-#EN-31680-
-#EN-31690-
-#EN-31700-
+		if [[ ${procPorUnidadTiempoBT[$k]} -eq ${procPorUnidadTiempoBT[$(($k - 1))]} ]]; then #Cuando se mantiene el mismo proceso en ejecución
+			if [[ $k -eq 0 || $k -eq $reloj ]]; then #En T=0 o T=momento actual, aumenta el contenido de las bandas
+				if [[ $(($numCaracteres + $maxCaracteres + 1)) -gt $terminal ]]; then # El texto no cabe en la terminal
+					n=$(($n + 1)) # Se pasa a la siguiente línea
 					bandaInstantes[n]="     "
 					bandaInstantesColor[n]=$NC"     "
 					numCaracteres=5
@@ -10365,9 +10365,9 @@ function dibujarBandaTiempos {
 				bandaInstantes[n]+=`printf "%${maxCaracteres}d" $k`
 				bandaInstantesColor[n]+=`printf "%${maxCaracteres}d" $k`
 				numCaracteres=$(($numCaracteres + $maxCaracteres))
-#EN-31710-
-#EN-31720-
-#EN-31730-
+			else #En T distinto de 0 o momento actual, también aumenta el contenido de las bandas
+				if [[ $(($numCaracteres + $maxCaracteres + 1)) -gt $terminal ]]; then # El texto no cabe en la terminal
+					n=$(($n + 1)) # Se pasa a la siguiente línea
 					bandaInstantes[n]="     "
 					bandaInstantesColor[n]=$NC"     "
 					numCaracteres=5
@@ -10376,9 +10376,9 @@ function dibujarBandaTiempos {
 				bandaInstantesColor[n]+=`printf "%${maxCaracteres}s" ""`
 				numCaracteres=$(($numCaracteres + $maxCaracteres))
 			fi
-#EN-31740-
-#EN-31750-
-#EN-31760-
+		else #Cuando no se mantiene el mismo proceso en ejecución
+			if [[ $(($numCaracteres + $maxCaracteres + 1)) -gt $terminal ]]; then # El texto no cabe en la terminal
+				n=$(($n + 1)) # Se pasa a la siguiente línea
 				bandaInstantes[n]="     "
 				bandaInstantesColor[n]=$NC"     "
 				numCaracteres=5
@@ -10388,9 +10388,9 @@ function dibujarBandaTiempos {
 			numCaracteres=$(($numCaracteres + $maxCaracteres))
 		fi
 	done
-#EN-31770-
-#EN-31780-
-#EN-31790-
+	# Añadir final de banda
+	if [[ $(($numCaracteres + 5 + $maxCaracteres + 1)) -gt $terminal ]]; then # El texto no cabe en la terminal
+		n=$(($n + 1)) # Se pasa a la siguiente línea
 		bandaInstantes[n]="     "
 		bandaInstantesColor[n]=$NC"     "
 		numCaracteres=5
@@ -10398,8 +10398,8 @@ function dibujarBandaTiempos {
 	bandaInstantes[n]+=`printf "|    %$(($maxCaracteres))s" ""`
 	bandaInstantesColor[n]+=`printf "|    %$(($maxCaracteres))s" ""`
 
-#EN-31800-
-#EN-31810-
+	# IMPRIMIR LAS 3 LÍNEAS DE LA BANDA DE TIEMPOS (COLOR y BN a pantalla y ficheros temporales) - Se meten ahora en los temporales para que la banda de tiempo vaya tras la banda de memoria
+	for (( i = 0; i < ${#bandaProcesos[@]}; i++ )); do
 		echo -e "${bandaProcesos[$i]}" >> $informeSinColorTotal
 		echo -e "${bandaTiempo[$i]}" >> $informeSinColorTotal
 		echo -e "${bandaInstantes[$i]}\n" >> $informeSinColorTotal
@@ -10409,28 +10409,28 @@ function dibujarBandaTiempos {
 	done    
 
 	#########################################################
-#EN-31820-
-#EN-31830-
+	#Se determina el modo de ejecución (Enter, sin paradas, con paradas con tiempo predefinido)
+	if [[ $optejecucion = "1" ]]; then #Impresión de forma manual (pulsando enter para pasar)
 		echo -e " Pulse ENTER para continuar.$NC" | tee -a $informeConColorTotal
 		echo -e " Pulse ENTER para continuar." >> $informeSinColorTotal
 		read continuar
 		echo -e $continuar "\n" >> $informeConColorTotal
 		echo -e $continuar "\n" >> $informeSinColorTotal
-#EN-31840-
-#EN-31850-
+	fi  #Cierre de fi - optejecucion=1 (seleccionMenuModoTiempoEjecucionAlgormitmo=1)
+	if [[ $optejecucion = "2" ]]; then #Impresión de forma sin parar (pasa sin esperar, de golpe)
 		echo -e "───────────────────────────────────────────────────────────────────────$NC" | tee -a $informeConColorTotal
 		echo -e "───────────────────────────────────────────────────────────────────────" >> $informeSinColorTotal
-#EN-31860-
-#EN-31870-
+	fi  #Cierre de fi - optejecucion=2 (seleccionMenuModoTiempoEjecucionAlgormitmo=2)
+	if [[ $optejecucion = "3" ]]; then #Impresión de forma automatica (esperando x segundo para pasar)
 		echo -e " Espere para continuar...$NC\n" | tee -a $informeConColorTotal
 		echo -e " Espere para continuar...\n" >> $informeSinColorTotal
 		sleep $tiempoejecucion 
-#EN-31880-
-#EN-31890-
+	fi  #Cierre de fi - optejecucion=3 (seleccionMenuModoTiempoEjecucionAlgormitmo=3)
+} #Fin de dibujarBandaTiempos()
 
 ####################################################################################
-#EN-31900-
-#EN-31910-
+# Sinopsis: Muestra en pantalla/informe una tabla con el resultado final tras la ejecución
+# de todos los procesos
 ####################################################################################
 function resultadoFinalDeLaEjecucion {
 	echo "$NORMAL Procesos introducidos (ordenados por tiempo de llegada):" | tee -a $informeConColorTotal
@@ -10441,23 +10441,23 @@ function resultadoFinalDeLaEjecucion {
 	echo -e " │ Ref │ Tll │ Tej │ Mem │ TEsp │ Tret │" >> $informeSinColorTotal
 	echo -e " ├─────┼─────┼─────┼─────┼──────┼──────┤" >> $informeSinColorTotal
 	
-#EN-31920-
+	for (( i=0; i<$nprocesos; i++ )) ; do  #Se usa m porque i recorre los procesos y m controla las unidades usadas por cada proceso, normalmente 0 o 1, y también las unidades de los n trozos de memoria asociados a cada proceso. 
 		echo -e " │ ${varC[$i]}${proceso[$i]}$NC │"\
-#EN-31930-
-#EN-31940-
-#EN-31950-
-#EN-31960-
-#EN-31970-
-#EN-31980-
-#EN-31990-
-#EN-32000-
-#EN-32010-
-#EN-32020-
+		"$(imprimirEspaciosEstrechos ${#llegada[$i]})${varC[$i]}${llegada[$i]}$NC │"\
+		"$(imprimirEspaciosEstrechos ${#ejecucion[$i]})${varC[$i]}${ejecucion[$i]}$NC │"\
+		"$(imprimirEspaciosEstrechos ${#memoria[$i]})${varC[$i]}${memoria[$i]}$NC │"\
+		"$(imprimirEspaciosAnchos ${#temp_wait[$i]})${varC[$i]}${temp_wait[$i]}$NC │"\
+		"$(imprimirEspaciosAnchos ${#temp_ret[$i]})${varC[$i]}${temp_ret[$i]}$NC │" | tee -a $informeConColorTotal
+		echo -e " │ ${proceso[$i]} │ $(imprimirEspaciosEstrechosBN ${#llegada[$i]})${llegada[$i]} │"\
+		"$(imprimirEspaciosEstrechosBN ${#ejecucion[$i]})${ejecucion[$i]} │"\
+		"$(imprimirEspaciosEstrechosBN ${#memoria[$i]})${memoria[$i]} │"\
+		"$(imprimirEspaciosAnchosBN ${#temp_wait[$i]})${temp_wait[$i]} │"\
+		"$(imprimirEspaciosAnchosBN ${#temp_ret[$i]})${temp_ret[$i]} │" >> $informeSinColorTotal
 	done
 	echo " └─────┴─────┴─────┴─────┴──────┴──────┘" | tee -a $informeConColorTotal
 	echo " └─────┴─────┴─────┴─────┴──────┴──────┘">> $informeSinColorTotal
 
-#EN-32030-
+	#Promedios
 	dividir=0
 	for (( i=0; i<nprocesos; i++ )) ; do
 		if [[ ${estad[$i]} -ne 0 ]] ; then 
@@ -10470,52 +10470,52 @@ function resultadoFinalDeLaEjecucion {
 	suma_contadorAlgPagExpulsionesForzadasProcesoAcumulado=0
 	for (( i=0; i<nprocesos; i++ )); do
 		tam=${memoria[$i]};
-#EN-32040-
-#EN-32050-
-#EN-32060-
+		if [[ ${estad[$i]} -ne 0 && $tam -le $mem_num_marcos ]]; then #Si el tamaño del proceso es menor o igual que el de memoria
+			suma_espera=$(($suma_espera + ${temp_wait[$i]}))           #suma para sacar su promedio
+			promedio_espera=$(echo "scale=2; $suma_espera/$dividir" | bc)  #promedio
 
-#EN-32070-
-#EN-32080-
+			suma_retorno=$(($suma_retorno + ${temp_ret[$i]}))   #suma para sacar su promedio
+			promedio_retorno=$(echo "scale=2; $suma_retorno/$dividir" | bc)  #promedio
 		fi
 		suma_contadorAlgPagFallosProcesoAcumulado=$(($suma_contadorAlgPagFallosProcesoAcumulado + ${contadorAlgPagFallosProcesoAcumulado[$i]}))
 		suma_contadorAlgPagExpulsionesForzadasProcesoAcumulado=$(($suma_contadorAlgPagExpulsionesForzadasProcesoAcumulado + ${contadorAlgPagExpulsionesForzadasProcesoAcumulado[$i]}))
 	done
 	echo -e "\n ┌─────────────────────────────┬─────────────────────────────┐" | tee -a $informeConColorTotal 
-#EN-32090-
-#EN-32100-
+	echo -e " │ T. espera medio: $promedio_espera$(imprimirEspaciosRangosLargos ${#promedio_espera})$NC " \
+	"│ T. retorno medio: $promedio_retorno$(imprimirEspaciosRangosLargos ${#promedio_retorno})$NC │" | tee -a $informeConColorTotal 
 	echo -e " └─────────────────────────────┴─────────────────────────────┘" | tee -a $informeConColorTotal 
 	echo -e "\n ┌─────────────────────────────┬─────────────────────────────┐" >> $informeSinColorTotal
-#EN-32110-
-#EN-32120-
+	echo -e " │ T. espera medio: $promedio_espera$(imprimirEspaciosRangosLargosBN ${#promedio_espera}) " \
+	"│ T. retorno medio: $promedio_retorno$(imprimirEspaciosRangosLargosBN ${#promedio_retorno}) │" >> $informeSinColorTotal
 	echo -e " └─────────────────────────────┴─────────────────────────────┘" >> $informeSinColorTotal
 	echo -e "\n ┌───────────────────────────────────────────────────────────┐" | tee -a $informeConColorTotal 
-#EN-32130-
+	echo -e " │ Total de Fallos de Página: $suma_contadorAlgPagFallosProcesoAcumulado$(imprimirEspaciosMasAnchos ${#suma_contadorAlgPagFallosProcesoAcumulado})$NC                          │" | tee -a $informeConColorTotal 
 	if [[ $seleccionMenuAlgoritmoGestionProcesos -eq 5 ]]; then
-#EN-32140-
+		echo -e " │ Total de Expulsiones Forzadas en Round-Robin (RR): $suma_contadorAlgPagExpulsionesForzadasProcesoAcumulado$(imprimirEspaciosMasAnchosBN ${#suma_contadorAlgPagExpulsionesForzadasProcesoAcumulado})$NC  │" | tee -a $informeConColorTotal 
 	fi
 	echo -e " └───────────────────────────────────────────────────────────┘" | tee -a $informeConColorTotal 
 	echo -e "\n ┌───────────────────────────────────────────────────────────┐" >> $informeSinColorTotal
-#EN-32150-
+	echo -e " │ Total de Fallos de Página: $suma_contadorAlgPagFallosProcesoAcumulado$(imprimirEspaciosMasAnchosBN ${#suma_contadorAlgPagFallosProcesoAcumulado})                          │" >> $informeSinColorTotal
 	if [[ $seleccionMenuAlgoritmoGestionProcesos -eq 5 ]]; then
-#EN-32160-
+		echo -e " │ Total de Expulsiones Forzadas en Round-Robin (RR): $suma_contadorAlgPagExpulsionesForzadasProcesoAcumulado$(imprimirEspaciosMasAnchosBN ${#suma_contadorAlgPagExpulsionesForzadasProcesoAcumulado})  │" >> $informeSinColorTotal
 	fi
 	echo -e " └───────────────────────────────────────────────────────────┘" >> $informeSinColorTotal
-#EN-32170-
+	if [[ $seleccionMenuEnsayos -ne 1 && $seleccionMenuEnsayos -ne 2 && $seleccionMenuEnsayos -ne 3 && $seleccionMenuEnsayos -ne 4 ]]; then #No se ejecuta cuando la selección inicial es la ejecución automática repetitiva.
 		echo -ne $ROJO"\n\n Pulsa ENTER para continuar "$NORMAL
 		read enter
 	fi
-#EN-32180-
+} #Fin de resultadoFinalDeLaEjecucion()
 
 ####################################################################################
-#EN-32190-
+# Sinopsis: Permite introducir las particiones y datos desde otro fichero (predefinido).
 ####################################################################################
 function mostrarInforme {
-#EN-32200-
+	if [[ $seleccionMenuEnsayos -ne 1 && $seleccionMenuEnsayos -ne 2 && $seleccionMenuEnsayos -ne 3 && $seleccionMenuEnsayos -ne 4 ]]; then #No se ejecuta cuando la selección inicial es la ejecución automática repetitiva.
 		echo -e "\n Final del proceso, puede consultar la salida en el fichero informeBN.txt" 
 		echo -e "\n Pulse enter para las opciones de visualización del fichero informeBN.txt..."
 		read enter
 	fi
-#EN-32210-
+#    clear
 	cecho -e " -----------------------------------------------------"  $FRED
 	cecho -e "         V I S U A L I Z A C I Ó N " $FYEL
 	cecho -e " -----------------------------------------------------"  $FRED
@@ -10529,7 +10529,7 @@ function mostrarInforme {
 	continuar="SI"
 	while [[ $num -ne 4 && "$continuar" == "SI" ]]; do
 		read num
-#EN-32220-
+		#Se comprueba que el número introducido por el usuario es de 1 a 10
 		until [[ 0 -lt $num && $num -lt 5 ]];  do
 			echo -ne "\n Error en la elección de una opción válida\n\n  --> " | tee -a $informeConColorTotal
 			echo -ne "\n Error en la elección de una opción válida\n\n  --> " >> $informeSinColorTotal
@@ -10539,22 +10539,22 @@ function mostrarInforme {
 		done
 		case $num in
 			'1' )  
-#EN-32230-
+#                clear               
 				cat $informeSinColorTotal
 				exit 0
 				;;
 			'2' ) 
-#EN-32240-
+#                clear
 				gedit $informeSinColorTotal
 				exit 0
 				;;
 			'3' )
-#EN-32250-
+#                clear
 				cat $informeConColorTotal
 				exit 0
 				;;
 			'4' )
-#EN-32260-
+#                clear
 				exit 0
 				;;
 			*) 
@@ -10562,40 +10562,40 @@ function mostrarInforme {
 				cecho "Opción errónea, vuelva a introducir:" $FRED
 		esac
 	done
-#EN-32270-
+} #Fin de mostrarInforme()
 
 ####################################################################################
 ####################################################################################
-#EN-32280-
+# COMIENZO DEL PROGRAMA
 ####################################################################################
 ####################################################################################
 function inicioNuevo {
-#EN-32290-
-#EN-32300-
-#EN-32310-
+	#Empieza el script
+	nprocesos=${#proceso[@]}
+	inicializaVectoresVariables #Inicilizamos diferentes tablas y variables  
 
-#EN-32320-
-#EN-32330-
+	# Se inicilizan las variables necesarias para la nueva línea del tiempo
+	dibujasNC=("${tejecucion[@]}") #Se dibuja tanto como tiempo de ejecución tengan
 	if [[ seleccionMenuAlgoritmoGestionProcesos -ne 4 ]]; then 
-#EN-32340-
+		dibujaDatosPantallaFCFS_SJF_SRPT_RR #Volcado de datos en pantalla tras pedir datos/introducción desde fichero.
 	elif [[ seleccionMenuAlgoritmoGestionProcesos -eq 4 ]]; then 
-#EN-32350-
+		dibujaDatosPantallaPrioridad #Volcado de datos en pantalla tras pedir datos/introducción desde fichero.
 	fi
 	
-#EN-32360-
-#EN-32370-
+	#B U C L E   P R I N C I P A L 
+	reloj=0 #Tiempo transcurrido desde el inicio del programa.
 	contador=1
-#EN-32380-
-#EN-32390-
-#EN-32400-
+	parar_proceso="NO" #Controla la salida del bucle cuando finalicen todos los procesos.
+	cpu_ocupada="NO" #Controla si hay procesos en ejecución.
+	finalprocesos=$nprocesos #Número de procesos definidos en el problema
 	realizadoAntes=0
 
 	while [[ "$parar_proceso" == "NO" ]]; do
-#EN-32410-
+		procPorUnidadTiempoBT[$reloj]=$topeProcPorUnidadTiempoBT #Se inicializa al máximo antes calculado para declarar que no hay proceso en ejecución en ese instante de reloj
 		timepoAux=`expr $reloj + 1`
 
-#EN-32420-
-#EN-32430-
+		#E N T R A R   E N   C O L A - Si el momento de entrada del proceso coincide con el reloj marcamos el proceso como en espera, en encola()
+		for (( i=0; i<$nprocesos; i++ )); do #Bucle que pone en cola los procesos.
 			if [[ ${llegada[$i]} == $reloj ]]; then
 				encola[$i]=1
 				fueraDelSistema[$i]=0
@@ -10608,128 +10608,128 @@ function inicioNuevo {
 			fi
 		done
 
-#EN-32440-
-#EN-32450-
+		#G U A R D A R   E N    M E M O R I A - Si un proceso está encola(), intento guardarlo en memoria, si cabe. Si lo consigo, lo marco como listo enmemoria().
+		for (( i=0; i<$nprocesos; i++ )); do #Comprueba si el proceso en ejecución ha finalizado, y lo saca de memoria. 
 			if [[ ${enejecucion[$i]} -eq 1 && ${temp_rej[$i]} -eq 0 ]]; then 
-#EN-32460-
-#EN-32470-
-#EN-32480-
+				enejecucion[$i]=0 #Para que deje de estar en ejecución.
+				enmemoria[$i]=0 #Para que deje de estar en memoria y deje espacio libre.  
+				mem_libre=`expr $mem_libre + ${memoria[$i]}` #Se libera la memoria que ocupaba el proceso cuando termina.
 				avisosalida[$i]=1
 				evento=1
-#EN-32490-
-#EN-32500-
-#EN-32510-
+				cpu_ocupada="NO" #Pasa a estar no ocupada hasta que se vuelva a buscar si hay procesos en memoria que vayan a ser ejecutados.
+				terminados[$i]=1 #Se guarda qué procesos han terminado (1) o no (0)
+				estad[$i]="5" #Finalizado
 				estado[$i]="Finalizado"
-#EN-32520-
+				finalprocesos=`expr $finalprocesos - 1` #Número de procesos que quedan por ejecutar.                    
 				pos_inicio[$i]=""
 				procFinalizado=$i
 			fi
 		done
 		
-#EN-32530-
+		calculosActualizarVariablesBandaMemoria #Se actualiza la variable memoria al terminar los procesos.
 		
-#EN-32540-
-#EN-32550-
+		#Con esta parte se revisa la reubicabilidad, y si hay procesos se intentan cargar antes de usar los gestores de procesos, mientras que con la que hay en la reubicación, tras reubicar y producir un hueco al final de la memoria, se reintenta cargar procesos.
+		#Se comprueba que haya espacio suficiente en memoria y se meten los procesos que se puedan de la cola para empezar a ejecutar los algoritmos de gestión de procesos.
 		if [[ $mem_libre -gt 0 ]]; then  
 			reubicarReubicabilidad=0 # #Determinará si se debe o no hacer la reubicación de los procesos por condiciones de reubicabilidad. En caso de ser memoria no continua, si hay un hueco demasiado pequeño, y se va a usar como parte de la memoria a usar.
 			reubicarContinuidad=0 # #Determinará si se debe o no hacer la reubicación de los procesos por condiciones de continuidad. En caso de ser memoria continua, si no hay un hueco suficientemente grande en el que quepa pero sí en la suma de todos ellos.
-#EN-32560-
-#EN-32570-
-#EN-32580-
-#EN-32590-
-#EN-32600-
+			crearListaSecuencialProcesosAlEntrarMemoria #Contiene los procesos que están en memoria de forma secuencial en la variable guardadoMemoria, y sus tamaños en tamanoGuardadoMemoria.
+			comprobacionSiguienteProcesoParaReubicar #Se determina qué proceso es el siguiente en entrar en memoria, y dependiendo de la continuidad y reubicabilidad definidas, se establece si hay espacio en memoria. 
+			if [[ $reubicarReubicabilidad -eq 0 && $reubicarContinuidad -eq 0 ]]; then #Si hay que reubicar antes de meter más procesos, se hace.
+				for (( po=0; po<$nprocesos; po++ )) ; do #Se meten todos los nuevos proceso que quepan y se comprueba si hay que reubicar tras cada uno de ellos. 
+					i=$po #Ajusta el bucle actual a la variable interna de la función.
 					comprobacionSiguienteProcesoParaMeterMemoria
 					meterProcesosBandaMemoria
-#EN-32610-
+					if [[ $noCabe0Cabe1 -eq 0 ]]; then #Sin este if+break fallaba porque podía meter otro proceso en memoria si tenía el espacio suficiente, incluso colándose a otro proceso anterior.
 						break
 					fi
 				done
 			else
-#EN-32620-
-#EN-32630-
-#EN-32640-
+				calculosReubicarYMeterProcesosBandaMemoria #Se reubica la memoria.
+				evento=0 #Se impide un nuevo volcado en pantalla en el que no se vea avance de la aplicación.
+				timepoAux=$reloj #Se modifica restando una unidad para ajustar el reloj y variables temporales al anular un ciclo del bucle, ya que la variable timepoAux se modifica al principio del bucle principal mediante: timepoAux=`expr $reloj + 1` 
 			fi
 		fi
 
-#EN-32650-
+		#Se inicializan las variables con diferentes acumulados en cada instante de reloj. Algunos acumulados sólo serían necesarios cuando se produzcan eventos, pero se podrían generalizar haciendo acumulados en cada instante.
 		inicializarAcumulados 
 		
-#EN-32660-
-#EN-32670-
-#EN-32680-
-#EN-32690-
-#EN-32700-
-#EN-32710-
+		# P L A N I F I C A R   P R O C E S O S  
+		# Si hay procesos listos en memoria(), se ejecuta el que corresponde en función del criterio de planificación que, 
+		# en este caso, es el que tenga una ejecución más corta de todos los procesos. Se puede expulsar a un proceso de la CPU
+		# Si acaba un proceso, su tiempo de ejecución se ponemos a 0 en la lista de enejecución y se libera la memoria que estaba ocupando
+		if [[ $reubicarReubicabilidad -eq 0 && $reubicarContinuidad -eq 0 ]]; then #Si hay que reubicar antes de meter más procesos, se hace.
+			ResuTiempoProceso[$reloj]=-1 #Mientras no haya un proceso en ejecución, se pone a -1. El gestor del algoritmo lo cambiará si procede.
 			if [[ $seleccionMenuAlgoritmoGestionProcesos == 1 ]]; then
-#EN-32720-
+				gestionProcesosFCFS #Algoritmo de gestión de procesos: FCFS
 			elif [[ $seleccionMenuAlgoritmoGestionProcesos == 2 ]]; then
-#EN-32730-
+				gestionProcesosSJF #Algoritmo de gestión de procesos: SJF
 			elif [[ $seleccionMenuAlgoritmoGestionProcesos == 3 ]]; then
-#EN-32740-
+				gestionProcesosSRPT #Algoritmo de gestión de procesos: SRPT
 			elif [[ $seleccionMenuAlgoritmoGestionProcesos == 4 ]]; then
-#EN-32750-
+				gestionProcesosPrioridades #Algoritmo de gestión de procesos: Prioridades
 			elif [[ $seleccionMenuAlgoritmoGestionProcesos == 5 ]]; then
-#EN-32760-
+				gestionProcesosRoundRobin #Algoritmo de gestión de procesos: Round Robin
 			fi
 		fi
-#EN-32770-
-#EN-32780-
-#EN-32790-
-#EN-32800-
-#EN-32810-
-#EN-32820-
-#EN-32830-
-#EN-32840-
+		#I M P R I M I R   E V E N T O S 
+		if [[ $evento -eq 1 ]]; then #Los eventos los determinan en las funciones gestionProcesosFCFS, gestionProcesosSJF y gestionProcesosSRPT
+			calculosImpresionBandaTiempos #Prepara la banda de tiempos de procesos en cada volcado
+			mostrarEventos #Se muestran los eventos sucedidos, sobre la tabla resumen.
+			# C Á L C U L O   D E   L A   B A N D A   D E   M E M O R I A  
+			# Habrá un array inicialmente relleno de "_" que se va llenando de las referencias de los procesos (memoria()). Después será usado para formar la banda de memoria.
+			# $po es el índice usado para los procesos y $ra para las posiciones de la memoria al recorrer el array.
+			# Hay otros arrays como el que se usa para generar los diferentes bloques que conforman cada proceso, relacionados con la reubicación (bloques()).
 			calculosPrepararLineasImpresionBandaMemoria
-#EN-32850-
-#EN-32860-
-#EN-32870-
-#EN-32880-
-#EN-32890-
-#EN-32900-
-#EN-32910-
+			# D I B U J O   D E   L A   T A B L A   D E   D A T O S   Y   D E   L A S   B A N D A S (Normalmente, por eventos) 
+			# Los eventos suceden cuando se realiza un cambio en los estados de cualquiera de los procesos.
+			# Los tiempos T. ESPERA, T. RETORNO y T. RESTANTE sólo se mostrarán en la tabla cuando el estado del proceso sea distinto de "No ha llegado".
+			# Para ello hacemos un bucle que pase por todos los procesos que compruebe si el estado fueraDelSistema() es 0 y para cada uno de los tiempos, si se debe mostrar se guarda el tiempo, si no se mostrará un guión
+			# Hay una lista de los procesos en memoria en la variable $guardados() 
+			dibujarTablaDatos #Prepara e imprime la tabla resumen de procesos en cada volcado
+			if [[ $procFinalizado -ne -1 ]]; then #Imprime diferentes resúmenes de paginación.
 				if [[ $seleccionMenuAlgoritmoPaginacion -eq 3 || $seleccionMenuAlgoritmoPaginacion -eq 4 ]]; then
 					procFinalizadoOEjecutando=$procFinalizado
 #					dibujaResumenReloj #Se dibuja la evolución del reloj para cada proceso con todos los usos de cada página.
 				fi
-#EN-32920-
-#EN-32930-
+				dibujaResumenAlgPagFrecUsoRec #Muestra el resumen de todos los fallos de paginación del proceso finnalizado
+				terminadosAux[$procFinalizado]=1 #Para no volver a hacer la impresión del mismo proceso a lescoger procFinalizado en gestionProcesosFCFS, gestionProcesosSJF y gestionProcesosSRPT.
 				procFinalizado=-1
 			fi          
 			if ([[ $seleccionMenuAlgoritmoPaginacion -eq 3 || $seleccionMenuAlgoritmoPaginacion -eq 4 ]]) && [[ $ejecutandoinst -ne -1 ]]; then
 				procFinalizadoOEjecutando=$ejecutandoinst
-#EN-32940-
+				dibujaReloj #Se dibuja el reloj para cada proceso cuando haya un volcado
 			fi
-#EN-32950-
-#EN-32960-
-#EN-32970-
-#EN-32980-
-#EN-32990-
-#EN-33000-
-#EN-33010-
-#EN-33020-
+			dibujaResumenBandaMemoriaMarcosPagina #Verifica qué proceso está en cada marco y determina si se produce un nuevo fallo de página, y lo muestra.
+			dibujarBandaMemoria #Se imprime la banda de memoria. Nueva versión, más fácil de interpretar y adaptar, larga y con iguales resultados.
+			dibujarBandaTiempos #Se imprime la banda de tiempo
+		fi #Cierre de Impresión Eventos
+		# Se incrementa el contador de tiempos de ejecución y de espera de los procesos y se decrementa 
+		# el tiempo de ejecución que tiene el proceso que se encuentra en ejecución.
+		if [[ $reubicarReubicabilidad -eq 0 && $reubicarContinuidad -eq 0 ]]; then #Si hay que reubicar antes de meter más procesos, se hace.
+			ajusteFinalTiemposEsperaEjecucionRestante #Prepara e imprime la tabla resumen de procesos en cada volcado - AL FINAL AUMENTA $reloj.
 		fi
-#EN-33030-
-#EN-33040-
-#EN-33050-
+	done #Fin del while con "$parar_proceso" = "NO"
+#    clear
+	tiempofinal=`expr $reloj - 1` #Para ajustar el tiempo final
 	echo -e "$NORMAL\n Tiempo: $tiempofinal  " | tee -a $informeConColorTotal
 	echo -e " Ejecución terminada." | tee -a $informeConColorTotal
 	echo -e "$NORMAL -----------------------------------------------------------\n" | tee -a $informeConColorTotal
 	echo -e "\n Tiempo: $tiempofinal  " >> $informeSinColorTotal
 	echo -e " Ejecución terminada." >> $informeSinColorTotal
 	echo -e " -----------------------------------------------------------\n" >> $informeSinColorTotal
-#EN-33060-
-#EN-33070-
-#EN-33080-
+	resultadoFinalDeLaEjecucion #Impresión de datos finales
+	if [[ $seleccionMenuEnsayos -ne 1 && $seleccionMenuEnsayos -ne 2 && $seleccionMenuEnsayos -ne 3 && $seleccionMenuEnsayos -ne 4 ]]; then #No se ejecuta cuando la selección inicial es la ejecución automática repetitiva.
+		mostrarInforme #Elección de visualización de informes
 	fi
-#EN-33090-
+} #Final del programa principal - inicioNuevo()
 
 ####################################################################################
 ####################################################################################
 ##############                   PROGRAMA PRINCIPAL                #################
 ####################################################################################
-#EN-33100-
-#EN-33110-
-#EN-33120-
-#EN-33130-
-#EN-33140-
+#Llamada a todas las funciones de forma secuencial
+revisarArbolDirectorios #Regenera el árbol de directorios si no se encuentra. 
+presentacionPantallaInforme #Carátula inicial con autores, versiones y licencias
+menuInicio #Elección de ejecución o ayuda
+inicioNuevo #Inicio de la ejecución del programa
