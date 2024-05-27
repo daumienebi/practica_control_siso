@@ -1,14 +1,6 @@
-#SP-10-Comentario 1
-#SP-20-Comentario 2
-#SP-30-Comentario 3
-#SP-40-Comentario 4
-#SP-50-Comentario 5
-#SP-20-Comentario
-#SP-30-Comentario
-#SP-40-Comentario
-#SP-50-Comentario
-#SP-60-Comentario
-#SP-70-Comentario
-#SP-80-Comentario
-#SP-90-Comentario
-#SP-100-Comentario
+#SP-10-Joder
+#SP-20-Joder
+#SP-30-Comentario 1
+#SP-40-Comentario 2
+#SP-50-Comentario 4
+#SP-60-Comentario 5
