@@ -33,7 +33,7 @@ NUM_ESPANHOL=1;
 NUM_INGLES=2;
 NUM_FRANCES=3;
 #LINEA_INICIO_IDIOMAS=$(($(grep -n '#CLAVE_IDIOMAS' ${BASH_SOURCE} | cut -d':' -f1) + 1))
-LINEA_INICIO_IDIOMAS=757 #Ver final del fichero para entender esta variable
+LINEA_INICIO_IDIOMAS=782  #Ver final del fichero para entender esta variable
 
 echo "LINE NUMBER : $LINEA_INICIO_IDIOMAS"
 #Otras variables
@@ -126,7 +126,8 @@ function cargarNuevasReferencias {
 	#Si se encuentra 1 o más ficheros, seguimos, si no, es que no se han encontrado scripts en los subdirectorios
 	if [[ $scripts_encontrados -lt 1 ]]
 	then
-		echo -e "${ROJO}No se han encontrado ningún script en los subdirectorios${RESET}"
+		mostrarErrorYAgregarloAlLogGeneral "No se han encontrado ningún script en los subdirectorios" $FUNCNAME
+		#echo -e "${ROJO}No se han encontrado ningún script en los subdirectorios${RESET}"
 		volverAlMenuOSalir
 	#Later add more options for the case where the files are already created
 	else
@@ -134,7 +135,7 @@ function cargarNuevasReferencias {
 		echo -e "${CIAN}Se han encontrado $scripts_encontrados scripts${RESET},¿deseas seguir? [s|n]"
 		echo -e -n "${AMARILLO}Seguir :${RESET}"
 		read opcion_seguir
-		#Comprobar la existencia de los ficheros antes de volver a crearlos
+		#TO-DO: Comprobar la existencia de los ficheros antes de volver a crearlos
 		while :; do
 			case $opcion_seguir in
 				's' | 'S')
@@ -220,7 +221,7 @@ function cargarNuevasReferencias {
 						else
 							echo -e "${ROJO}Opcion invalida${RESET}"
 							break;
-						fi
+						fi					
 					done
 					volverAlMenuOSalir #Prompt para que el usuario elija si salir o no de la app
 					;;
@@ -259,6 +260,7 @@ function leerFicheroYExtraerComentarios {
   	fichero_idioma3=$6
   	cod_idioma3=$7
   	contador_lineas=$INICIO_NUM_LINEAS #Numero inicial de cada linea
+  	declare -a lineas_script_original=()
   	#Ajustamos el Internal field separator
   	IFS=$'\n'
   	#Ahora leemos el fichero de origin (El .sh sobre el que se crearán las referencias)
@@ -273,6 +275,16 @@ function leerFicheroYExtraerComentarios {
     			comentario="#"$cod_idioma1"-"$contador_lineas"-"$linea_filtrada
     			#Escribimos el contenido en el fichero principal
     			echo $comentario >> $fichero_idioma1 # usamos ">>" para adjuntar cada linea a lo que ya hay en el fichero
+    			#Concatenamos la linea para el script original que contiene la referencia y el texto
+    			if [[ "$linea" =~ ^# ]]; then
+    				comentario_script="#${cod_idioma1}-${contador_lineas}-${linea#\#}"
+			else
+    				#Separamos la línea en la parte antes del primer # y el comentario después del #
+    				parte_antes=${linea%%#*}
+    				comentario_despues=${linea#*#}
+    				comentario_script="${parte_antes}#${cod_idioma1}-${contador_lineas}-${comentario_despues}"
+			fi
+    			lineas_script_original+=("$comentario_script") #Tiene que ir aqui porque aqui es donde añadimos el fichero principal
     			#Escribimos las referencias vacia en ficheros de otros idiomas
     			#Idioma2
     			comentario="#"$cod_idioma2"-"$contador_lineas"-"
@@ -283,10 +295,13 @@ function leerFicheroYExtraerComentarios {
     			contador_lineas=$((contador_lineas + $INCR_LINEAS)) #El número de lineas del documento tiene que ir de 10 en 10
   		else
   			#Seguimos a la siguiente linea
+  			lineas_script_original+=("$linea")
   			comentario=""
     			continue;
   		fi
-  	done < "$fichero_origin" 
+  	done < "$fichero_origin"
+  	#Ahora poner las etiquetas en el script original
+  	printf "%s\n" "${lineas_script_original[@]}" > "$fichero_origin" #Risky shit :)
 } #Fin leerFicheroYExtraerComentarios()
 
 #Comprueba si es una linea es valida para considerarla un comentario para la traducción
@@ -330,6 +345,7 @@ function regenerarReferencias {
 			echo "nombre_fichero:"$nombre_fichero
 			echo "fichero idioma :"$fichero_idioma
 			declare -a lineas_idiomas=()
+			declare -a lineas_actualizada_script=()
 			contador_lineas=$INICIO_NUM_LINEAS #Numero inicial de cada linea
  			while IFS= read -r linea; #Con la opcion -r, nos aseguramos de que se lee todo tal cual aparece en el fichero y no se interprete de otra forma, por ejemplo el (\n o \t)
   			do
@@ -351,26 +367,34 @@ function regenerarReferencias {
 						echo "Me quedé con : $linea_filtrada"
 					fi
 		    			comentario="#"${cod_idioma^^}"-"$contador_lineas"-"$linea_filtrada
-		    			#Escribimos el contenido en el fichero principal
 		    			lineas_idiomas+=("$comentario")
+		    			#Escribimos el contenido en el fichero principal
+		    			if [[ "$linea" =~ ^# ]]; then
+                    				#comentario_script="#${cod_idioma}-${contador_lineas}-${linea#\#}"
+                    				comentario_script="#${cod_idioma}-${contador_lineas}-${linea_filtrada}"
+                			else
+                    				# Separamos la línea en la parte antes del primer # y el comentario después del #
+                    				parte_antes=${linea%%#*}
+                    				comentario_despues=${linea#*#}
+                    				comentario_script="${parte_antes}#${cod_idioma}-${contador_lineas}-${comentario_despues}"
+               		 		fi
+               		 		#comentario_script="#"${cod_idioma^^}"-"$contador_lineas"-"$linea_filtrada
+		    			lineas_actualizada_script+=("$comentario_script")
 		    			contador_lineas=$((contador_lineas + $INCR_LINEAS))
-		    			#Escribimos las referencias vacia en ficheros de otros idiomas
-		    			#Idioma2
-		    			#comentario="#"$cod_idioma2"-"$contador_lineas"-"
-		    			#echo $comentario >> $fichero_idioma2
-		    			#Idioma3
-		    			#comentario="#"$cod_idioma3"-"$contador_lineas"-"
-		    			#echo $comentario >> $fichero_idioma3
-		    			#contador_lineas=$((contador_lineas + $INCR_LINEAS)) #El número de lineas del documento tiene que ir de 10 en 10
+		    			#Now make it substitute something like for loop #Comment correctly,the line doesnt start with an # but it has an # later on
   				else
 		  			#Seguimos a la siguiente linea
 		  			echo "Linea no valida: $linea"
+		  			comentario_script="$linea"
+		  			lineas_actualizada_script+=("$comentario_script")
 		  			comentario=""
 		    			continue;
   				fi
   			done < "$script"
   			#Escribir en el fichero de idiomas y actualizar el script llamando a la funcion cambiaIdioma
   			printf "%s\n" "${lineas_idiomas[@]}" > "$fichero_idioma" #Risky shit :)
+  			#Despues de escribir en el de idiomas, ahora cambiamos el idioma de vuelta
+  			printf "%s\n" "${lineas_actualizada_script[@]}" > "$script" #Risky shit :)
  		done
  	else
  		mostrarErrorYAgregarloAlLogGeneral "No existe ese código de idioma" $FUNCNAME
@@ -438,92 +462,91 @@ function mostrarPresentacion {
 } #Fin mostrarPresentacion()
 
 function cambiarIdiomaEnElScript {
-	#Volvemos a buscar los ficheros para encontrar cada script y dentro del ese mismo directorio, tenemos los ficheros de traducción
-	find */ -name "$FILTRO_FICHEROS" -type f -print 
- 	#Ahora por cada uno de ellos, cogemos su comentario y lo introducimos pero primero preguntamos el idioma
- 	#Preguntamos a que idioma lo quiere traducir el usuario
- 	echo -e "\n¿A que idioma quieres traducir el script? (Indica el código [XY])"
- 	mostrarIdiomasDisponibles
- 	echo -e -n "${AMARILLO}Código Idioma:${RESET}"
- 	read cod_idioma
- 	#Comprobamos si existe el codigo de idioma, si no existe , la funcion devuelve 1 si existe y 0 si no
- 	existeCodigoIdioma "${cod_idioma}"
- 	existe=$? #Obtenemos el resultado del ultimo comando ejecutado
- 	if [[ $existe -eq 1 ]]
- 	then
- 		#Ahora que existe el código, copiamos el las referencias del fichero al script
- 		echo "Existe el codigo"
- 		IFS=$'\n'
- 		#Obtenemos cada sh de los subdirectorios
- 		for script in $(find */ -name "$FILTRO_FICHEROS" -type f);
- 		do
- 			nombre_fichero=$(basename ${script%.*})
-			ruta_fichero_original=$script
-			directorio=$(dirname "$ruta_fichero_original")
-			fichero_idioma="$directorio/${cod_idioma^^}_${nombre_fichero}.txt"
-			#fichero_idioma=$cod_idioma"_"$nombre_fichero.txt
-			echo $fichero_idioma
-			echo $ruta_fichero_original
-			#Con la opcion -r, nos aseguramos de que se lee todo tal cual aparece en el fichero y no se interprete de otra forma, por ejemplo el (\n o \t)
-			#Leemos el fichero original y el fichero txt de traduccion pero primero miramos si existe el de traduccion
-		 	if [[ -e "$fichero_idioma" ]]; then
-		 	#Array para guardar las lineas
-		 	declare -a lineas_referencias=()
-		 	linea_traduccion=$(grep "$referencia" "$fichero_idioma")
-		 	ultimo_numero_referencia=0
-				while IFS= read -r linea_original; do
-					esLineaValidaComoComentario "$linea_original"
-					valido=$?
-					if [[ $valido -eq 1 ]]; then
-						referencia=$(echo "$linea_original" | grep -o '#[A-Z]\+-[0-9]\+-')
-						echo "La referencia es: $referencia"
-						#Buscamos la traduccion
-						linea_traduccion=$(grep "$referencia" "$fichero_idioma")
-						if [[ -n "$referencia" && -n "$linea_traduccion" ]]; then
-							linea_nueva="$linea_traduccion"
-				    			echo "Linea original: $linea_original"
-				   			echo "Linea traducida: $linea_traduccion"
-				   			echo "Linea nueva: $linea_nueva"
-				   			#ultimo_numero_referencia=$(echo "$referencia" | grep -o '[0-9]\+')
-				   			#echo "ultimo_numero_referencia $ultimo_numero_referencia"
-				   			#linea_anterior=$linea_traduccion
-				   		else
-				   			echo "La línea no contiene la referencia esperada: $linea_original"
-				   			echo "ultimo_numero_referencia $ultimo_numero_referencia"
-				   			#nueva_referencia="#"${cod_idioma^^}"-"$((ultimo_numero_referencia+1))"-"${linea_original#*#} #Pillar todo lo que haya despues del segundo 
-				   			echo "Escribiendo nueva referencia : $nueva_referencia"
-				   			#echo "$nueva_referencia" >> "$fichero_idioma"
-				   			echo "$linea_original" >> "$fichero_idioma" #de momento metemos la linea original y ya
-                                			linea_nueva="$linea_original" #Si no encuentra la referencia, deja la linea como esta en el fichero original
-                                			#linea_nueva="$nueva_referencia"
-                                			#((ultimo_numero_referencia++))
-                                			#linea_nueva=#${contenido_depues_de_guion}
-                                			#contenido_depues_de_guion=${linea_traduccion##*-} maybe just when we are regenerating, we get everything after the last - as the line
-						fi
-					else
-				    		linea_nueva="$linea_original"
-				    		echo "Linea original: $linea_original"
-				    		echo "Linea nueva: $linea_nueva"
-					fi
-					#((ultimo_numero_referencia++))	
-					# Añadimos la nueva línea al array
-                    			lineas_referencias+=("$linea_nueva")
-                    		done < "$ruta_fichero_original"
-			    	#done < "$ruta_fichero_original" 3< "$fichero_idioma"
-			    	# Escribimos el contenido actualizado de nuevo en el archivo original
-                		printf "%s\n" "${lineas_referencias[@]}" > "$ruta_fichero_original" #Risky shit :)
-			else
-			    echo -e "${ROJO}No se encontraron los ficheros de traducción correspondientes, puede que no estén generados${RESET}"
-			    volverAlMenuOSalir
-			fi
- 		done
- 		volverAlMenuOSalir 
- 	else
- 		echo -e "${ROJO}No existe ese código de idioma${RESET}"
- 		volverAlMenuOSalir
- 	fi
-} #Fin cambiarIdiomaEnElScript()
 
+    # Volvemos a buscar los ficheros para encontrar cada script y dentro del ese mismo directorio, tenemos los ficheros de traducción
+    find */ -name "$FILTRO_FICHEROS" -type f -print 
+
+    # Ahora por cada uno de ellos, cogemos su comentario y lo introducimos pero primero preguntamos el idioma
+
+    # Preguntamos a qué idioma lo quiere traducir el usuario
+    echo -e "\n¿A qué idioma quieres traducir el script? (Indica el código [XY])"
+    mostrarIdiomasDisponibles
+    echo -e -n "${AMARILLO}Código Idioma:${RESET}"
+    read cod_idioma
+
+    # Comprobamos si existe el código de idioma, si no existe, la función devuelve 1 si existe y 0 si no
+    existeCodigoIdioma "${cod_idioma}"
+    existe=$? # Obtenemos el resultado del último comando ejecutado
+
+    if [[ $existe -eq 1 ]]
+    then
+        # Ahora que existe el código, copiamos las referencias del fichero al script
+        echo "Existe el código"
+        IFS=$'\n'
+
+        # Obtenemos cada script de los subdirectorios
+        for script in $(find */ -name "$FILTRO_FICHEROS" -type f);
+        do
+            nombre_fichero=$(basename ${script%.*})
+            ruta_fichero_original=$script
+            directorio=$(dirname "$ruta_fichero_original")
+            fichero_idioma="$directorio/${cod_idioma^^}_${nombre_fichero}.txt"
+
+            echo $fichero_idioma
+            echo $ruta_fichero_original
+
+            # Con la opción -r, nos aseguramos de que se lee todo tal cual aparece en el fichero y no se interprete de otra forma, por ejemplo el (\n o \t)
+            # Leemos el fichero original y el fichero txt de traducción pero primero miramos si existe el de traducción
+            if [[ -e "$fichero_idioma" ]]; then
+                # Array para guardar las líneas
+                declare -a lineas_referencias=()
+
+                while IFS= read -r linea_original; do
+                    esLineaValidaComoComentario "$linea_original"
+                    valido=$?
+
+                    if [[ $valido -eq 1 ]]; then
+                        referencia=$(echo "$linea_original" | grep -o '#[A-Z]\+-[0-9]\+-')
+                        echo "La referencia es: $referencia"
+
+                        # Buscamos la traducción
+                        linea_traduccion=$(grep "$referencia" "$fichero_idioma" | sed "s/.*$referencia\(.*\)/\1/")
+
+                        if [[ -n "$referencia" && -n "$linea_traduccion" ]]; then
+                            linea_nueva=$(echo "$linea_original" | sed "s/$referencia.*/$referencia$linea_traduccion/")
+                            echo "Línea original: $linea_original"
+                            echo "Línea traducida: $linea_traduccion"
+                            echo "Línea nueva: $linea_nueva"
+                        else
+                            echo "La línea no contiene la referencia esperada: $linea_original"
+                            #echo "$nueva_referencia" >> "$fichero_idioma"
+                            echo "$linea_original" >> "$fichero_idioma" #de momento metemos la linea original y ya
+                            linea_nueva="$linea_original"
+                        fi
+                    else
+                        linea_nueva="$linea_original"
+                        echo "Línea original: $linea_original"
+                        echo "Línea nueva: $linea_nueva"
+                    fi
+
+                    # Añadimos la nueva línea al array
+                    lineas_referencias+=("$linea_nueva")
+                done < "$ruta_fichero_original"
+
+                # Escribimos el contenido actualizado de nuevo en el archivo original
+                printf "%s\n" "${lineas_referencias[@]}" > "$ruta_fichero_original" # Risky shit :)
+
+            else
+            	mostrarErrorYAgregarloAlLogGeneral "No se encontraron los ficheros de traducción correspondientes, puede que no estén generados" $FUNCNAME
+                volverAlMenuOSalir
+            fi
+        done
+        volverAlMenuOSalir 
+    else
+        echo -e "${ROJO}No existe ese código de idioma${RESET}"
+        volverAlMenuOSalir
+    fi
+} # Fin cambiarIdiomaEnElScript()
 
 #Recibe un codigo de idioma como parametro y comprueba si existe
 #Devuelve [1] si existe y [0] si no
@@ -569,7 +592,8 @@ function crearNuevoFicheroDeAlmacenamiento {
 			#Mostrar distintos mensajes dependiendo del error
 			if [[ $existe_cod_idioma -eq 1 ]]
 			then
-				echo -e "${ROJO}Error: Ese codigo de idioma ya existe.\n${RESET}"
+				mostrarErrorYAgregarloAlLogGeneral "Error: Ese codigo de idioma ya existe.\n" $FUNCNAME
+				#echo -e "${ROJO}Error: Ese codigo de idioma ya existe.\n${RESET}"
 				mostrarIdiomasDisponibles 
 			fi
 			if [[ $tamanho_codigo -ne 2  ]]
@@ -593,7 +617,7 @@ function crearNuevoFicheroDeAlmacenamiento {
                 			tamanho_codigo=${#cod_idioma_nuevo} #volvemos a comprobar el tamaño
                 			;;
             			*)
-                			echo -e "${ROJO}Opcion no valida. Por favor, seleccione 0 o 1.${RESET}" 
+            				mostrarErrorYAgregarloAlLogGeneral "Opcion no valida. Por favor, seleccione 0 o 1" $FUNCNAME
                 			;;
         		esac
     		else
@@ -667,7 +691,7 @@ function volverAlMenuOSalir {
                 		mostrarMenuPrincipal
                 		;;
             		*)
-                		echo -e "${ROJO}Opcion no valida. Por favor, seleccione 0 o 1.${RESET}" 
+            			mostrarErrorYAgregarloAlLogGeneral "Opcion no valida. Por favor, seleccione 0 o 1" $FUNCNAME
                 		;;
         	esac
 	done
@@ -699,7 +723,8 @@ function visualizarFicherosLog {
                 		echo "Aun no disponible"
                 		;;
             		*)
-                		echo -e "${ROJO}Por favor, seleccione una opción valida.${RESET}" 
+            			mostrarErrorYAgregarloAlLogGeneral "Por favor, seleccione una opción valida." $FUNCNAME
+                		#echo -e "${ROJO}Por favor, seleccione una opción valida.${RESET}" 
                 		;;
         	esac
 	done

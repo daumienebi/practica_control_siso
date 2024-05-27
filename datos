@@ -1,0 +1,60 @@
+#!\bin\bash
+veras tu
+#Joder
+A ver si pillas esto bobi #Joder
+for i in {1..10} do
+	#Imprimimos el número por pantalla
+	echo $i #pilla esto bobi
+done
+#Mas te vale funcionar
+#Comentario 1
+
+#Comentario 2
+#Comentario 4
+#Comentario 5
+
+
+#!\bin\bash
+veras tu
+#SP-10-Joder
+A ver si pillas esto bobi #SP-20-Joder
+for i in {1..10} do
+	#SP-30-Imprimimos el número por pantalla
+	echo $i #SP-40-pilla esto bobi
+done
+#SP-50-Mas te vale funcionar
+#SP-60-Comentario 1 jajjaja
+#A ver que hacer
+#SP-70-Comentario 2 khe?
+#SP-80-Comentario 4 pero
+#SP-90-Comentario Josep Pedrerol
+#SP-91-Comentario
+
+
+#SP-10-Joder
+#SP-20-Joder
+#SP-30-Imprimimos el número por pantalla
+#SP-40-pilla esto bobi
+#SP-50-Mas te vale funcionar
+#SP-60-Comentario 1 jajjaja
+#SP-70-Comentario 2 khe?
+#SP-80-Comentario 4 pero
+#SP-90-Comentario Josep Pedrerol
+#A ver que hacer
+#SP-91-Comentario
+
+#!\bin\bash
+veras tu
+#SP-10-Joder
+A ver si pillas esto bobi #SP-20-Joder
+for i in {1..10} do
+	#SP-30-Imprimimos el número por pantalla
+	echo $i #SP-40-pilla esto bobi
+done
+#SP-50-Mas te vale funcionar
+#SP-60-Comentario 1
+#A ver que hacer
+#SP-70-Comentario 2
+#SP-80-Comentario 4
+#SP-90-Comentario 5
+#SP-91-Vamosss
