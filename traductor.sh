@@ -33,7 +33,7 @@ NUM_ESPANHOL=1;
 NUM_INGLES=2;
 NUM_FRANCES=3;
 #LINEA_INICIO_IDIOMAS=$(($(grep -n '#CLAVE_IDIOMAS' ${BASH_SOURCE} | cut -d':' -f1) + 1))
-LINEA_INICIO_IDIOMAS=782  #Ver final del fichero para entender esta variable
+LINEA_INICIO_IDIOMAS=785  #Ver final del fichero para entender esta variable
 
 echo "LINE NUMBER : $LINEA_INICIO_IDIOMAS"
 #Otras variables
@@ -371,12 +371,15 @@ function regenerarReferencias {
 		    			#Escribimos el contenido en el fichero principal
 		    			if [[ "$linea" =~ ^# ]]; then
                     				#comentario_script="#${cod_idioma}-${contador_lineas}-${linea#\#}"
-                    				comentario_script="#${cod_idioma}-${contador_lineas}-${linea_filtrada}"
+                    				comentario_script="#"${cod_idioma^^}-${contador_lineas}-${linea_filtrada}
                 			else
                     				# Separamos la línea en la parte antes del primer # y el comentario después del #
                     				parte_antes=${linea%%#*}
-                    				comentario_despues=${linea#*#}
-                    				comentario_script="${parte_antes}#${cod_idioma}-${contador_lineas}-${comentario_despues}"
+                    				#comentario_despues=${linea#*#}
+                    				#comentario_script="${parte_antes}#${cod_idioma}-${contador_lineas}-${comentario_despues}"
+                    				comentario_despues=$(echo "$linea" | sed 's/^[A-Z]\+-[0-9]\+-//')
+                    				#Makes sense now : Cogemos la parte antes que no tiene  # y luego la linea filtrada
+                    				comentario_script=${parte_antes}#${cod_idioma^^}-${contador_lineas}-${linea_filtrada}
                		 		fi
                		 		#comentario_script="#"${cod_idioma^^}"-"$contador_lineas"-"$linea_filtrada
 		    			lineas_actualizada_script+=("$comentario_script")
