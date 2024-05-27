@@ -32,16 +32,17 @@ COD_FR="FR"
 NUM_ESPANHOL=1;
 NUM_INGLES=2;
 NUM_FRANCES=3;
-#LINE_NUMBER=$(grep -n "#Zona_Inicio_Idiomas" "$BASH_SOURCE" | cut -d: -f1)
-#LINEA_INICIO_IDIOMAS=$((LINE_NUMBER +1))
-LINEA_INICIO_IDIOMAS=666 #Ver final del fichero para entender esta variable
+#LINEA_INICIO_IDIOMAS=$(($(grep -n '#CLAVE_IDIOMAS' ${BASH_SOURCE} | cut -d':' -f1) + 1))
+LINEA_INICIO_IDIOMAS=757 #Ver final del fichero para entender esta variable
 
+echo "LINE NUMBER : $LINEA_INICIO_IDIOMAS"
 #Otras variables
 FILTRO_FICHEROS="*.sh"
 BIN_BASH1="#!/bin/bash"
 BIN_BASH2="#!\bin\bash"
 INICIO_NUM_LINEAS=10
 INCR_LINEAS=10 #Incremento de linea
+FICHERO_LOGS_GENERAL="./logGeneral.log"
 
 #Colores
 RESET="\e[0m" #Reset para volver al color normal despues de haber aplicado un color anteriormente
@@ -285,7 +286,7 @@ function leerFicheroYExtraerComentarios {
   			comentario=""
     			continue;
   		fi
-  	done < "$fichero_origin"
+  	done < "$fichero_origin" 
 } #Fin leerFicheroYExtraerComentarios()
 
 #Comprueba si es una linea es valida para considerarla un comentario para la traducción
@@ -298,8 +299,7 @@ function esLineaValidaComoComentario {
     	#linea_sin_espacios=$(echo "$linea" | sed 's/ //g') #espacion y simbolo global para reemplazar todas las ocurencias
 	#Contamos el número de almohadillas que hay en la linea porque cuando tiene más de 1,normalmente son las cabeceras
     	num_hashtags=$(echo "$linea" | tr -cd '#' | wc -c)
-	#Tambien comprobamos si la linea contiene una # o no con "$linea" != *#*, No incluir las "" aqui para el *#*,si no,nos buscará que la linea sea exactamente "*#*"
-	#Saltamos la linea de bin bash en sus diferentes formas y aplicamos los demás filtros
+	#Tambien comprobamos si la linea contiene una # o no con "$linea" != *#*, No incluir las "" aqui para el *#*,si no,nos buscará que la linea sea exactamente "*#*"	
 	if [[ "$linea" == "$BIN_BASH1" || "$linea" == "$BIN_BASH2"  || "$linea_sin_espacios" == "#" || $num_hashtags -gt 1 || "$linea" != *#* ]]
 	then
 		return 0 #No es una linea válida
@@ -311,7 +311,7 @@ function esLineaValidaComoComentario {
 function regenerarReferencias {
 	#Preguntamos al usuario en que idioma quiere regenerar las referencias
 	mostrarIdiomasDisponibles
-	echo "Introduce el código de idioma para realizar la regeneración de referencias"
+	echo "¿En que idioma están los scripts ?"
 	echo -e -n "${AMARILLO}Codigo Idioma :${RESET}"
 	read cod_idioma
 	#Comprobamos si existe el codigo de idioma, si no existe , la funcion existeCodigoIdioma devuelve 1 si existe y 0 si no
@@ -319,18 +319,83 @@ function regenerarReferencias {
  	existe=$? #Obtenemos el resultado del ultimo comando ejecutado
  	if [[ $existe -eq 1 ]]
  	then
- 		#Buscamos los scripts otra vez y actualizamos las referencias por si se ha cambiado
- 		echo "Existe el codigo"
  		#Obtener los comentarios de cada script pero intentando ordenarlos y comprobar si nos han insertado alguno nuevo en medio
  		for script in $(find */ -name "$FILTRO_FICHEROS" -type f);
  		do
- 			echo $script
+ 			#Obtenemos el nombre del fichero con 'basename' asi no nos devuelve la ruta relativa del fichero.sh encontrado
+			nombre_fichero=$(basename ${script%.*}) 
+			directorio=$(dirname "$script")
+			fichero_idioma="$directorio/${cod_idioma^^}_${nombre_fichero}.txt"
+			echo "codigo idioma :" $cod_idioma
+			echo "nombre_fichero:"$nombre_fichero
+			echo "fichero idioma :"$fichero_idioma
+			declare -a lineas_idiomas=()
+			contador_lineas=$INICIO_NUM_LINEAS #Numero inicial de cada linea
+ 			while IFS= read -r linea; #Con la opcion -r, nos aseguramos de que se lee todo tal cual aparece en el fichero y no se interprete de otra forma, por ejemplo el (\n o \t)
+  			do
+		  		#Comprobamos si cada linea es válida
+		  		esLineaValidaComoComentario "$linea"
+				linea_valida=$?
+				if [[ $linea_valida -eq 1 ]]; 
+				then
+					echo "Linea valida: $linea"
+					#q for silence and E to enable regular expresions
+					if echo "$linea" | grep -qE '#[A-Z]+-[0-9]+-';
+					then
+						#cogemos todo lo que venga despues del ultimo -
+						linea_filtrada=$(echo "$linea" | cut -d'-' -f3-) #Desde field 3
+						#linea_filtrada=${linea##*-} Este puede fallar si hay mas de 2 guiones
+						echo "Patron Me quedé con : $linea_filtrada"
+					else
+						linea_filtrada=${linea#*#} #Cogemos todo lo que venga despues de la primera # de la linea
+						echo "Me quedé con : $linea_filtrada"
+					fi
+		    			comentario="#"${cod_idioma^^}"-"$contador_lineas"-"$linea_filtrada
+		    			#Escribimos el contenido en el fichero principal
+		    			lineas_idiomas+=("$comentario")
+		    			contador_lineas=$((contador_lineas + $INCR_LINEAS))
+		    			#Escribimos las referencias vacia en ficheros de otros idiomas
+		    			#Idioma2
+		    			#comentario="#"$cod_idioma2"-"$contador_lineas"-"
+		    			#echo $comentario >> $fichero_idioma2
+		    			#Idioma3
+		    			#comentario="#"$cod_idioma3"-"$contador_lineas"-"
+		    			#echo $comentario >> $fichero_idioma3
+		    			#contador_lineas=$((contador_lineas + $INCR_LINEAS)) #El número de lineas del documento tiene que ir de 10 en 10
+  				else
+		  			#Seguimos a la siguiente linea
+		  			echo "Linea no valida: $linea"
+		  			comentario=""
+		    			continue;
+  				fi
+  			done < "$script"
+  			#Escribir en el fichero de idiomas y actualizar el script llamando a la funcion cambiaIdioma
+  			printf "%s\n" "${lineas_idiomas[@]}" > "$fichero_idioma" #Risky shit :)
  		done
  	else
+ 		mostrarErrorYAgregarloAlLogGeneral "No existe ese código de idioma" $FUNCNAME
  		volverAlMenuOSalir
- 		echo "No existe el codigo"
  	fi	
 } #Fin regenerarReferencias()
+
+#Function que agrega los errores o aviso a un fichero log en en directorio donde se encuentra el
+#script principal
+#$1 - mensaje de error
+#$2 - Nombre de la función que lanzó el error
+function mostrarErrorYAgregarloAlLogGeneral {
+	mensaje_error=$1
+	nombre_funcion=$2
+	fecha_y_hora=$(date)
+	#Comprobamos si existe el fichero con la opcion -e
+	echo -e "${ROJO}$mensaje_error${RESET}"
+	if [[ -e  $FICHERO_LOGS_GENERAL ]];
+	then
+		echo "$fecha_y_hora : $mensaje_error [Nombre función: $nombre_funcion]" >> $FICHERO_LOGS_GENERAL
+	else
+		touch $FICHERO_LOGS_GENERAL
+		echo "$fecha_y_hora : $mensaje_error [Nombre función: $nombre_funcion]" > $FICHERO_LOGS_GENERAL
+	fi
+}
 
 #Lo mismo que el leerFicheroYExtraerComentarios, pero esta funcion solo recibe 3 parametros y solo será llamado cuando se agregue un idioma nuevo
 function leerFicheroYExtraerComentariosNuevoIdioma {
@@ -425,7 +490,7 @@ function cambiarIdiomaEnElScript {
 				   		else
 				   			echo "La línea no contiene la referencia esperada: $linea_original"
 				   			echo "ultimo_numero_referencia $ultimo_numero_referencia"
-				   			#nueva_referencia="#"${cod_idioma^^}"-"$((ultimo_numero_referencia+1))"-"${linea_original#*#} #Pillar todo lo que haya despues del segundo -
+				   			#nueva_referencia="#"${cod_idioma^^}"-"$((ultimo_numero_referencia+1))"-"${linea_original#*#} #Pillar todo lo que haya despues del segundo 
 				   			echo "Escribiendo nueva referencia : $nueva_referencia"
 				   			#echo "$nueva_referencia" >> "$fichero_idioma"
 				   			echo "$linea_original" >> "$fichero_idioma" #de momento metemos la linea original y ya
@@ -571,6 +636,7 @@ function guardarIdiomaNuevo {
 #Nota : Obtiene este dato solo basandose en los que encuentra al final del script, no comprueba los ficheros
 function mostrarIdiomasDisponibles {
 	contador_idiomas=0
+	echo "LINEA_INICIO_IDIOMAS is $LINEA_INICIO_IDIOMAS"
 	echo -e "${CIAN}Se han encontrado los siguientes idiomas :${RESET}"
 	while IFS= read -r linea;
 	do
@@ -578,7 +644,7 @@ function mostrarIdiomasDisponibles {
 		echo -e "\n✅ $linea_filtrada"
 		((contador_idiomas++))
 		#codigo_idiomas+=("$linea_filtrada") #Añadimos cada código encontrado al array
-	done < <(sed -n "$LINEA_INICIO_IDIOMAS,\$p" "${BASH_SOURCE}") #Sustitucion de procesos
+	done < <(sed -n "${LINEA_INICIO_IDIOMAS},\$p" "${BASH_SOURCE}") #Sustitucion de procesos
 	echo -e "${CIAN}$contador_idiomas idiomas disponibles\n${RESET}"	
 } #Fin mostrarIdiomasDisponibles()
 
@@ -609,10 +675,35 @@ function volverAlMenuOSalir {
 
 #Buscar los ficheros de log de cada directorio y mostrarselo al usuario
 function visualizarFicherosLog {
-	echo -e "${CIAN}Selecciona el fichero de log que deseas ver${RESET}"
-	#Obtenemos los ficheros de logs existentes
-} #Fin crearFicheroDeAlmacenamiento()
-
+	while : ; 
+	do
+		echo -e "${CIAN}Selecciona el fichero de log que deseas ver\n${RESET}"
+		echo "1. Fichero de logs general"
+		echo "2. Fichero de logs por cada idioma"
+		echo "0. Salir"
+		echo -e -n "${AMARILLO} Opción: ${RESET}"
+		read opcion
+        	case $opcion in
+        		0)
+                		exit 
+                		;;
+            		1)
+            			clear
+                		cat $FICHERO_LOGS_GENERAL
+                		echo -e "${VERDE}FIN DE LOG${RESET}\n"
+                		volverAlMenuOSalir
+                		break
+                		;;
+                	2)
+            			clear
+                		echo "Aun no disponible"
+                		;;
+            		*)
+                		echo -e "${ROJO}Por favor, seleccione una opción valida.${RESET}" 
+                		;;
+        	esac
+	done
+} #Fin visualizarFicherosLog()
 
 #Funcion para simular la carga de una operacion, recibe 2 parametros
 #1. El mensaje de carga
@@ -658,11 +749,11 @@ function eliminarFicherosDeAlmacenamiento {
 mostrarPresentacion
 mostrarMenuPrincipal
 
-#Zona de idiomas, se obtendrá los idiomas con la linea donde se encuentran, solo sera necesario indicar donde se encuentra la primera linea del codigo de un idioma.
-#Cuidado con las modificaciones del script, si se modifica el script y aumentan / disminuyen las lineas,hay que actualizar 
-# el valor de la variable LINEA_ZONA_INICIO_IDIOMAS al principio del fichero, y tiene que ser igual al numero de la
+#Zona de idiomas, se obtendrá los idiomas con la linea donde se encuentran,Cuidado con las modificaciones del script,
+#si se modifica el script y aumentan / disminuyen las lineas,hay que actualizar el valor de la variable LINEA_ZONA_INICIO_IDIOMAS 
+#que se encuentra al principio del fichero. Despues de este comentario se puede ver la primera linea de los códigos de idiomas
 
-##ZONA DE IDIOMAS ### NO MODIFICAR NI AGREGAR CODIGOS DE IDIOMAS A MANO ###
+#CLAVE_IDIOMAS
 #SP-Español
 #EN-Ingles
 #FR-Frances
