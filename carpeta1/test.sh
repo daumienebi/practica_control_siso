@@ -1,7 +1,7 @@
 #!\bin\bash
 veras tu
 #SP-10-Joder
-A ver si pillas esto bobi #SP-20-Joder
+A ver si pillas esto bobi #SP-20-Joder wow
 for i in {1..10} do
 	#SP-30-Imprimimos el número por pantalla
 	echo $i #SP-40-pilla esto bobi
