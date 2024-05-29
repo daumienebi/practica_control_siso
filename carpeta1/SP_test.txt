@@ -1,11 +1,12 @@
 #SP-10-Joder
-#SP-20-Joder wow
+#SP-20-Joder
 #SP-30-Imprimimos el número por pantalla
 #SP-40-pilla esto bobi
 #SP-50-Mas te vale funcionar
-#SP-60-Comentario 1 jajjaja
-#SP-70-A ver que hacer
-#SP-80-Comentario 2 khe?
-#SP-90-Comentario 4 pero
-#SP-100-Comentario Josep Pedrerol
-#SP-110-Comentario
+#SP-60-Comentario 1
+#SP-70-Comentario 2
+#SP-80-Comentario 4
+#SP-90-Comentario 5
+#SP-100-
+#SP-110-
+#SP-120-

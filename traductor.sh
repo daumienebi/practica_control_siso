@@ -25,6 +25,12 @@
 #														     
 ######################################################################################################################
 
+#Regenerate
+#get the number of line
+#for loop for the line number
+#read the txt file of each language
+#extract the comment and form the reference
+
 #Variables de Idiomas por defecto
 COD_SP="SP"
 COD_EN="EN"
@@ -33,7 +39,7 @@ NUM_ESPANHOL=1;
 NUM_INGLES=2;
 NUM_FRANCES=3;
 #LINEA_INICIO_IDIOMAS=$(($(grep -n '#CLAVE_IDIOMAS' ${BASH_SOURCE} | cut -d':' -f1) + 1))
-LINEA_INICIO_IDIOMAS=814  #Ver final del fichero para entender esta variable
+LINEA_INICIO_IDIOMAS=840  #Ver final del fichero para entender esta variable
 
 echo "LINE NUMBER : $LINEA_INICIO_IDIOMAS"
 #Otras variables
@@ -64,7 +70,7 @@ function mostrarMenuPrincipal {
 	echo "[5] Visualizar los ficheros de log"
 	echo "[6] Cambiar idioma de los scripts"
 	echo "[7] Mostrar ayuda"
-	echo -e "${ROJO}0. Salir${RESET}"
+	echo -e "${ROJO}[0] Salir${RESET}"
 	echo -e -n "${AMARILLO}\nOpcion: ${RESET}"
 	read opcion
 	
@@ -500,6 +506,8 @@ function mostrarPresentacion {
     echo -e "${CIAN}---------------------------------------${RESET}\n"
 } #Fin mostrarPresentacion()
 
+#cambioIdiomaScript: SIDE NOTE : Make a function to delete the scripts and leave it like that
+#Search for just the number so that it can go to the language files instead of the full reference #XX-YY-
 function cambiarIdiomaEnElScript {
 	#To change the language to other files, if it already contains codes that are like #SP-10- or something, maybe just
 	#get the number to search for it
@@ -530,7 +538,7 @@ function cambiarIdiomaEnElScript {
             		ruta_fichero_original=$script
             		directorio=$(dirname "$ruta_fichero_original")
             		fichero_idioma="$directorio/${cod_idioma^^}_${nombre_fichero}.txt"
-
+            		
             		echo $fichero_idioma
             		echo $ruta_fichero_original
 
@@ -543,12 +551,29 @@ function cambiarIdiomaEnElScript {
                     			esLineaValidaComoComentario "$linea_original"
                     			valido=$?
                     			if [[ $valido -eq 1 ]]; then
-                        			referencia=$(echo "$linea_original" | grep -o '#[A-Z]\+-[0-9]\+-')
+                        			referencia_a_quitar=$(echo "$linea_original" | grep -o '#[A-Z]\+-[0-9]\+-')
+                        			referencia=$(echo "$linea_original" | grep -oP '(?<=-)[0-9]+(?=-)') #numero de referencia
                         			echo "La referencia es: $referencia"
-                        			# Buscamos la traducción
-                        			linea_traduccion=$(grep "$referencia" "$fichero_idioma" | sed "s/.*$referencia\(.*\)/\1/")
-                        			if [[ -n "$referencia" && -n "$linea_traduccion" ]]; then
-                            				linea_nueva=$(echo "$linea_original" | sed "s/$referencia.*/$referencia$linea_traduccion/")
+                        			referencia_a_buscar="#"${cod_idioma^^}"-"$referencia"-"
+                        			echo $referencia_a_buscar
+                        			#Buscamos los que coinciden con la referencia original de la linea y quitamos la parte de la referencia a buscar
+                        			#The last part : Toma la salida de grep y utiliza sed para capturar y devolver solo una parte de esa línea.
+                        			#working linea_traduccion=$(grep "$referencia_a_buscar" "$fichero_idioma" | sed "s/.*$referencia\(.*\)/\1/")
+                        			linea_traduccion=$(grep "$referencia_a_buscar" "$fichero_idioma" | sed -E "s/^.*${referencia}//") #No uncessary language file update
+                        			#Eliminar el "-" misterioso que aparece al principio de la linea de traduccion si existe
+                        			linea_traduccion=${linea_traduccion#-}
+                        			#linea_traduccion=$(grep "$referencia_a_buscar" "$fichero_idioma" | sed -E "s/^.*${referencia_a_buscar}//") #Yes
+                        			# Siempre me añade un guion al final por alguna razon asiq a lo guarro...
+						#if [ "$linea_traduccion" == "-" ]; then
+    						#	linea_traduccion=""
+						#fi
+                        			#linea_traduccion=$(grep "$referencia" "$fichero_idioma" | sed "s/.*$referencia\(.*\)/\1/")
+                        			#linea_traduccion=${linea_pre_traduccion#*-*-} #Cogemos lo que hay depues de los dos guiones #SP-10-
+                        			#if [[ -n "$referencia" && -n "$linea_traduccion" ]]; then
+                            			if [[ -n "$referencia" ]]; then
+                            				#linea_nueva=$(echo "$linea_original" | sed "s/$referencia.*/$referencia$linea_traduccion/")
+                            				echo "Good Referencia a buscar : $referencia_a_buscar"
+                            				linea_nueva=$(echo "$linea_original" | sed "s/$referencia_a_quitar.*/$referencia_a_buscar$linea_traduccion/")
                             				echo "Línea original: $linea_original"
                             				echo "Línea traducida: $linea_traduccion"
                             				echo "Línea nueva: $linea_nueva"
@@ -557,6 +582,7 @@ function cambiarIdiomaEnElScript {
                             				#echo "$nueva_referencia" >> "$fichero_idioma"
                             				echo "$linea_original" >> "$fichero_idioma" #de momento metemos la linea original y ya
                             				linea_nueva="$linea_original"
+                            				echo "Bad Referencia a buscar : $referencia_a_buscar"
                         			fi
                 			else
                         			linea_nueva="$linea_original"
