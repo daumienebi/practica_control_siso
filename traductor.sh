@@ -6,8 +6,8 @@
 # 
 # Autor: Derick Daumienebi Sakpa
 #
-# Descripcion: Proyecto de la practica de control de la asignatura : Sistemas Operativos
-#              Sirve para estionar las traducciones de los comentarios de encontrados en otros scripts(.sh)
+# Descripcion: Práctica de control de la asignatura : Sistemas Operativos
+#              Sirve para gestionar las traducciones de los comentarios de bash encontrados en otros scripts(.sh)
 #
 # Tutor: José Manuel Saiz Diez
 #
@@ -17,19 +17,13 @@
 #      original,del script cambiando el idioma de los comentarios o realizando otra opciones disponibles a través de
 #      los menus de opciones.
 # 
-# Última modificación: 25/05/2024
+# Última modificación: 29/05/2024
 #
 # Versión: 0.1														
 #
 # Nota : Se requiere una version de bash superior a la 4 para un funcionamiento optimo. 			     
 #														     
 ######################################################################################################################
-
-#Regenerate
-#get the number of line
-#for loop for the line number
-#read the txt file of each language
-#extract the comment and form the reference
 
 #Variables de Idiomas por defecto
 COD_SP="SP"
@@ -39,7 +33,7 @@ NUM_ESPANHOL=1;
 NUM_INGLES=2;
 NUM_FRANCES=3;
 #LINEA_INICIO_IDIOMAS=$(($(grep -n '#CLAVE_IDIOMAS' ${BASH_SOURCE} | cut -d':' -f1) + 1))
-LINEA_INICIO_IDIOMAS=840  #Ver final del fichero para entender esta variable
+LINEA_INICIO_IDIOMAS=877 #Ver final del fichero para entender esta variable
 
 echo "LINE NUMBER : $LINEA_INICIO_IDIOMAS"
 #Otras variables
@@ -57,71 +51,43 @@ VERDE="\e[1;32m"
 CIAN="\e[1;36m"
 AMARILLO="\033[1;33m"
 
+#Opciones de menus
+OPCIONES_MENU=(
+"Cargar un nuevo juego de referencias" 
+"Regenerar referencias" 
+"Crear un nuevo fichero de almacenamiento"
+"Eliminar ficheros de almacenamiento"
+"Visualizar los ficheros de log"
+"Cambiar idioma de los scripts"
+"Mostrar ayuda"
+"Salir"
+)
+
 #Muestra las opciones del menu principal al usuario
 function mostrarMenuPrincipal {
-	#fix this menu to make it an infinite loop of some sort
-	#clear
-	# Trying to simulate a do-while
-	echo -e "${CIAN}Selecciona una opcion de (0-7):${RESET}"
-	echo "[1] Cargar un nuevo juego de referencias"
-	echo "[2] Regenerar referencias"
-	echo "[3] Crear un nuevo fichero de almacenamiento"
-	echo "[4] Eliminar ficheros de almacenamiento"
-	echo "[5] Visualizar los ficheros de log"
-	echo "[6] Cambiar idioma de los scripts"
-	echo "[7] Mostrar ayuda"
-	echo -e "${ROJO}[0] Salir${RESET}"
-	echo -e -n "${AMARILLO}\nOpcion: ${RESET}"
-	read opcion
-	
-	while [[ $opcion -lt 0 || $opcion -gt 7 ]]
-	do
-		echo -e "${CIAN}Selecciona una opcion de (0-7):${RESET}"
-		echo "1. Cargar un nuevo juego de referencias"
-		echo "2. Regenerar referencias"
-		echo "3. Crear un nuevo fichero de almacenamiento"
-		echo "4. Eliminar ficheros de almacenamiento"
-		echo "5. Visualizar los ficheros de log"
-		echo "6. Cambiar idioma de los scripts"
-		echo "7. Mostrar ayuda"
-		echo "0. Salir"
-		echo -e -n "${AMARILLO}\nOpcion: ${RESET}"
-		read opcion
-	done
-	case $opcion in
+	seleccionarOpcion "${OPCIONES_MENU[@]}"
+	opcion_seleccionada=$?
+	((opcion_seleccionada++)) #Sumamos 1 porque el indice empieza en 0
+	#Switch-case para las opciones :
+	case $opcion_seleccionada in
 		1)
-			cargarNuevasReferencias
-			;;
+			cargarNuevasReferencias ;;
 		2)
-			regenerarReferencias 
-			;;
+			regenerarReferencias ;;
 		3)
-			crearNuevoFicheroDeAlmacenamiento
-			;;
+			crearNuevoFicheroDeAlmacenamiento ;;
 		4)
-			eliminarFicherosDeAlmacenamiento
-			;;
+			eliminarFicherosDeAlmacenamiento ;;
 		5)
-			visualizarFicherosLog
-			;;
+			visualizarFicherosLog ;;
 		6)
-			cambiarIdiomaEnElScript
-			;;
+			cambiarIdiomaEnElScript ;;
 		7)
-			echo "Hola"
-			#mostrarAyuda
-			;;
-		0)	
-			echo -e "${VERDE}SE HA SALIDO DEL PROGRAMA!${RESET}"
-			exit 1
-			;;
-		*)
-			echo -e "${ROJO}Por favor, selecciona una opción válida${RESET}"
-			mostrarMenuPrincipal
-			;;
+			mostrarAyuda ;;
+		8)
+			exit 1 ;;	
 	esac	
 } #Fin mostrarMenuPrincipal()
-
 
 #Opcion del menu para crear referencias nuevas
 function cargarNuevasReferencias {
@@ -146,7 +112,7 @@ function cargarNuevasReferencias {
 			case $opcion_seguir in
 				's' | 'S')
 					#Preguntamos al usuario el idioma en el que quiere realizar las traducciones
-					echo -e "\n¿En que idioma deseas crear los ficheros ?"
+					echo -e "\n¿En que idioma deseas crear los ficheros? (Selecciona un número)"
 					echo "$NUM_ESPANHOL. Español (SP)"
 					echo "$NUM_INGLES. Inglés  (EN)"
 					echo "$NUM_FRANCES. Francés (FR)"
@@ -203,7 +169,6 @@ function cargarNuevasReferencias {
 								 			$COD_SP\
 											"$directorio/$nombre_fichero_fr"\
 								 			$COD_FR
-			
 						#Creamos los ficheros Francés (FR)
 						elif [ $opcion_idioma -eq $NUM_FRANCES ]
 						then
@@ -329,6 +294,11 @@ function esLineaValidaComoComentario {
 	fi	
 } #Fin esLineaValidaComoComentario()
 
+#Regenerate
+#get the number of line
+#for loop for the line number
+#read the txt file of each language
+#extract the comment and form the reference
 function regenerarReferencias {
 	#Preguntamos al usuario en que idioma quiere regenerar las referencias
 	mostrarIdiomasDisponibles
@@ -618,7 +588,6 @@ function existeCodigoIdioma {
 		#Añadimos cada código de idioma obtenido a un array
 		codigo_idiomas+=("$linea_filtrada") #Añadimos cada código encontrado al array
 	done < <(sed -n "$LINEA_INICIO_IDIOMAS,\$p" "${BASH_SOURCE}")
-	
 	for cod in ${codigo_idiomas[@]}; do
 		if [[ "${cod_idioma_nuevo,,}" == "${cod,,}" ]]
 		then
@@ -626,7 +595,6 @@ function existeCodigoIdioma {
 			break;
 		fi
 	done
-	
 	return 0 #El codigo de idioma no existe
 } #Fin existeCodigoIdioma()
 
@@ -658,7 +626,6 @@ function crearNuevoFicheroDeAlmacenamiento {
 			then
 				echo -e "${ROJO}El codigo solo puede contener dos caracteres.\n${RESET}"
 			fi
-			
         		echo "¿Deseas probar con otro codigo o prefieres salir?"
         		echo "1. Introducir otro codigo"
         		echo "0. Salir"
@@ -666,8 +633,7 @@ function crearNuevoFicheroDeAlmacenamiento {
         		read opcion
         		case $opcion in
             			0)
-                			exit 
-                			;;
+                			exit ;;
             			1)
                 			echo -e "\nIntroduce el Codigo del idioma nuevo,por ejemplo XY (dos caracteres)"
                 			echo -e -n "${AMARILLO}Codigo Idioma :${RESET}"
@@ -742,12 +708,10 @@ function volverAlMenuOSalir {
        	 	read opcion
         	case $opcion in
         		0)
-                		exit 
-                		;;
+                		exit ;;
             		1)
             			clear
-                		mostrarMenuPrincipal
-                		;;
+                		mostrarMenuPrincipal ;;
             		*)
             			mostrarErrorYAgregarloAlLogGeneral "Opcion no valida. Por favor, seleccione 0 o 1" $FUNCNAME
                 		;;
@@ -788,6 +752,18 @@ function visualizarFicherosLog {
 	done
 } #Fin visualizarFicherosLog()
 
+#Mostrar ayuda, maybe scrap it out
+function mostrarAyuda {
+	echo -e "\n\t\t\t\t${VERDE}AYUDA DEL SCRIPT${RESET}"
+    	echo -e "${VERDE}Cargar un nuevo juego de referencias:${RESET}\nEsta opción te permite cargar un nuevo conjunto de referencias para tu juego.\n"
+    	echo -e "${VERDE}Regenerar referencias:${RESET}\nEsta opción te permite regenerar las referencias en tus scripts según un nuevo idioma seleccionado.\n"
+    	echo -e "${VERDE}Crear un nuevo fichero de almacenamiento:${RESET}\nCon esta opción puedes crear un nuevo fichero de almacenamiento para tu juego.\n"
+    	echo -e "${VERDE}Eliminar ficheros de almacenamiento:${RESET}\nUtiliza esta opción para eliminar los ficheros de almacenamiento existentes en tu juego.\n"
+    	echo -e "${VERDE}Visualizar los ficheros de log:${RESET}\nCon esta opción puedes ver los ficheros de registro (log) de tu juego.\n"
+    	echo -e "${VERDE}Cambiar idioma de los scripts:${RESET}\nUtiliza esta opción para cambiar el idioma de los scripts de tu juego.\n"
+    	volverAlMenuOSalir
+}
+
 #Funcion para simular la carga de una operacion, recibe 2 parametros
 #1. El mensaje de carga
 #2. El tiempo que deberia quedar cargando
@@ -826,6 +802,67 @@ function eliminarFicherosDeAlmacenamiento {
 	rm ./carpeta2/carpeta3/carpeta4/XY_test.txt
 	echo "He borrado todo jefe! :)"
 	volverAlMenuOSalir
+}
+
+# Renders a text based list of options that can be selected by the
+# user using up, down and enter keys and returns the chosen option.
+#
+#   Arguments   : list of options, maximum of 256
+#                 "opt1" "opt2" ...
+#   Return value: selected index (0 for opt1, 1 for opt2 ...)
+#Credit :StackVverFlow
+function seleccionarOpcion {
+    # little helpers for terminal print control and key input
+    ESC=$( printf "\033")
+    cursor_blink_on()  { printf "$ESC[?25h"; }
+    cursor_blink_off() { printf "$ESC[?25l"; }
+    cursor_to()        { printf "$ESC[$1;${2:-1}H"; }
+    print_option()     { printf "   $1 "; }
+    print_selected()   { printf "  $ESC[7m $1 $ESC[27m"; }
+    get_cursor_row()   { IFS=';' read -sdR -p $'\E[6n' ROW COL; echo ${ROW#*[}; }
+    key_input()        { read -s -n3 key 2>/dev/null >&2
+                         if [[ $key = $ESC[A ]]; then echo up;    fi
+                         if [[ $key = $ESC[B ]]; then echo down;  fi
+                         if [[ $key = ""     ]]; then echo enter; fi; }
+
+    # initially print empty new lines (scroll down if at bottom of screen)
+    for opt; do printf "\n"; done
+
+    # determine current screen position for overwriting the options
+    local lastrow=`get_cursor_row`
+    local startrow=$(($lastrow - $#))
+
+    # ensure cursor and input echoing back on upon a ctrl+c during read -s
+    trap "cursor_blink_on; stty echo; printf '\n'; exit" 2
+    cursor_blink_off
+
+    local selected=0
+    while true; do
+        # print options by overwriting the last lines
+        local idx=0
+        for opt; do
+            cursor_to $(($startrow + $idx))
+            if [ $idx -eq $selected ]; then
+                print_selected "$opt"
+            else
+                print_option "$opt"
+            fi
+            ((idx++))
+        done
+        # user key control
+        case `key_input` in
+            enter) break;;
+            up)    ((selected--));
+                   if [ $selected -lt 0 ]; then selected=$(($# - 1)); fi;;
+            down)  ((selected++));
+                   if [ $selected -ge $# ]; then selected=0; fi;;
+        esac
+    done
+    # cursor position back to normal
+    cursor_to $lastrow
+    printf "\n"
+    cursor_blink_on
+    return $selected
 }
 
 #INICIO DEL PROGRAMA

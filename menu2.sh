@@ -1,4 +1,4 @@
-#Copied to try it out
+#Credit :Stackoverflow
 #!/usr/bin/env bash
 
 # Renders a text based list of options that can be selected by the
@@ -56,16 +56,14 @@ function select_option {
                    if [ $selected -ge $# ]; then selected=0; fi;;
         esac
     done
-
     # cursor position back to normal
     cursor_to $lastrow
     printf "\n"
     cursor_blink_on
-
     return $selected
 }
 
-options=(
+OPCIONES_MENU=(
 "Cargar un nuevo juego de referencias" 
 "Regenerar referencias" 
 "Crear un nuevo fichero de almacenamiento"
@@ -75,9 +73,9 @@ options=(
 "Mostrar ayuda"
 )
 
-select_option "${options[@]}"
-choice=$?
+select_option "${OPCIONES_MENU[@]}"
+opcion_seleccionada=$?
 
-echo "Choosen index = $choice"
-echo "        value = ${options[$choice]}"
+echo "Choosen index = $opcion_seleccionada"
+echo "        value = ${OPCIONES_MENU[$opcion_seleccionada]}"
 
