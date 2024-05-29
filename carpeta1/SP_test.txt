@@ -1,14 +1,15 @@
-#SP-10-Joder
-#SP-20-Joder
-#SP-30-Imprimimos el número por pantalla
-#SP-40-pilla esto bobi
-#SP-50-Mas te vale funcionar
-#SP-60-Comentario 1
-#SP-70-Comentario 2
-#SP-80-Comentario 4
-#SP-90-Comentario 5
-#SP-100-
-#SP-110-
-#SP-120-
-#SP-130-
-#SP-140-
+Joder
+Joder
+Imprimimos el número por pantalla
+pilla esto bobi
+Mas te vale funcionar
+Comentario 1
+Comentario 2
+Comentario 4
+Esto irá?
+Comentario 5
+
+
+
+
+

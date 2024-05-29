@@ -33,7 +33,7 @@ NUM_ESPANHOL=1;
 NUM_INGLES=2;
 NUM_FRANCES=3;
 #LINEA_INICIO_IDIOMAS=$(($(grep -n '#CLAVE_IDIOMAS' ${BASH_SOURCE} | cut -d':' -f1) + 1))
-LINEA_INICIO_IDIOMAS=848 #Ver final del fichero para entender esta variable
+LINEA_INICIO_IDIOMAS=846 #Ver final del fichero para entender esta variable
 
 echo "LINE NUMBER : $LINEA_INICIO_IDIOMAS"
 #Otras variables
@@ -89,7 +89,7 @@ function mostrarMenuPrincipal {
 		2)
 			crearNuevoFicheroDeAlmacenamiento ;;
 		3)
-			eliminarFicherosDeAlmacenamiento ;;
+			borrarReferencias ;;
 		4)
 			visualizarFicherosLog ;;
 		5)
@@ -306,11 +306,7 @@ function esLineaValidaComoComentario {
 	fi	
 } #Fin esLineaValidaComoComentario()
 
-#Regenerate
-#get the number of line
-#for loop for the line number
-#read the txt file of each language
-#extract the comment and form the reference
+#Funcion para regenerar las referencias dependiendo del idioma en el que estén los scripts
 function regenerarReferencias {
 	#Preguntamos al usuario en que idioma quiere regenerar las referencias
 	mostrarIdiomasDisponibles
@@ -742,37 +738,39 @@ function mostrarAyuda {
 
 #Eliminar los ficheros de almacenamiento dinamicamente.
 #Primero se mostrará un menu de los disponibles al usuario y se borran los ficheros de lenguage elegido
-function eliminarFicherosDeAlmacenamiento {
-	echo "Borrando mierda ..."
-	#Spanish files
-	rm ./carpeta1/SP_test.txt
-	rm ./hola.sh/SP_3-GestionDeProcesosYMemoria-Paginacion-VirtualYNoVirtual.txt
-	rm ./carpeta2/SP_test.txt
-	rm ./carpeta2/carpeta3/SP_test.txt
-	rm ./carpeta2/carpeta3/carpeta4/SP_test.txt
+function borrarReferencias {
+    # Buscar todos los scripts en los subdirectorios
+    for script in $(find */ -type f -name "*.sh"); do
+        # Usar sed para eliminar las referencias y convertirlas en comentarios
+        sed -i 's/#\([A-Z]\+\)-[0-9]\+-/#/g' "$script"
+        echo "Referencias eliminadas y convertidas en comentarios en el script: $script"
+    done
 
-	#English files
-	rm ./carpeta1/EN_test.txt
-	rm ./hola.sh/EN_3-GestionDeProcesosYMemoria-Paginacion-VirtualYNoVirtual.txt
-	rm ./carpeta2/EN_test.txt
-	rm ./carpeta2/carpeta3/EN_test.txt
-	rm ./carpeta2/carpeta3/carpeta4/EN_test.txt
+    # Buscar todos los archivos de idioma en los subdirectorios
+    for archivo_idioma in $(find . -type f -name '[A-Z][A-Z]_*[0-9][0-9]*.txt'); do
+        # Eliminar los archivos de idioma que cumplen con el formato "XX-YY-"
+        rm "$archivo_idioma"
+        echo "Archivo de idioma eliminado: $archivo_idioma"
+    done
 
-	#French files
-	rm ./carpeta1/FR_test.txt
-	rm ./hola.sh/FR_3-GestionDeProcesosYMemoria-Paginacion-VirtualYNoVirtual.txt
-	rm ./carpeta2/FR_test.txt
-	rm ./carpeta2/carpeta3/FR_test.txt
-	rm ./carpeta2/carpeta3/carpeta4/FR_test.txt
-	
-	#New files
-	rm ./carpeta1/XY_test.txt
-	rm ./hola.sh/XY_3-GestionDeProcesosYMemoria-Paginacion-VirtualYNoVirtual.txt
-	rm ./carpeta2/XY_test.txt
-	rm ./carpeta2/carpeta3/XY_test.txt
-	rm ./carpeta2/carpeta3/carpeta4/XY_test.txt
-	echo "He borrado todo jefe! :)"
-	volverAlMenuOSalir
+    #limpiarIdiomasExtras
+}
+#Borrar los idiomas nuevos
+function limpiarIdiomasExtras {
+    local script_path="${BASH_SOURCE[0]}"
+    # Encontrar la línea donde empieza "LINEA_INICIO_IDIOMAS"
+    #local linea_inicio_idiomas=$(grep -n "LINEA_INICIO_IDIOMAS" "$script_path" | cut -d: -f1)
+    # Encontrar la línea donde está "#FR-Frances"
+    local linea_frances=$(grep -n "#FR-Frances" "$script_path" | cut -d: -f1)
+    
+    # Si no se encuentra la línea, mostrar un error y salir
+    if [ -z "$linea_frances" ]; then
+        echo "No se encontró la línea #FR-Frances"
+        return
+    fi
+    # Eliminamos todas las líneas por debajo de #FR-Frances
+    sed -i "$((linea_frances + 1)),\$d" "$script_path"
+    echo "Se han eliminado todas las líneas debajo de #FR-Frances."
 }
 
 # Renders a text based list of options that can be selected by the
