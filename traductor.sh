@@ -37,7 +37,7 @@ NUM_FRANCES=3;
 FILTRO_FICHEROS="*.sh"
 BIN_BASH1="#!/bin/bash"
 BIN_BASH2="#!\bin\bash"
-INICIO_NUM_LINEAS=10
+INICIO_NUM_LINEAS=10 #Inicio del número de lineas (por ejemplo #SP-10-)
 INCR_LINEAS=10 #Incremento de linea
 FICHERO_LOGS_GENERAL="./logGeneral.log"
 #Variable para obtener los códigos de idiomas que se encuentran al final del fichero, utiliza la '#CLAVE_ZONA_IDIOMAS'
@@ -57,7 +57,7 @@ OPCIONES_MENU_PRINCIPAL=(
 "-> Cargar un nuevo juego de referencias" 
 "-> Regenerar referencias" 
 "-> Crear un nuevo fichero de almacenamiento"
-"-> Eliminar ficheros de almacenamiento"
+"-> Eliminar referencias de los scripts"
 "-> Visualizar los ficheros de log"
 "-> Cambiar idioma de los scripts"
 "-> Mostrar ayuda"
@@ -234,7 +234,6 @@ function cargarNuevasReferencias {
 #$3: (Código del fichero de idioma principal)
 #$4,$5,$6 y $7: El fichero y codigo de idiomas del resto de ficheros que irán con las referencias vacias ($4 y $5 para uno) y ($6 y $7 para el otro)
 function leerFicheroYExtraerComentarios {
-	#Useful shit elif [ "$(echo "$linea" | grep -c '#')" -gt 0 ]
   	fichero_origin=$1 #El script original sobre el que se va crear los ficheros relevantes
   	#Ficheros del idioma principal
   	fichero_idioma1=$2 #Fichero del idioma principal  (SP,FR o EN)
@@ -289,6 +288,7 @@ function leerFicheroYExtraerComentarios {
   	done < "$fichero_origin"
   	#Ahora poner las etiquetas en el script original
   	printf "%s\n" "${lineas_script_original[@]}" > "$fichero_origin" #Risky shit :)
+  	mostrarAciertoYAgregarloAlLogGeneral "Las nuevas referencias han sido creadas" $FUNCNAME
 } #Fin leerFicheroYExtraerComentarios()
 
 #Comprueba si es una linea es valida para considerarla un comentario para la traducción
@@ -394,7 +394,8 @@ function regenerarReferencias {
                 		# Añadimos cada código de idioma obtenido a un array
                 		codigo_idiomas+=("$linea_filtrada") # Añadimos cada código encontrado al array
             		done < <(sed -n "$LINEA_INICIO_IDIOMAS,\$p" "${BASH_SOURCE}")
-
+			
+			#Crear las referencias en el los otros idiomas que no sean el mismo que estamos re-referenciando
             		for cod in ${codigo_idiomas[@]}; do
                 		if [[ "${cod,,}" != "${cod_idioma,,}" ]]; then
                     			fichero_otro_idioma="$directorio/${cod}_${nombre_fichero}.txt"
@@ -423,6 +424,8 @@ function regenerarReferencias {
                 		fi
            		done
  		done
+ 		mostrarAciertoYAgregarloAlLogGeneral "Referencias regeneradas correctamente tanto en ${cod_idioma^^} como en los demás idiomas" $FUNCNAME
+ 		volverAlMenuOSalir	
  	else
  		mostrarErrorYAgregarloAlLogGeneral "No existe ese código de idioma" $FUNCNAME
  		volverAlMenuOSalir
@@ -438,13 +441,32 @@ function mostrarErrorYAgregarloAlLogGeneral {
 	nombre_funcion=$2
 	fecha_y_hora=$(date)
 	#Comprobamos si existe el fichero con la opcion -e
-	echo -e "${ROJO}$mensaje_error${RESET}"
+	echo -e "${ROJO}Error: $mensaje_error${RESET}"
 	if [[ -e  $FICHERO_LOGS_GENERAL ]];
 	then
-		echo "$fecha_y_hora : $mensaje_error [Nombre función: $nombre_funcion]" >> $FICHERO_LOGS_GENERAL
+		echo "$fecha_y_hora : Error -> $mensaje_error [Nombre función: $nombre_funcion]" >> $FICHERO_LOGS_GENERAL
 	else
 		touch $FICHERO_LOGS_GENERAL
-		echo "$fecha_y_hora : $mensaje_error [Nombre función: $nombre_funcion]" > $FICHERO_LOGS_GENERAL
+		echo "$fecha_y_hora : Error -> $mensaje_error [Nombre función: $nombre_funcion]" > $FICHERO_LOGS_GENERAL
+	fi
+}
+
+#Function que agrega los aciertos o aviso a un fichero log en en directorio donde se encuentra el
+#script principal
+#$1 - mensaje de acierto
+#$2 - Nombre de la función que lanzó el error
+function mostrarAciertoYAgregarloAlLogGeneral {
+	mensaje_acierto=$1
+	nombre_funcion=$2
+	fecha_y_hora=$(date)
+	#Comprobamos si existe el fichero con la opcion -e
+	echo -e "${VERDE}$mensaje_acierto${RESET}"
+	if [[ -e  $FICHERO_LOGS_GENERAL ]];
+	then
+		echo "$fecha_y_hora : $mensaje_acierto [Nombre función: $nombre_funcion]" >> $FICHERO_LOGS_GENERAL
+	else
+		touch $FICHERO_LOGS_GENERAL
+		echo "$fecha_y_hora : $mensaje_acierto [Nombre función: $nombre_funcion]" > $FICHERO_LOGS_GENERAL
 	fi
 }
 
@@ -559,10 +581,11 @@ function cambiarIdiomaEnElScript {
                 		# Escribimos el contenido actualizado de nuevo en el archivo original
                 		printf "%s\n" "${lineas_referencias[@]}" > "$script" # Risky shit i guess but it works :)
             		else
-            			mostrarErrorYAgregarloAlLogGeneral "No se encontraron los ficheros de traducción correspondientes, puede que no estén generados" $FUNCNAME
+            			mostrarErrorYAgregarloAlLogGeneral "No se encontraron los ficheros de traducción para el codigo de idioma ${cod_idioma^^}, puede que no estén generados" $FUNCNAME
                 		volverAlMenuOSalir
             		fi
         	done
+        	mostrarAciertoYAgregarloAlLogGeneral "Se ha cambiado el idioma del script a ${cod_idioma^^}" $FUNCNAME
         	volverAlMenuOSalir 
     	else
         	echo -e "${ROJO}No existe ese código de idioma${RESET}"
@@ -612,7 +635,7 @@ function crearNuevoFicheroDeAlmacenamiento {
 			#Mostrar distintos mensajes dependiendo del error
 			if [[ $existe_cod_idioma -eq 1 ]]
 			then
-				mostrarErrorYAgregarloAlLogGeneral "Error: Ese codigo de idioma ya existe.\n" $FUNCNAME
+				mostrarErrorYAgregarloAlLogGeneral "Ese codigo de idioma ya existe.\n" $FUNCNAME
 				mostrarIdiomasDisponibles 
 			fi
 			if [[ $tamanho_codigo -ne 2  ]]
@@ -657,6 +680,7 @@ function crearNuevoFicheroDeAlmacenamiento {
 						"$directorio/$nombre_fichero_nuevo_idioma"\
 						${cod_idioma_nuevo^^} #^^ para pasar el codigo del idioma en mayusculas
 	done
+	mostrarAciertoYAgregarloAlLogGeneral "Nuevo fichero de almacenamiento de $nombre_idioma_nuevo creado" $FUNCNAME
 	#Ahora actualizamos el fichero de los idiomas y añadimos el idioma nuevo
 	guardarIdiomaNuevo $cod_idioma_nuevo $nombre_idioma_nuevo
 	volverAlMenuOSalir
@@ -667,6 +691,7 @@ function guardarIdiomaNuevo {
 	cod_idioma_nuevo=$1
 	nombre_idioma_nuevo=$2
 	echo ""#"$cod_idioma_nuevo"-"$nombre_idioma_nuevo" >> $BASH_SOURCE
+	mostrarAciertoYAgregarloAlLogGeneral "Se ha guardado el idioma $nombre_idioma_nuevo con código ${cod_idioma_nuevo^^}" $FUNCNAME
 } #Fin guardarIdiomaNuevo()
 
 #Lista y añade de recuente al final de todos los idiomas disponibles.
@@ -710,26 +735,50 @@ function visualizarFicherosLog {
 		0)
 			clear
                 	cat $FICHERO_LOGS_GENERAL
-                	echo -e "\n${VERDE}FIN DE LOG${RESET}\n"
-                	volverAlMenuOSalir ;;
+                	echo -e "\n${VERDE}FIN DE LOG${RESET}\n" ;;
 		1)
-			echo "No disponible"
-			volverAlMenuOSalir ;;
+			echo "No disponible" ;;
 		2)
 			exit 1 ;;	
 	esac
+	while true; do
+        echo -e "\n${AMARILLO}Pulsa 0 para salir y 1 para volver al menú principal${RESET}"
+        read -r opcion
+        	case $opcion in
+            		0)
+                		exit 0 ;;
+            		1)
+            			clear
+                		mostrarMenuPrincipal ;;
+            		*)
+               	 		echo -e "${ROJO}Opción no válida, por favor introduce 0 o 1.${RESET}" ;;
+        	esac
+    	done
 } #Fin visualizarFicherosLog()
 
 #Mostrar ayuda, maybe scrap it out
 function mostrarAyuda {
 	echo -e "\n\t\t\t\t${VERDE}AYUDA DEL SCRIPT${RESET}"
+	echo -e "${AMARILLO}*IMPORTANTE* :${RESET} Antes de empezar con los demás opciones, es recomendable crear las referencias primero"
     	echo -e "${VERDE}Cargar un nuevo juego de referencias:${RESET}\nEsta opción te permite cargar un nuevo conjunto de referencias para tu juego.\n"
     	echo -e "${VERDE}Regenerar referencias:${RESET}\nEsta opción te permite volver a regenerar las referencias de todos los scripts para cuadra los números en caso de haber agregado referencias nuevas a los scripts originales\n"
     	echo -e "${VERDE}Crear un nuevo fichero de almacenamiento:${RESET}\nCon esta opción puedes crear un nuevo fichero de que se corresponde a un idioma nuevo no se puede crear un nuevo fichero de almacenamiento de un idioma que ya existe.\n"
     	echo -e "${VERDE}Eliminar ficheros de almacenamiento:${RESET}\nUtiliza esta opción para eliminar los ficheros de almacenamiento y borrar todas las referencias de los scripts originales.\n"
     	echo -e "${VERDE}Visualizar los ficheros de log:${RESET}\nCon esta opción puedes ver los ficheros de registro (Tanto el general como el de cada script).\n"
     	echo -e "${VERDE}Cambiar idioma de los scripts:${RESET}\nUtiliza esta opción para cambiar el idioma de los scripts, puedes intercambiar entre un idioma u otro, siempre que exista el fichero de almacenamiento. Al cambiar de idioma, el script se queda con los valores actualizados de los ficheros de almacenamiento."
-    	volverAlMenuOSalir
+    	while true; do
+        echo -e "\n${AMARILLO}Pulsa 0 para salir y 1 para volver al menú principal${RESET}"
+        read -r opcion
+        	case $opcion in
+            		0)
+                		exit 0 ;;
+            		1)
+            			clear
+                		mostrarMenuPrincipal ;;
+            		*)
+               	 		echo -e "${ROJO}Opción no válida, por favor introduce 0 o 1.${RESET}" ;;
+        	esac
+    	done
 }
 
 #Funcion para simular la carga de una operacion, recibe 2 parametros
@@ -743,21 +792,18 @@ function borrarReferencias {
     read opcion
     case $opcion in
     	's'|'S')
-    		# Buscar todos los scripts en los subdirectorios
+    		# Se buscan todos los scripts en los subdirectorios
     		for script in $(find */ -type f -name "*.sh"); do
-        		# Usar sed para eliminar las referencias y convertirlas en comentarios
+        		# Usamos sed para eliminar las referencias y convertirlas en comentarios
         		sed -i 's/#\([A-Z]\+\)-[0-9]\+-/#/g' "$script"
-        		echo -e "${VERDE}Referencias eliminadas y convertidas en comentarios en el script:${RESET} $script"
+        		mostrarAciertoYAgregarloAlLogGeneral "Referencias eliminadas y convertidas en comentarios en el script: $script" $FUNCNAME
     		done
-    		volverAlMenuOSalir
-    		;;
+    		volverAlMenuOSalir ;;
     	'n'|'N')
-    		mostrarMenuPrincipal
-    		;;
+    		mostrarMenuPrincipal ;;
     	*)
     		echo "Opcion no válida"
-    		volverAlMenuOSalir
-    		
+    		volverAlMenuOSalir ;;	
     esac   
 }
 
@@ -827,3 +873,4 @@ mostrarMenuPrincipal
 #SP-Español
 #EN-Ingles
 #FR-Frances
+#WH-Baby dont hurt me
