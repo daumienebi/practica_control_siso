@@ -517,15 +517,21 @@ function cambiarIdiomaEnElScript {
     	find */ -name "$FILTRO_FICHEROS" -type f -print 
     	# Preguntamos a qué idioma lo quiere traducir el usuario
     	mostrarIdiomasDisponibles
-    	echo -e "\n¿A qué idioma quieres traducir el script? (Indica el código [XY])"
-    	echo -e -n "${AMARILLO}Código Idioma:${RESET}"
+    	echo -e "¿A qué idioma quieres traducir los scripts? (Indica el código [XY])"
+    	echo -e -n "${AMARILLO}Código idioma a traducir :${RESET}"
    	read cod_idioma
-    	# Comprobamos si existe el código de idioma, si no existe, la función devuelve 1 si existe y 0 si no
+   	#Preguntar en que idioma se encuentran los scripts
+   	echo -e "\n¿En que idioma se encuentran los scripts? (Indica el código [XY])"
+    	echo -e -n "${AMARILLO}Código idioma de los scripts :${RESET}"
+   	read cod_idioma_script
+    	# Comprobamos si existen los códigos de idiomas del script y el idioma a la que va traducir el usuario, si no existe, la función devuelve 1 si existe y 0 si no
     	existeCodigoIdioma "${cod_idioma}"
-    	existe=$? # Obtenemos el resultado del último comando ejecutado
-    	if [[ $existe -eq 1 ]]
+    	existe_cod_a_traducir=$? # Obtenemos el resultado del último comando ejecutado
+    	existeCodigoIdioma "${cod_idioma_script}"
+    	existe_cod_script=$? # Obtenemos el resultado del último comando ejecutado
+    	if [[ $existe_cod_a_traducir -eq 1 && $existe_cod_script -eq 1 ]]
     	then
-        	# Ahora que existe el código, copiamos las referencias del fichero al script
+        	# Ahora que existen los códigos,copiamos las referencias del fichero al script
         	echo "Existe el código"
         	IFS=$'\n'
         	# Obtenemos cada script de los subdirectorios
@@ -533,18 +539,19 @@ function cambiarIdiomaEnElScript {
         	do
             		nombre_fichero=$(basename ${script%.*})
             		directorio=$(dirname "$script")
-            		fichero_idioma="$directorio/${cod_idioma^^}_${nombre_fichero}.txt"
-            		echo $fichero_idioma
+            		fichero_idioma_a_traducir="$directorio/${cod_idioma^^}_${nombre_fichero}.txt"
+            		echo $fichero_idioma_a_traducir
             		echo $script
             		# Con la opción -r, nos aseguramos de que se lee todo tal cual aparece en el fichero y no se interprete de otra forma, por ejemplo el (\n o \t)
             		# Leemos el fichero original y el fichero txt de traducción pero primero miramos si existe el de traducción
-            		if [[ -e "$fichero_idioma" ]]; then
+            		if [[ -e "$fichero_idioma_a_traducir" ]]; then
                 		# Array para guardar las líneas
                 		declare -a lineas_referencias=()
                 		while IFS= read -r linea_original; do
+                		echo ${linea_original:1:3} "es igual a" "${cod_idioma_script^^}-"
                     			esLineaValidaComoComentario "$linea_original"
-                    			valido=$?
-                    			if [[ $valido -eq 1 ]]; then
+                    			linea_valida=$?
+                    			if [[ $linea_valida -eq 1 ]]; then
                         			referencia_a_quitar=$(echo "$linea_original" | grep -o '#[A-Z]\+-[0-9]\+-')
                         			referencia=$(echo "$linea_original" | grep -oP '(?<=-)[0-9]+(?=-)') #utilizamos el número de referencia,de "#SP-10-", extraemos "10"
                         			echo "La referencia es: $referencia"
@@ -552,7 +559,9 @@ function cambiarIdiomaEnElScript {
                         			echo $referencia_a_buscar
                         			#Buscamos los que coinciden con la referencia a buscar(del idioma a la que vamos a cambiar) linea y quitamos la parte de la referencia a buscar
                         			#Con el sed, -E para expresiones y extraemos solo el texto de la traduccion en vez de toda la linea
-                        			linea_traduccion=$(grep "$referencia_a_buscar" "$fichero_idioma" | sed -E "s/^.*${referencia}//") #No uncessary language file update
+                        			linea_traduccion=$(grep "$referencia_a_buscar" "$fichero_idioma_a_traducir" | sed -E "s/^.*${referencia}//") #No uncessary language file update
+                        			fichero_idioma_actual="$directorio/${cod_idioma_script^^}_${nombre_fichero}.txt"
+                        			echo $fichero_idioma_actual
                         			#Eliminar el "-" misterioso que aparece al principio de la linea de traduccion si existe
                         			linea_traduccion=${linea_traduccion#-}
                         			#if [[ -n "$referencia" && -n "$linea_traduccion" ]]; then
@@ -563,10 +572,16 @@ function cambiarIdiomaEnElScript {
                             				echo "Línea original: $linea_original"
                             				echo "Línea traducida: $linea_traduccion"
                             				echo "Línea nueva: $linea_nueva"
+                            				#Ya que en las referencias normales van de 10 en 10, comprobamos si la referencia no es multiplo de 10 para saber
+                            				#que es uno nuevo que puede ser XX-11-,XX-125-,XX-1212-, y agregamos esas "nuevas" al fichero del idioma en
+                            				#el que esta el script antes de traducirlo
+                            				if (( referencia % 10 != 0 )); then
+                            					fichero_idioma_actual="$directorio/${cod_idioma_script^^}_${nombre_fichero}.txt"
+                            					echo "$linea_original" >> "$fichero_idioma_actual"
+                            				fi
                         			else
                             				echo "La línea no contiene la referencia esperada: $linea_original"
-                            				#echo "$nueva_referencia" >> "$fichero_idioma"
-                            				echo "$linea_original" >> "$fichero_idioma" #de momento metemos la linea original y ya
+                            				#echo "$linea_original" >> "$fichero_idioma_a_traducir" #Ni de coña, no podemos meterlo aqui porque esta sin referencia
                             				linea_nueva="$linea_original"
                             				echo "Bad Referencia a buscar : $referencia_a_buscar"
                         			fi
@@ -588,7 +603,7 @@ function cambiarIdiomaEnElScript {
         	mostrarAciertoYAgregarloAlLogGeneral "Se ha cambiado el idioma del script a ${cod_idioma^^}" $FUNCNAME
         	volverAlMenuOSalir 
     	else
-        	echo -e "${ROJO}No existe ese código de idioma${RESET}"
+        	echo -e "${ROJO}Alguno de los códigos de idiomas no existe${RESET}"
         	volverAlMenuOSalir
     	fi
 } # Fin cambiarIdiomaEnElScript()
