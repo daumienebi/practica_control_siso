@@ -13,8 +13,3 @@ done
 #Comentario 4 pero
 #Comentario Josep Pedrerol
 #Comentario
-
-
-
-
-

@@ -1,0 +1,14 @@
+#Borrar los idiomas nuevos
+function limpiarIdiomasExtras {
+    # Encontrar la línea donde está "#FR-Frances"
+    local linea_frances=$(($(grep -n '#FR-Frances' "${BASH_SOURCE[0]}" | tail -n 1 | cut -d':' -f1)+1))
+    # Si no se encuentra la línea, mostrar un error y salir
+    if [ -z "$linea_frances" ]; then
+        echo "No se encontró la línea #FR-Frances"
+        return
+    fi
+    # Eliminamos todas las líneas por debajo de #FR-Frances
+    sed -i "$linea_frances,\$d" "${BASH_SOURCE[0]}"
+}
+
+

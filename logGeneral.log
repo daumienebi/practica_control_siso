@@ -26,3 +26,5 @@ mié 29 may 2024 12:04:18 CEST : Error: Ese codigo de idioma ya existe.\n [Nombr
 mié 29 may 2024 12:04:20 CEST : Error: Ese codigo de idioma ya existe.\n [Nombre función: crearNuevoFicheroDeAlmacenamiento]
 mié 29 may 2024 12:04:34 CEST : Error: Ese codigo de idioma ya existe.\n [Nombre función: crearNuevoFicheroDeAlmacenamiento]
 mié 29 may 2024 12:04:37 CEST : Error: Ese codigo de idioma ya existe.\n [Nombre función: crearNuevoFicheroDeAlmacenamiento]
+jue 30 may 2024 02:37:35 CEST : No se encontraron los ficheros de traducción correspondientes, puede que no estén generados [Nombre función: cambiarIdiomaEnElScript]
+jue 30 may 2024 03:17:06 CEST : No existe ese código de idioma [Nombre función: regenerarReferencias]
