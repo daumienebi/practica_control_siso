@@ -16,13 +16,8 @@
 #      seleccionas en que idioma se encuentra el script original.Una vez generados, puedes gestionar los comentarios 
 #      original,del script cambiando el idioma de los comentarios o realizando otra opciones disponibles a través de
 #      los menus de opciones.
-# 
-# Última modificación: 30/05/2024
-#
-# Versión: 0.1														
-#
-# Nota : Se requiere una version de bash superior a la 4 para un funcionamiento optimo. 			     
-#														     
+# 													
+# Nota : Se requiere una version de bash superior a la 4 para un funcionamiento óptimo
 ######################################################################################################################
 
 #Variables de Idiomas por defecto
@@ -50,7 +45,13 @@ RESET="\e[0m" #Reset para volver al color normal despues de haber aplicado un co
 ROJO="\e[1;31m"
 VERDE="\e[1;32m"
 CIAN="\e[1;36m"
-AMARILLO="\033[1;33m"
+AMARILLO="\e[93m"
+AMARILLO_OSCURO="\033[1;33m"
+
+#Opciones para el tipo de mensaje de log
+LOG_ERROR=0
+LOG_WARNING=1
+LOG_SUCCESS=2
 
 #Opciones de menus
 OPCIONES_MENU_PRINCIPAL=(
@@ -107,7 +108,7 @@ function mostrarMenuPrincipal {
 	esac	
 } #Fin mostrarMenuPrincipal()
 
-#Opcion del menu para crear referencias nuevas
+#Opcion del menu principal para crear referencias nuevas
 function cargarNuevasReferencias {
 	#Primero identificamos los scripts base con los que vamos a trabajar y avisamos al usuario
 	#remember the -exec {} in case i need to run a command on the found files directly
@@ -116,12 +117,17 @@ function cargarNuevasReferencias {
 	#Si se encuentra 1 o más ficheros, seguimos, si no, es que no se han encontrado scripts en los subdirectorios
 	if [[ $scripts_encontrados -lt 1 ]]
 	then
-		mostrarErrorYAgregarloAlLogGeneral "No se han encontrado ningún script en los subdirectorios" $FUNCNAME
+		mostrarMensajeYAgregarloAlLogGeneral "No se han encontrado ningún script en los subdirectorios" $FUNCNAME $LOG_WARNING
 		volverAlMenuOSalir
 	#Later add more options for the case where the files are already created
 	else
 		#En el caso de no haber salido en la comprobación anterior, se han encontrado scripts, seguimos :
-		echo -e "${CIAN}Se han encontrado $scripts_encontrados scripts${RESET},¿deseas seguir? [s|n]"
+		#Gestionamos el singular/plural de los scripts
+		if [[ $scripts_encontrados -eq 1 ]]; then
+			echo -e "${CIAN}Se han encontrado $scripts_encontrados script${RESET},¿deseas seguir? [s|n]"
+		else
+			echo -e "${CIAN}Se han encontrado $scripts_encontrados scripts${RESET},¿deseas seguir? [s|n]"
+		fi
 		echo -e -n "${AMARILLO}Seguir :${RESET}"
 		read opcion_seguir
 		#TO-DO: Comprobar la existencia de los ficheros antes de volver a crearlos
@@ -129,36 +135,32 @@ function cargarNuevasReferencias {
 			case $opcion_seguir in
 				's' | 'S')
 					#Preguntamos al usuario el idioma en el que quiere realizar las traducciones
-					echo -e "\n¿En que idioma deseas crear los ficheros? (Selecciona un número)"
+					echo -e "\n¿En que idioma se encuentran los scripts? (Selecciona un número)"
 					echo "$NUM_ESPANHOL. Español (SP)"
 					echo "$NUM_INGLES. Inglés  (EN)"
 					echo "$NUM_FRANCES. Francés (FR)"
 					echo -e "${AMARILLO}Opcion Idioma :${RESET}"
 					read opcion_idioma
-		
 					#for script in $(find "." -name "$FILTRO_FICHEROS" -type f -print); #"." buscaria tanto en el directorio actual como subdirectorios
 					for script in $(find */ -name "$FILTRO_FICHEROS" -type f); #*/ para buscar solo en los subdirectorios,
 					do
-						#Obtenemos el nombre del fichero con 'basename' asi no nos devuelve la ruta relativa del fichero.sh encontrado
-						#Obtenemos "prueba.sh" por ejemplo,despues obtenemos todo que que haya antes del "." porque ese será el nombre, por ejemplo "prueba"
+						#Obtenemos el nombre del fichero con 'basename' asi no nos devuelve la ruta relativa del fichero.sh encontrado, si devuelve
+						#"prueba.sh" por ejemplo, despues obtenemos todo que que haya antes del "." porque ese será el nombre, por ejemplo "prueba"
 						nombre_fichero=$(basename ${script%.*}) 
-						#Extraemos la ruta donde se esta creando cada fichero,cogiendo todo antes de la última "/" porque eso es la ruta al directorio
-						directorio=${script%/*}
-						#directorio=$(dirname "$script") #Otra opción válida
+						directorio=$(dirname "$script")
+						#Creamos los 3 ficheros txt de idiomas para por cada script en el directorio
+						nombre_fichero_sp=$COD_SP"_"$nombre_fichero.txt
+						nombre_fichero_en=$COD_EN"_"$nombre_fichero.txt
+						nombre_fichero_fr=$COD_FR"_"$nombre_fichero.txt
+						touch $directorio/$nombre_fichero_sp
+						touch $directorio/$nombre_fichero_en
+						touch $directorio/$nombre_fichero_fr
+						
 						#Creamos los ficheros Español (SP)
 						if [ $opcion_idioma -eq $NUM_ESPANHOL ] 
 						then
-							#Concatenamos los nombres de los txt's
-							nombre_fichero_sp=$COD_SP"_"$nombre_fichero.txt
-							nombre_fichero_en=$COD_EN"_"$nombre_fichero.txt
-							nombre_fichero_fr=$COD_FR"_"$nombre_fichero.txt
-							#Crear los 3 ficheros de idiomas por cada script en el directorio adecuado 
-							touch $directorio/$nombre_fichero_sp
-							touch $directorio/$nombre_fichero_en
-							touch $directorio/$nombre_fichero_fr
-							#Extraer los comentarios de los scripts (mirar la cabecera de la funcion para ver sus parametros)
 							#Usamos las barras \ para que no se interpreten todos los 7 parametros como 1
-							leerFicheroYExtraerComentarios $script\
+							extraerComentariosDelScript $script\
 											"$directorio/$nombre_fichero_sp"\
 								 			$COD_SP\
 								 			"$directorio/$nombre_fichero_en"\
@@ -168,17 +170,8 @@ function cargarNuevasReferencias {
 						#Creamos los ficheros Ingles (EN)
 						elif [ $opcion_idioma -eq $NUM_INGLES ] 
 						then
-							#Concatenamos los nombres de los txt's
-							nombre_fichero_en=$COD_EN"_"$nombre_fichero.txt
-							nombre_fichero_sp=$COD_SP"_"$nombre_fichero.txt
-							nombre_fichero_fr=$COD_FR"_"$nombre_fichero.txt
-							#Crear los 3 ficheros de idiomas por cada script en el directorio adecuado 
-							touch $directorio/$nombre_fichero_en
-							touch $directorio/$nombre_fichero_sp
-							touch $directorio/$nombre_fichero_fr
-							#Extraer los comentarios de los scripts (mirar la cabecera de la funcion para ver sus parametros)
 							#Usamos las barras \ para que no se interpreten todos los 7 parametros como 1
-							leerFicheroYExtraerComentarios $script\
+							extraerComentariosDelScript $script\
 											"$directorio/$nombre_fichero_en"\
 								 			$COD_EN\
 								 			"$directorio/$nombre_fichero_sp"\
@@ -188,17 +181,8 @@ function cargarNuevasReferencias {
 						#Creamos los ficheros Francés (FR)
 						elif [ $opcion_idioma -eq $NUM_FRANCES ]
 						then
-							#Concatenamos los nombres de los txt's
-							nombre_fichero_fr=$COD_FR"_"$nombre_fichero.txt
-							nombre_fichero_en=$COD_EN"_"$nombre_fichero.txt
-							nombre_fichero_sp=$COD_SP"_"$nombre_fichero.txt						
-							#Crear los 3 ficheros de idiomas por cada script en el directorio adecuado 
-							touch $directorio/$nombre_fichero_fr
-							touch $directorio/$nombre_fichero_en
-							touch $directorio/$nombre_fichero_sp
-							#Extraer los comentarios de los scripts (mirar la cabecera de la funcion para ver sus parametros)
 							#Usamos las barras \ para que no se interpreten todos los 7 parametros como 1
-							leerFicheroYExtraerComentarios $script\
+							extraerComentariosDelScript $script\
 											"$directorio/$nombre_fichero_fr"\
 								 			$COD_FR\
 								 			"$directorio/$nombre_fichero_en"\
@@ -210,8 +194,7 @@ function cargarNuevasReferencias {
 							break;
 						fi					
 					done
-					volverAlMenuOSalir #Prompt para que el usuario elija si salir o no de la app
-					;;
+					volverAlMenuOSalir ;; #Prompt para que el usuario elija si salir o no de la app
 				'n' | 'N')
 					echo "Se ha salido del programa"
 					exit 1
@@ -233,8 +216,8 @@ function cargarNuevasReferencias {
 #$2: El fichero de idiomas principal (el idioma en el que esta el script)
 #$3: (Código del fichero de idioma principal)
 #$4,$5,$6 y $7: El fichero y codigo de idiomas del resto de ficheros que irán con las referencias vacias ($4 y $5 para uno) y ($6 y $7 para el otro)
-function leerFicheroYExtraerComentarios {
-  	fichero_origin=$1 #El script original sobre el que se va crear los ficheros relevantes
+function extraerComentariosDelScript {
+  	script=$1 #El script original sobre el que se va crear los ficheros relevantes
   	#Ficheros del idioma principal
   	fichero_idioma1=$2 #Fichero del idioma principal  (SP,FR o EN)
   	cod_idioma1=$3 #Codigo del idioma principal,el tercer parametro recibido
@@ -285,11 +268,11 @@ function leerFicheroYExtraerComentarios {
   			comentario=""
     			continue;
   		fi
-  	done < "$fichero_origin"
+  	done < "$script"
   	#Ahora poner las etiquetas en el script original
-  	printf "%s\n" "${lineas_script_original[@]}" > "$fichero_origin" #Risky shit :)
-  	mostrarAciertoYAgregarloAlLogGeneral "Las nuevas referencias han sido creadas" $FUNCNAME
-} #Fin leerFicheroYExtraerComentarios()
+  	printf "%s\n" "${lineas_script_original[@]}" > "$script" #Risky shit :)
+  	mostrarMensajeYAgregarloAlLogGeneral "Las nuevas referencias han sido creadas" $FUNCNAME $LOG_SUCCESS
+} #Fin extraerComentariosDelScript()
 
 #Comprueba si es una linea es valida para considerarla un comentario para la traducción
 #Recibe : La linea de comentario en cuestion, y por cada uno que recibe, devuelve si es válida o no
@@ -424,55 +407,48 @@ function regenerarReferencias {
                 		fi
            		done
  		done
- 		mostrarAciertoYAgregarloAlLogGeneral "Referencias regeneradas correctamente tanto en ${cod_idioma^^} como en los demás idiomas" $FUNCNAME
+ 		mostrarMensajeYAgregarloAlLogGeneral "Referencias regeneradas correctamente tanto en ${cod_idioma^^} como en los demás idiomas" $FUNCNAME $LOG_SUCCESS
  		volverAlMenuOSalir	
  	else
- 		mostrarErrorYAgregarloAlLogGeneral "No existe ese código de idioma" $FUNCNAME
+ 		mostrarMensajeYAgregarloAlLogGeneral "No existe el código de idioma ${cod_idioma^^}" $FUNCNAME $LOG_ERROR
  		volverAlMenuOSalir
  	fi	
 } #Fin regenerarReferencias()
 
-#Function que agrega los errores o aviso a un fichero log en en directorio donde se encuentra el
-#script principal
+#Function que agrega los errores, avisos o operaciones realizadas correctamente  a un fichero log principal
 #$1 - mensaje de error
 #$2 - Nombre de la función que lanzó el error
-function mostrarErrorYAgregarloAlLogGeneral {
-	mensaje_error=$1
+#$3 - Tipo de mensaje de log [LOG_ERROR,LOG_WARNING o LOG_SUCCESS]
+function mostrarMensajeYAgregarloAlLogGeneral {
+	mensaje=$1
 	nombre_funcion=$2
+	tipo_log=$3
 	fecha_y_hora=$(date)
-	#Comprobamos si existe el fichero con la opcion -e
-	echo -e "${ROJO}Error: $mensaje_error${RESET}"
-	if [[ -e  $FICHERO_LOGS_GENERAL ]];
+	#Creamos el fichero de logs si no existe
+	if [ ! -e  $FICHERO_LOGS_GENERAL ];
 	then
-		echo "$fecha_y_hora : Error -> $mensaje_error [Nombre función: $nombre_funcion]" >> $FICHERO_LOGS_GENERAL
-	else
 		touch $FICHERO_LOGS_GENERAL
-		echo "$fecha_y_hora : Error -> $mensaje_error [Nombre función: $nombre_funcion]" > $FICHERO_LOGS_GENERAL
 	fi
-}
+	
+	case $tipo_log in
+		$LOG_ERROR)
+			echo -e "${ROJO}$mensaje${RESET}"
+			echo -e "${ROJO}ERROR:${RESET} $fecha_y_hora -> $mensaje [Nombre función: $nombre_funcion]" >> $FICHERO_LOGS_GENERAL
+			;;
+		$LOG_WARNING)
+			echo -e "${AMARILLO_OSCURO}$mensaje${RESET}"
+			echo -e "${AMARILLO}WARNING:${RESET} $fecha_y_hora -> $mensaje [Nombre función: $nombre_funcion]" >> $FICHERO_LOGS_GENERAL
+			;;
+		$LOG_SUCCESS)
+			echo -e "${VERDE}$mensaje${RESET}"
+			echo -e "${VERDE}SUCCESS:${RESET} $fecha_y_hora -> $mensaje [Nombre función: $nombre_funcion]" >> $FICHERO_LOGS_GENERAL
+			;;
+	esac
+} #Fin mostrarMensajeYAgregarloAlLogGeneral()
 
-#Function que agrega los aciertos o aviso a un fichero log en en directorio donde se encuentra el
-#script principal
-#$1 - mensaje de acierto
-#$2 - Nombre de la función que lanzó el error
-function mostrarAciertoYAgregarloAlLogGeneral {
-	mensaje_acierto=$1
-	nombre_funcion=$2
-	fecha_y_hora=$(date)
-	#Comprobamos si existe el fichero con la opcion -e
-	echo -e "${VERDE}$mensaje_acierto${RESET}"
-	if [[ -e  $FICHERO_LOGS_GENERAL ]];
-	then
-		echo "$fecha_y_hora : $mensaje_acierto [Nombre función: $nombre_funcion]" >> $FICHERO_LOGS_GENERAL
-	else
-		touch $FICHERO_LOGS_GENERAL
-		echo "$fecha_y_hora : $mensaje_acierto [Nombre función: $nombre_funcion]" > $FICHERO_LOGS_GENERAL
-	fi
-}
-
-#Lo mismo que el leerFicheroYExtraerComentarios, pero esta funcion solo recibe 3 parametros y solo será llamado cuando se agregue un idioma nuevo
-function leerFicheroYExtraerComentariosNuevoIdioma {
-  	fichero_origin=$1 #El script original sobre el que se va crear los ficheros relevantes
+#Lo mismo que el extraerComentariosDelScript, pero esta funcion solo recibe 3 parametros y solo será llamado cuando se agregue un idioma nuevo
+function extraerComentariosDelScriptNuevoIdioma {
+  	script=$1 #El script original sobre el que se va crear los ficheros relevantes
   	#Ficheros del idioma nuevo
   	fichero_idioma_nuevo=$2 #Fichero del idioma nuevo (COD)
   	cod_idioma_nuevo=$3 #Codigo del idioma nuevo
@@ -495,8 +471,8 @@ function leerFicheroYExtraerComentariosNuevoIdioma {
 			comentario=""
     			continue;
 		fi
-  	done < "$fichero_origin"
-} #Fin leerFicheroYExtraerComentarios()
+  	done < "$script"
+} #Fin extraerComentariosDelScriptNuevoIdioma()
 
 function mostrarPresentacion {	
     clear
@@ -596,11 +572,11 @@ function cambiarIdiomaEnElScript {
                 		# Escribimos el contenido actualizado de nuevo en el archivo original
                 		printf "%s\n" "${lineas_referencias[@]}" > "$script" # Risky shit i guess but it works :)
             		else
-            			mostrarErrorYAgregarloAlLogGeneral "No se encontraron los ficheros de traducción para el codigo de idioma ${cod_idioma^^}, puede que no estén generados" $FUNCNAME
+            			mostrarMensajeYAgregarloAlLogGeneral "No se encontraron los ficheros de traducción para el codigo de idioma ${cod_idioma^^}, puede que no estén generados" $FUNCNAME $LOG_ERROR
                 		volverAlMenuOSalir
             		fi
         	done
-        	mostrarAciertoYAgregarloAlLogGeneral "Se ha cambiado el idioma del script a ${cod_idioma^^}" $FUNCNAME
+        	mostrarMensajeYAgregarloAlLogGeneral "Se ha cambiado el idioma del script a ${cod_idioma^^}" $FUNCNAME $LOG_SUCCESS
         	volverAlMenuOSalir 
     	else
         	echo -e "${ROJO}Alguno de los códigos de idiomas no existe${RESET}"
@@ -650,7 +626,7 @@ function crearNuevoFicheroDeAlmacenamiento {
 			#Mostrar distintos mensajes dependiendo del error
 			if [[ $existe_cod_idioma -eq 1 ]]
 			then
-				mostrarErrorYAgregarloAlLogGeneral "Ese codigo de idioma ya existe.\n" $FUNCNAME
+				mostrarMensajeYAgregarloAlLogGeneral "Ese codigo de idioma ya existe.\n" $FUNCNAME $LOG_SUCCESS
 				mostrarIdiomasDisponibles 
 			fi
 			if [[ $tamanho_codigo -ne 2  ]]
@@ -691,11 +667,11 @@ function crearNuevoFicheroDeAlmacenamiento {
 		#Copiamos el contenido del fichero original a la nueva
 		echo "se va copiar el contenido de $script a $nombre_fichero_nuevo_idioma"
 		#Ahora copiamos las lineas a los ficheros en el idioma
-		leerFicheroYExtraerComentariosNuevoIdioma $script\
+		extraerComentariosDelScriptNuevoIdioma $script\
 						"$directorio/$nombre_fichero_nuevo_idioma"\
 						${cod_idioma_nuevo^^} #^^ para pasar el codigo del idioma en mayusculas
 	done
-	mostrarAciertoYAgregarloAlLogGeneral "Nuevo fichero de almacenamiento de $nombre_idioma_nuevo creado" $FUNCNAME
+	mostrarMensajeYAgregarloAlLogGeneral "Nuevo fichero de almacenamiento de $nombre_idioma_nuevo creado" $FUNCNAME $LOG_SUCCESS
 	#Ahora actualizamos el fichero de los idiomas y añadimos el idioma nuevo
 	guardarIdiomaNuevo $cod_idioma_nuevo $nombre_idioma_nuevo
 	volverAlMenuOSalir
@@ -706,10 +682,10 @@ function guardarIdiomaNuevo {
 	cod_idioma_nuevo=$1
 	nombre_idioma_nuevo=$2
 	echo ""#"$cod_idioma_nuevo"-"$nombre_idioma_nuevo" >> $BASH_SOURCE
-	mostrarAciertoYAgregarloAlLogGeneral "Se ha guardado el idioma $nombre_idioma_nuevo con código ${cod_idioma_nuevo^^}" $FUNCNAME
+	mostrarMensajeYAgregarloAlLogGeneral "Se ha guardado el idioma $nombre_idioma_nuevo con código ${cod_idioma_nuevo^^}" $FUNCNAME $LOG_SUCCESS
 } #Fin guardarIdiomaNuevo()
 
-#Lista y añade de recuente al final de todos los idiomas disponibles.
+#Lista los idiomas disponibles y añade un recuento al final.
 #Nota : Obtiene este dato solo basandose en los que encuentra al final del script, no comprueba los ficheros
 function mostrarIdiomasDisponibles {
 	contador_idiomas=0
@@ -724,8 +700,7 @@ function mostrarIdiomasDisponibles {
 	echo -e "${CIAN}$contador_idiomas idiomas disponibles\n${RESET}"	
 } #Fin mostrarIdiomasDisponibles()
 
-#Muestra un pequño menu de opciones para que el usuario elija si quiere salir o no 
-#(sobre todo despues de realizar una operación)
+#Muestra un menu de opciones para que el usuario elija si quiere salir o no 
 function volverAlMenuOSalir {
 	echo -e "\n\n${CIAN}Selecciona una opción${RESET}"
 	seleccionarOpcion "${OPCIONES_MENU_VOLVER_O_SALIR[@]}"
@@ -740,7 +715,7 @@ function volverAlMenuOSalir {
 	esac	
 } #Fin volverAlMenuOSalir()
 
-#Buscar los ficheros de log de cada directorio y mostrarselo al usuario
+#Opcion para que el usuario visualice los ficheros de log disponibles
 function visualizarFicherosLog {
 	echo -e "${CIAN}Selecciona el fichero de log que deseas ver\n${RESET}"
 	seleccionarOpcion "${OPCIONES_MENU_LOGS[@]}"
@@ -796,22 +771,17 @@ function mostrarAyuda {
     	done
 }
 
-#Funcion para simular la carga de una operacion, recibe 2 parametros
-#1. El mensaje de carga
-#2. El tiempo que deberia quedar cargando
-
-#Quitar las referencias de todos los scripts
+#Quitar las referencias (XX-YY-) de todos los scripts y los deja como estaban antes de referenciarlos 
 function borrarReferencias {
     echo -e "${ROJO}Seguro que quieres borrar las referencias de cada script ? [s|n] ${RESET}"
     echo -e -n "${AMARILLO}Opcion:${RESET}"
     read opcion
     case $opcion in
     	's'|'S')
-    		# Se buscan todos los scripts en los subdirectorios
     		for script in $(find */ -type f -name "*.sh"); do
         		# Usamos sed para eliminar las referencias y convertirlas en comentarios
         		sed -i 's/#\([A-Z]\+\)-[0-9]\+-/#/g' "$script"
-        		mostrarAciertoYAgregarloAlLogGeneral "Referencias eliminadas y convertidas en comentarios en el script: $script" $FUNCNAME
+        		mostrarMensajeYAgregarloAlLogGeneral "Referencias eliminadas y convertidas en comentarios en el script: $script" $FUNCNAME $LOG_SUCCESS
     		done
     		volverAlMenuOSalir ;;
     	'n'|'N')
@@ -889,3 +859,4 @@ mostrarMenuPrincipal
 #EN-Ingles
 #FR-Frances
 #WH-Baby dont hurt me
+#OP-Opp
