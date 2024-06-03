@@ -20,6 +20,14 @@
 # Nota : Se requiere una version de bash superior a la 4 para un funcionamiento óptimo
 ######################################################################################################################
 
+#Variables de Idiomas por defecto
+COD_SP="SP"
+COD_EN="EN"
+COD_FR="FR"
+NUM_ESPANHOL=1;
+NUM_INGLES=2;
+NUM_FRANCES=3;
+
 #Otras variables
 FILTRO_FICHEROS="*.sh"
 BIN_BASH1="#!/bin/bash"
@@ -132,6 +140,7 @@ function cargarNuevasReferencias {
 		volverAlMenuOSalir
 	fi
 	#Identificamos los scripts base con los que vamos a trabajar y avisamos al usuario
+	#remember the -exec {} in case i need to run a command on the found files directly
 	scripts_encontrados=$(find */ -name "$FILTRO_FICHEROS" -type f -print | grep -c '') #Sustitucion de comandos y contamos cada linea del find con grep
 	echo -e "${AMARILLO_OSCURO}\nScripts(.sh) encontrado :${RESET}"
 	find */ -name "$FILTRO_FICHEROS" -type f -print #Mostrar los scripts encontrados
@@ -142,6 +151,8 @@ function cargarNuevasReferencias {
 		volverAlMenuOSalir
 	#Later add more options for the case where the files are already created
 	else
+		#En el caso de no haber salido en la comprobación anterior, se han encontrado scripts, seguimos :
+		#Gestionamos el singular/plural de los scripts
 		if [[ $scripts_encontrados -eq 1 ]]; then
 			echo -e "${CIAN}\nSe ha encontrado $scripts_encontrados script${RESET},¿deseas seguir? [s|n]"
 		else
@@ -149,29 +160,71 @@ function cargarNuevasReferencias {
 		fi
 		echo -e -n "${AMARILLO}Seguir :${RESET}"
 		read opcion_seguir
+		#TO-DO: Comprobar la existencia de los ficheros antes de volver a crearlos
 		while :; do
 			case $opcion_seguir in
 				's' | 'S')
 					#Preguntamos al usuario el idioma en el que quiere realizar las traducciones
-					mostrarIdiomasDisponibles
-					echo -e "¿En que idioma se encuentran los scripts? (Introduce el código)"
-					echo -e -n "${AMARILLO}Código Idioma :${RESET}"
-					read codigo_idioma_script
-					#Comprobamos si existe el código de idioma introducido
-					existeCodigoIdioma "$codigo_idioma_script"
-					existe=$?
-					if [[ $existe -eq 1 ]]; then
-						echo -e "Generando ficheros de idiomas..."
-						for script in $(find */ -name "$FILTRO_FICHEROS" -type f); # "*/" para buscar solo en los subdirectorios,
-						do
-							extraerComentariosDelScript $script $codigo_idioma_script
-						done
-						volverAlMenuOSalir #Prompt para que el usuario elija si salir o no de la app, truqito para salir del while o yo que se :)
-					else
-						mostrarMensajeYAgregarloAlLogGeneral "No existe el código de idioma ${codigo_idioma_script^^}" $FUNCNAME $LOG_ERROR
-						volverAlMenuOSalir
-					fi
-					;;	
+					echo -e "\n¿En que idioma se encuentran los scripts? (Selecciona un número)"
+					echo "$NUM_ESPANHOL. Español (SP)"
+					echo "$NUM_INGLES. Inglés  (EN)"
+					echo "$NUM_FRANCES. Francés (FR)"
+					echo -e "${AMARILLO}Opcion Idioma :${RESET}"
+					read opcion_idioma
+					#for script in $(find "." -name "$FILTRO_FICHEROS" -type f -print); #"." buscaria tanto en el directorio actual como subdirectorios
+					echo -e "Generando ficheros de idiomas..."
+					for script in $(find */ -name "$FILTRO_FICHEROS" -type f); #*/ para buscar solo en los subdirectorios,
+					do
+						#Obtenemos el nombre del fichero con 'basename' asi no nos devuelve la ruta relativa del fichero.sh encontrado, si devuelve
+						#"prueba.sh" por ejemplo, despues obtenemos todo que que haya antes del "." porque ese será el nombre, por ejemplo "prueba"
+						nombre_fichero=$(basename ${script%.*}) 
+						directorio=$(dirname "$script")
+						#Creamos los 3 ficheros txt de idiomas para por cada script en el directorio
+						nombre_fichero_sp=$COD_SP"_"$nombre_fichero.txt
+						nombre_fichero_en=$COD_EN"_"$nombre_fichero.txt
+						nombre_fichero_fr=$COD_FR"_"$nombre_fichero.txt
+						touch $directorio/$nombre_fichero_sp
+						touch $directorio/$nombre_fichero_en
+						touch $directorio/$nombre_fichero_fr
+						
+						#Creamos los ficheros Español (SP)
+						if [ $opcion_idioma -eq $NUM_ESPANHOL ] 
+						then
+							#Usamos las barras \ para que no se interpreten todos los 7 parametros como 1
+							extraerComentariosDelScript $script\
+											"$directorio/$nombre_fichero_sp"\
+								 			$COD_SP\
+								 			"$directorio/$nombre_fichero_en"\
+								 			$COD_EN\
+											"$directorio/$nombre_fichero_fr"\
+								 			$COD_FR
+						#Creamos los ficheros Ingles (EN)
+						elif [ $opcion_idioma -eq $NUM_INGLES ] 
+						then
+							#Usamos las barras \ para que no se interpreten todos los 7 parametros como 1
+							extraerComentariosDelScript $script\
+											"$directorio/$nombre_fichero_en"\
+								 			$COD_EN\
+								 			"$directorio/$nombre_fichero_sp"\
+								 			$COD_SP\
+											"$directorio/$nombre_fichero_fr"\
+								 			$COD_FR
+						#Creamos los ficheros Francés (FR)
+						elif [ $opcion_idioma -eq $NUM_FRANCES ]
+						then
+							#Usamos las barras \ para que no se interpreten todos los 7 parametros como 1
+							extraerComentariosDelScript $script\
+											"$directorio/$nombre_fichero_fr"\
+								 			$COD_FR\
+								 			"$directorio/$nombre_fichero_en"\
+								 			$COD_EN\
+											"$directorio/$nombre_fichero_sp"\
+								 			$COD_SP
+						else
+							echo -e "${ROJO}Opcion invalida${RESET}"
+						fi					
+					done
+					volverAlMenuOSalir ;; #Prompt para que el usuario elija si salir o no de la app
 				'n' | 'N')
 					echo "Se ha salido del programa"
 					exit 1
@@ -185,32 +238,39 @@ function cargarNuevasReferencias {
 			esac
 		done
 	fi
-}
+} #Fin cargarNuevasReferencias()
 
 #La funcion lee un fichero (.sh en este caso) y extrae los comentarios para copiarlos a sus respectivos ficheros txt's
+#Recibe 7 parametros:
 #$1: El script original (de donde se va extraer los comentarios)
-#$2: El codigo de idioma en el que se encuentra el script
+#$2: El fichero de idiomas principal (el idioma en el que esta el script)
+#$3: (Código del fichero de idioma principal)
+#$4,$5,$6 y $7: El fichero y codigo de idiomas del resto de ficheros que irán con las referencias vacias ($4 y $5 para uno) y ($6 y $7 para el otro)
 function extraerComentariosDelScript {
-  	script=$1
-  	codigo_idioma_script=$2
+  	script=$1 #El script original sobre el que se va crear los ficheros relevantes
+  	#Ficheros del idioma principal
+  	fichero_idioma1=$2 #Fichero del idioma principal  (SP,FR o EN)
+  	cod_idioma1=$3 #Codigo del idioma principal,el tercer parametro recibido
+  	#Ficheros secundarios donde solo irán las referencias del fichero principal
+  	#Segundo idioma
+  	fichero_idioma2=$4
+  	cod_idioma2=$5
+  	#Tercer idioma
+  	fichero_idioma3=$6
+  	cod_idioma3=$7
   	contador_lineas=$INICIO_NUM_LINEAS #Numero inicial de cada linea
   	declare -a lineas_script_original=()
-  	#Obtenemos el nombre del fichero con 'basename' asi no nos devuelve la ruta relativa del fichero.sh encontrado, si devuelve
-	#"prueba.sh" por ejemplo, despues obtenemos todo que que haya antes del "." porque ese será el nombre, por ejemplo "prueba"
-	nombre_script=$(basename ${script%.*}) 
-	directorio=$(dirname "$script") #El directoro donde se encuentra el script
-	#Creamos el fichero de idiomas principal
-	nombre_fichero_idioma_principal=${codigo_idioma_script^^}"_"$nombre_script.txt
-	touch $directorio/$nombre_fichero_idioma_principal
-	#Obtengo los códigos de idiomas disponibles
-	local codigo_idiomas=()
-    	while IFS= read -r linea; do
-        #Obtenemos los valores del índice 1 y 2 de la línea, si la línea es #SP-Español, el índice 1:2 = SP
-        	linea_filtrada=${linea:1:2}
-                codigo_idiomas+=("$linea_filtrada")
-        done < <(sed -n "$LINEA_INICIO_IDIOMAS,\$p" "${BASH_SOURCE}")
-  	IFS=$'\n' #Ajustar el Internal field separator
-  	#Ahora leemos el script (El .sh sobre el que se crearán las referencias)
+  	#Ajustamos el Internal field separator
+  	IFS=$'\n'
+	#Borramos los ficheros si ya existe y los volvemos a crear
+	for file in "$fichero_idioma1" "$fichero_idioma2" "$fichero_idioma3"; do
+    		if [ -f "$file" ]; then
+        		rm "$file"
+        		touch "$file"
+        		echo "Fichero $file existente se ha borrado."
+		fi
+	done
+  	#Ahora leemos el fichero de origin (El .sh sobre el que se crearán las referencias)
   	while IFS= read -r linea; #Con la opcion -r, nos aseguramos de que se lee todo tal cual aparece en el fichero y no se interprete de otra forma, por ejemplo el (\n o \t)
   	do
   		#Comprobamos si cada linea es válida
@@ -219,30 +279,27 @@ function extraerComentariosDelScript {
 		if [[ $linea_valida -eq 1 ]]; 
 		then
   			linea_filtrada=${linea#*#} #Cogemos todo lo que venga despues de la primera # de la linea
-    			comentario="#"${codigo_idioma_script^^}"-"$contador_lineas"-"$linea_filtrada
-    			#Escribimos el contenido en el fichero principal (El fichero del idioma en el que se encuentra el script)
-    			echo $comentario >> $directorio/$nombre_fichero_idioma_principal # usamos ">>" para adjuntar cada linea a lo que ya hay en el fichero
-    			#Ahora añadimos la misma referencia en el script
+    			comentario="#"$cod_idioma1"-"$contador_lineas"-"$linea_filtrada
+    			#Escribimos el contenido en el fichero principal
+    			echo $comentario >> $fichero_idioma1 # usamos ">>" para adjuntar cada linea a lo que ya hay en el fichero
     			#Comprobamos si el inicio (^) de la linea contiene una #
     			if [[ "$linea" =~ ^# ]]; then
     				#Concatenamos la referencia con el contenido de la linea que haya despues de la #
-    				comentario_script="#${codigo_idioma_script^^}-${contador_lineas}-${linea#\#}"
+    				comentario_script="#${cod_idioma1}-${contador_lineas}-${linea#\#}"
 			else
     				#Separamos la línea en la parte antes del primer # y el comentario después del #
     				parte_antes=${linea%%#*}
     				comentario_despues=${linea#*#}
-    				comentario_script="${parte_antes}#${codigo_idioma_script^^}-${contador_lineas}-${comentario_despues}"
+    				comentario_script="${parte_antes}#${cod_idioma1}-${contador_lineas}-${comentario_despues}"
 			fi
     			lineas_script_original+=("$comentario_script") #Tiene que ir aqui porque aqui es donde añadimos el fichero principal
     			#Escribimos las referencias vacia en ficheros de otros idiomas
-    			for cod in ${codigo_idiomas[@]}; do
-    				if [[ "${cod,,}" != "${codigo_idioma_script,,}" ]]; then
-    					nombre_fichero_otro_idioma=${cod^^}"_"$nombre_script.txt
-    					touch $directorio/$nombre_fichero_otro_idioma
-    					comentario="#"${cod^^}"-"$contador_lineas"-"
-        				echo $comentario >> $directorio/$nombre_fichero_otro_idioma
-    				fi
-			done
+    			#Idioma2
+    			comentario="#"$cod_idioma2"-"$contador_lineas"-"
+    			echo $comentario >> $fichero_idioma2
+    			#Idioma3
+    			comentario="#"$cod_idioma3"-"$contador_lineas"-"
+    			echo $comentario >> $fichero_idioma3
     			contador_lineas=$((contador_lineas + $INCR_LINEAS)) #El número de lineas del documento tiene que ir de 10 en 10
   		else
   			#Seguimos a la siguiente linea
@@ -253,7 +310,7 @@ function extraerComentariosDelScript {
   	done < "$script"
   	#Ahora poner las etiquetas en el script original
   	printf "%s\n" "${lineas_script_original[@]}" > "$script" #Risky shit :)
-  	mostrarMensajeYAgregarloAlLogGeneral "Las nuevas referencias han sido creadas para $directorio/$nombre_fichero_idioma_principal" $FUNCNAME $LOG_SUCCESS
+  	mostrarMensajeYAgregarloAlLogGeneral "Las nuevas referencias han sido creadas" $FUNCNAME $LOG_SUCCESS
 } #Fin extraerComentariosDelScript()
 
 #Comprueba si es una linea es valida para considerarla un comentario para la traducción
@@ -285,12 +342,6 @@ function regenerarReferencias {
 	#Comprobamos si existe el codigo de idioma, si no existe , la funcion existeCodigoIdioma devuelve 1 si existe y 0 si no
  	existeCodigoIdioma "$cod_idioma"
  	existe=$? #Obtenemos el resultado del ultimo comando ejecutado
- 	#Obtenemos todos los códigos de idiomas
- 	local codigo_idiomas=() # Array para meter los códigos de idiomas
-        while IFS= read -r linea; do
-        	linea_filtrada=${linea:1:2} # Obtenemos los valores del índice 1 y 2 de la línea, si la línea es #SP-Español, el índice 1:2 = SP
-                codigo_idiomas+=("$linea_filtrada") # Añadimos cada código encontrado al array
-        done < <(sed -n "$LINEA_INICIO_IDIOMAS,\$p" "${BASH_SOURCE}")
  	if [[ $existe -eq 1 ]]
  	then
  		#Obtener los comentarios de cada script pero intentando ordenarlos y comprobar si nos han insertado alguno nuevo en medio
@@ -358,11 +409,11 @@ function regenerarReferencias {
   			#Despues de escribir en el de idiomas, ahora cambiamos el idioma de vuelta
   			printf "%s\n" "${lineas_actualizada_script[@]}" > "$script" #Risky shit :)
   			# Obtener el resto de los códigos de idiomas y actualizar sus ficheros con las nuevas referencias vacías
-            		#local codigo_idiomas=() # Array para meter los códigos de idiomas
-            		#while IFS= read -r linea; do
-                	#	linea_filtrada=${linea:1:2} # Obtenemos los valores del índice 1 y 2 de la línea, si la línea es #SP-Español, el índice 1:2 = SP
-                	#	codigo_idiomas+=("$linea_filtrada") # Añadimos cada código encontrado al array
-            		#done < <(sed -n "$LINEA_INICIO_IDIOMAS,\$p" "${BASH_SOURCE}")
+            		local codigo_idiomas=() # Array para meter los códigos de idiomas
+            		while IFS= read -r linea; do
+                		linea_filtrada=${linea:1:2} # Obtenemos los valores del índice 1 y 2 de la línea, si la línea es #SP-Español, el índice 1:2 = SP
+                		codigo_idiomas+=("$linea_filtrada") # Añadimos cada código encontrado al array
+            		done < <(sed -n "$LINEA_INICIO_IDIOMAS,\$p" "${BASH_SOURCE}")
 			
 			#Crear las referencias en el los otros idiomas que no sean el mismo que estamos re-referenciando
             		for cod in ${codigo_idiomas[@]}; do
@@ -460,23 +511,6 @@ function extraerComentariosDelScriptNuevoIdioma {
   	done < "$script"
 } #Fin extraerComentariosDelScriptNuevoIdioma()
 
-#Mostrar cuantas referencias quedan por traducir de cada idioma aproximadamente
-function  mostrarReferenciasRestantesPorTraducir {
-	#Antes de nada,comprobamos si los scripts ya están referenciados
-	comprobarSiLosScriptsEstanReferenciados
-	comprobacion=$? #Obtenemos el resultado de la última ejecución
-	if [[ $comprobacion -eq 0 ]];
-	then
-		#Salimos directamente y agregamos el error al log
-		mostrarMensajeYAgregarloAlLogGeneral "Primero los scripts tienen que estar referenciados,puedes referenciarlos desde el menú principal" $FUNCNAME $LOG_ERROR
-		volverAlMenuOSalir
-	fi
-	for script in $(find */ -name "$FILTRO_FICHEROS" -type f);
- 	do
- 		echo $script
- 	done
-}
-
 function mostrarPresentacion {	
     clear
     echo -e "${CIAN}---------------------------------------${RESET}"
@@ -552,13 +586,15 @@ function cambiarIdiomaEnElScript {
                         			#Con el sed, -E para expresiones y extraemos solo el texto de la traduccion en vez de toda la linea
                         			linea_traduccion=$(grep "$referencia_a_buscar" "$fichero_idioma_a_traducir" | sed -E "s/^.*${referencia}//") #No uncessary language file update
                         			fichero_idioma_actual="$directorio/${cod_idioma_script^^}_${nombre_fichero}.txt"
+                        			echo $fichero_idioma_actual
                         			#Eliminar el "-" misterioso que aparece al principio de la linea de traduccion si existe
                         			linea_traduccion=${linea_traduccion#-}
                         			if [[ -z $linea_traduccion ]]; then
                         				((num_traducciones_restantes++))
                         			fi
-                        			
+                        			#if [[ -n "$referencia" && -n "$linea_traduccion" ]]; then
                             			if [[ -n "$referencia" ]]; then
+                            				#linea_nueva=$(echo "$linea_original" | sed "s/$referencia.*/$referencia$linea_traduccion/")
                             				echo "Good Referencia a buscar : $referencia_a_buscar"
                             				linea_nueva=$(echo "$linea_original" | sed "s/$referencia_a_quitar.*/$referencia_a_buscar$linea_traduccion/")
                             				echo "Línea original: $linea_original"
@@ -612,7 +648,7 @@ function cambiarIdiomaEnElScript {
         	mostrarMensajeYAgregarloAlLogGeneral "Se ha cambiado el idioma del script a ${cod_idioma^^}" $FUNCNAME $LOG_SUCCESS
         	#Mostrar las referencias restantes por traducir del nuevo idioma al que se ha cambiado el script
         	if [[ $num_traducciones_restantes -gt 0 ]]; then
-        		mostrarMensajeYAgregarloAlLogGeneral "Faltan $num_traducciones_restantes referencias aproximadamente por traducir para el código de idioma : ${cod_idioma^^}"\
+        		mostrarMensajeYAgregarloAlLogGeneral "Faltan $num_traducciones_restantes referencias por traducir para el código de idioma : ${cod_idioma^^}"\
         						      $FUNCNAME $LOG_WARNING
         	fi
         	volverAlMenuOSalir 
@@ -646,16 +682,6 @@ function existeCodigoIdioma {
 
 #Crear nuevas referencias para un idioma nuevo que elegirá el usuario
 function crearNuevoFicheroDeAlmacenamiento {
-	#Antes de nada,comprobamos si los scripts ya están referenciados, para evitar una doble referencia
-	comprobarSiLosScriptsEstanReferenciados
-	comprobacion=$? #Obtenemos el resultado de la última ejecución
-	if [[ $comprobacion -eq 0 ]];
-	then
-		#Salimos directamente y agregamos el error al log
-		mostrarMensajeYAgregarloAlLogGeneral "Antes de crear un nuevo fichero de almacenamiento, los scripts tienen que estar referenciados"\
-						     $FUNCNAME $LOG_ERROR
-		volverAlMenuOSalir
-	fi
 	mostrarIdiomasDisponibles #Mostrar los idiomas disponibles antes que nada
 	local num_coincidencias #Contador del número de coincidencias del codigo nuevo con algunos existente, tiene que ser 0 para que sea valido
 	local tamanho_codigo #Tamaño del nuevo codigo de idioma
@@ -674,7 +700,7 @@ function crearNuevoFicheroDeAlmacenamiento {
 			#Mostrar distintos mensajes dependiendo del error
 			if [[ $existe_cod_idioma -eq 1 ]]
 			then
-				mostrarMensajeYAgregarloAlLogGeneral "El código de idioma $cod_idioma_nuevo ya existe.\n" $FUNCNAME $LOG_ERROR
+				mostrarMensajeYAgregarloAlLogGeneral "Ese codigo de idioma ya existe.\n" $FUNCNAME $LOG_SUCCESS
 				mostrarIdiomasDisponibles 
 			fi
 			if [[ $tamanho_codigo -ne 2  ]]
@@ -847,7 +873,7 @@ function borrarReferencias {
 #   Arguments   : list of options, maximum of 256
 #                 "opt1" "opt2" ...
 #   Return value: selected index (0 for opt1, 1 for opt2 ...)
-#Credit : StackOverFlow
+#Credit : StackOverFlow :)
 function seleccionarOpcion {
     # little helpers for terminal print control and key input
     ESC=$( printf "\033")
@@ -907,4 +933,3 @@ mostrarMenuPrincipal
 #SP-Español
 #EN-Ingles
 #FR-Frances
-#IO-This is

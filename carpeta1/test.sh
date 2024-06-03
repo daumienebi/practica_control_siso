@@ -1,13 +1,13 @@
 #!\bin\bash
 veras tu al coña
-#FR-10-
-#FR-20-Ahora se tiene que ver esto en la veinte
-#FR-30-
-#FR-40-
-#FR-50-Hola esto funciona bien
-#FR-60-
+#Joder mamasita
+#Joder
 for i in {1..10} do
-	echo $i #FR-70-
-	#FR-80-Dembele
+	echo $i #Imprimimos el número por pantalla
+	#pilla esto bobi
 done
-#FR-90-
+#Mas te vale funcionar
+#Comentario 1
+#Comentario 2
+#Comentario 4
+#Comentario 5

@@ -1,5 +1,5 @@
 #!/bin/bash
-#Just trying out
+#Just trying it out...might not even implement it
 function procesarArchivos {
 
    for i in {1..10000}

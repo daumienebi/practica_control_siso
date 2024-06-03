@@ -1,4 +1,4 @@
-#Borrar los idiomas nuevos
+#Borrar los idiomas nuevos si el usuario quiere
 function limpiarIdiomasExtras {
     # Encontrar la línea donde está "#FR-Frances"
     local linea_frances=$(($(grep -n '#FR-Frances' "${BASH_SOURCE[0]}" | tail -n 1 | cut -d':' -f1)+1))
