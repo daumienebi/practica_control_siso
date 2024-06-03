@@ -1,13 +1,13 @@
 #!\bin\bash
 veras tu al coña
-#SP-10-Hola comentario1
-#SP-20-Bonjour
-#SP-30-
-#SP-40-Body
-#SP-50-Halo
-#SP-60-Dominos
+#FR-10-
+#FR-20-Ahora se tiene que ver esto en la veinte
+#FR-30-
+#FR-40-
+#FR-50-Hola esto funciona bien
+#FR-60-
 for i in {1..10} do
-	echo $i #SP-70-Hola comentario2
-	#SP-80-Hola comentario3
+	echo $i #FR-70-
+	#FR-80-Dembele
 done
-#SP-90-Hola comentario4
+#FR-90-
