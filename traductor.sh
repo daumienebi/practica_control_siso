@@ -108,11 +108,73 @@ function mostrarMenuPrincipal {
 	esac	
 } #Fin mostrarMenuPrincipal()
 
+#Función que comprueba si los scripts están referenciados antes de crear una nueva referencias
+#o antes de cambiar el idioma de los scripts
+#Devuelve [1] si ya están referenciados y [0] si aun no lo están
+function comprobarSiLosScriptsEstanReferenciados {
+    echo -e "${AMARILLO}Comprobando si los scripts están referenciados...${RESET}"
+    # Buscar en los subdirectorios inmediatos
+    for script in $(find */ -type f -name "$FILTRO_FICHEROS"); do
+        while IFS= read -r linea; do
+            if echo "$linea" | grep -qE '#[A-Z]{2}-[0-9]+-'; then
+                # Con encontrar una línea, sabemos que mínimo hay una referencia
+                #echo "Referencia encontrada en el script: $script"
+                return 1 #Ya están referenciados
+            fi
+        done < "$script"
+    done
+    echo "No se encontraron referencias en los scripts."
+    return 0 #No están referenciados
+} #Fin comprobarSiLosScriptsEstanReferenciados()
+
+#Opcion del menu principal para crear referencias nuevas
+function cargarNuevasReferenciasDynamic {
+	#Antes de nada,comprobamos si los scripts ya están referenciados, para evitar una doble referencia
+	comprobarSiLosScriptsEstanReferenciados
+	comprobacion=$? #Obtenemos el resultado de la última ejecución
+	if [[ $comprobacion -eq 1 ]];
+	then
+		#Salimos directamente y agregamos el error al log
+		mostrarMensajeYAgregarloAlLogGeneral "Se está intentando referenciar algúnos scripts ya referenciados, puedes utilizar la opcion de regenerar referencias o borrar las referencias"\
+						     $FUNCNAME $LOG_ERROR
+		volverAlMenuOSalir
+	fi
+	#Identificamos los scripts base con los que vamos a trabajar y avisamos al usuario
+	scripts_encontrados=$(find */ -name "$FILTRO_FICHEROS" -type f -print | grep -c '') #Sustitucion de comandos y contamos cada linea del find con grep
+	echo -e "${AMARILLO_OSCURO}\nScripts(.sh) encontrado :${RESET}"
+	find */ -name "$FILTRO_FICHEROS" -type f -print #Mostrar los scripts encontrados
+	#Si se encuentra 1 o más ficheros, seguimos, si no, es que no se han encontrado scripts en los subdirectorios
+	if [[ $scripts_encontrados -lt 1 ]]
+	then
+		mostrarMensajeYAgregarloAlLogGeneral "No se han encontrado ningún script en los subdirectorios" $FUNCNAME $LOG_WARNING
+		volverAlMenuOSalir
+	#Later add more options for the case where the files are already created
+	else
+		echo "Doings"
+		#Make it fucking dynamic then
+	fi
+}
+
+function extraerComentariosDelScriptDynamic {
+	echo "To be implemented"
+}
+
 #Opcion del menu principal para crear referencias nuevas
 function cargarNuevasReferencias {
-	#Primero identificamos los scripts base con los que vamos a trabajar y avisamos al usuario
+	#Antes de nada,comprobamos si los scripts ya están referenciados, para evitar una doble referencia
+	comprobarSiLosScriptsEstanReferenciados
+	comprobacion=$? #Obtenemos el resultado de la última ejecución
+	if [[ $comprobacion -eq 1 ]];
+	then
+		#Salimos directamente y agregamos el error al log
+		mostrarMensajeYAgregarloAlLogGeneral "Se está intentando referenciar algúnos scripts ya referenciados, puedes utilizar la opcion de regenerar referencias o borrar las referencias"\
+						     $FUNCNAME $LOG_ERROR
+		volverAlMenuOSalir
+	fi
+	#Identificamos los scripts base con los que vamos a trabajar y avisamos al usuario
 	#remember the -exec {} in case i need to run a command on the found files directly
 	scripts_encontrados=$(find */ -name "$FILTRO_FICHEROS" -type f -print | grep -c '') #Sustitucion de comandos y contamos cada linea del find con grep
+	echo -e "${AMARILLO_OSCURO}\nScripts(.sh) encontrado :${RESET}"
 	find */ -name "$FILTRO_FICHEROS" -type f -print #Mostrar los scripts encontrados
 	#Si se encuentra 1 o más ficheros, seguimos, si no, es que no se han encontrado scripts en los subdirectorios
 	if [[ $scripts_encontrados -lt 1 ]]
@@ -124,9 +186,9 @@ function cargarNuevasReferencias {
 		#En el caso de no haber salido en la comprobación anterior, se han encontrado scripts, seguimos :
 		#Gestionamos el singular/plural de los scripts
 		if [[ $scripts_encontrados -eq 1 ]]; then
-			echo -e "${CIAN}Se han encontrado $scripts_encontrados script${RESET},¿deseas seguir? [s|n]"
+			echo -e "${CIAN}\nSe ha encontrado $scripts_encontrados script${RESET},¿deseas seguir? [s|n]"
 		else
-			echo -e "${CIAN}Se han encontrado $scripts_encontrados scripts${RESET},¿deseas seguir? [s|n]"
+			echo -e "${CIAN}\nSe han encontrado $scripts_encontrados scripts${RESET},¿deseas seguir? [s|n]"
 		fi
 		echo -e -n "${AMARILLO}Seguir :${RESET}"
 		read opcion_seguir
@@ -142,6 +204,7 @@ function cargarNuevasReferencias {
 					echo -e "${AMARILLO}Opcion Idioma :${RESET}"
 					read opcion_idioma
 					#for script in $(find "." -name "$FILTRO_FICHEROS" -type f -print); #"." buscaria tanto en el directorio actual como subdirectorios
+					echo -e "Generando ficheros de idiomas..."
 					for script in $(find */ -name "$FILTRO_FICHEROS" -type f); #*/ para buscar solo en los subdirectorios,
 					do
 						#Obtenemos el nombre del fichero con 'basename' asi no nos devuelve la ruta relativa del fichero.sh encontrado, si devuelve
@@ -191,7 +254,6 @@ function cargarNuevasReferencias {
 								 			$COD_SP
 						else
 							echo -e "${ROJO}Opcion invalida${RESET}"
-							break;
 						fi					
 					done
 					volverAlMenuOSalir ;; #Prompt para que el usuario elija si salir o no de la app
@@ -203,7 +265,7 @@ function cargarNuevasReferencias {
 					echo -e "\n${ROJO}Porfavor selecciona una opcion válida${RESET}"
 					echo -e "\n${CIAN}Se han encontrado $scripts_encontrados scripts${RESET},¿deseas seguir? [s|n]"
 					echo -e "${AMARILLO}Seguir :${RESET}"
-					read opcion_seguir
+					read opcion_seguir 
 					;;
 			esac
 		done
@@ -232,6 +294,14 @@ function extraerComentariosDelScript {
   	declare -a lineas_script_original=()
   	#Ajustamos el Internal field separator
   	IFS=$'\n'
+	#Borramos los ficheros si ya existe y los volvemos a crear
+	for file in "$fichero_idioma1" "$fichero_idioma2" "$fichero_idioma3"; do
+    		if [ -f "$file" ]; then
+        		rm "$file"
+        		touch "$file"
+        		echo "Fichero $file existente se ha borrado."
+		fi
+	done
   	#Ahora leemos el fichero de origin (El .sh sobre el que se crearán las referencias)
   	while IFS= read -r linea; #Con la opcion -r, nos aseguramos de que se lee todo tal cual aparece en el fichero y no se interprete de otra forma, por ejemplo el (\n o \t)
   	do
@@ -244,8 +314,9 @@ function extraerComentariosDelScript {
     			comentario="#"$cod_idioma1"-"$contador_lineas"-"$linea_filtrada
     			#Escribimos el contenido en el fichero principal
     			echo $comentario >> $fichero_idioma1 # usamos ">>" para adjuntar cada linea a lo que ya hay en el fichero
-    			#Concatenamos la linea para el script original que contiene la referencia y el texto
+    			#Comprobamos si el inicio (^) de la linea contiene una #
     			if [[ "$linea" =~ ^# ]]; then
+    				#Concatenamos la referencia con el contenido de la linea que haya despues de la #
     				comentario_script="#${cod_idioma1}-${contador_lineas}-${linea#\#}"
 			else
     				#Separamos la línea en la parte antes del primer # y el comentario después del #
@@ -371,10 +442,8 @@ function regenerarReferencias {
   			printf "%s\n" "${lineas_actualizada_script[@]}" > "$script" #Risky shit :)
   			# Obtener el resto de los códigos de idiomas y actualizar sus ficheros con las nuevas referencias vacías
             		local codigo_idiomas=() # Array para meter los códigos de idiomas
-
             		while IFS= read -r linea; do
                 		linea_filtrada=${linea:1:2} # Obtenemos los valores del índice 1 y 2 de la línea, si la línea es #SP-Español, el índice 1:2 = SP
-                		# Añadimos cada código de idioma obtenido a un array
                 		codigo_idiomas+=("$linea_filtrada") # Añadimos cada código encontrado al array
             		done < <(sed -n "$LINEA_INICIO_IDIOMAS,\$p" "${BASH_SOURCE}")
 			
@@ -489,7 +558,18 @@ function mostrarPresentacion {
 #cambioIdiomaScript: SIDE NOTE : Make a function to delete the scripts and leave it like that
 #Search for just the number so that it can go to the language files instead of the full reference #XX-YY-
 function cambiarIdiomaEnElScript {
-    	# Volvemos a buscar los ficheros para encontrar cada script y dentro del ese mismo directorio, tenemos los ficheros de traducción
+	#Antes de nada,comprobamos si los scripts ya están referenciados, para evitar una doble referencia
+	comprobarSiLosScriptsEstanReferenciados
+	comprobacion=$? #Obtenemos el resultado de la última ejecución
+	if [[ $comprobacion -eq 0 ]];
+	then
+		#Salimos directamente y agregamos el error al log
+		mostrarMensajeYAgregarloAlLogGeneral "Para poder cambiar de idioma, los scripts tienen que estar referenciados"\
+						     $FUNCNAME $LOG_ERROR
+		volverAlMenuOSalir
+	fi
+	num_traducciones_restantes=0 #Recuento de cuantas traducciones faltan
+    	#Buscar los ficheros para encontrar cada script y dentro del ese mismo directorio, tenemos los ficheros de traducción
     	find */ -name "$FILTRO_FICHEROS" -type f -print 
     	# Preguntamos a qué idioma lo quiere traducir el usuario
     	mostrarIdiomasDisponibles
@@ -540,6 +620,9 @@ function cambiarIdiomaEnElScript {
                         			echo $fichero_idioma_actual
                         			#Eliminar el "-" misterioso que aparece al principio de la linea de traduccion si existe
                         			linea_traduccion=${linea_traduccion#-}
+                        			if [[ -z $linea_traduccion ]]; then
+                        				((num_traducciones_restantes++))
+                        			fi
                         			#if [[ -n "$referencia" && -n "$linea_traduccion" ]]; then
                             			if [[ -n "$referencia" ]]; then
                             				#linea_nueva=$(echo "$linea_original" | sed "s/$referencia.*/$referencia$linea_traduccion/")
@@ -549,11 +632,27 @@ function cambiarIdiomaEnElScript {
                             				echo "Línea traducida: $linea_traduccion"
                             				echo "Línea nueva: $linea_nueva"
                             				#Ya que en las referencias normales van de 10 en 10, comprobamos si la referencia no es multiplo de 10 para saber
-                            				#que es uno nuevo que puede ser XX-11-,XX-125-,XX-1212-, y agregamos esas "nuevas" al fichero del idioma en
-                            				#el que esta el script antes de traducirlo
-                            				if (( referencia % 10 != 0 )); then
+                            				#que es uno nuevo que puede ser XX-11-,XX-125-,XX-1212-, y agregamos esas "nuevas" a los ficheros de idiomas.
+                            				#Tambien comprobamos que la referencia no esté en el idioma
+                            				if (( referencia % 10 != 0 )) && ! grep -qF "#${cod_idioma_script^^}-$referencia-" "$fichero_idioma_actual"; then
+                            					local codigo_idiomas=()
                             					fichero_idioma_actual="$directorio/${cod_idioma_script^^}_${nombre_fichero}.txt"
-                            					echo "$linea_original" >> "$fichero_idioma_actual"
+                            					echo "$linea_original" >> "$fichero_idioma_actual" #Escribimos en los demás idiomas
+                            					while IFS= read -r linea; do
+                            						#Obtenemos los valores del índice 1 y 2 de la línea, si la línea es #SP-Español, el índice 1:2 = SP
+                							linea_filtrada=${linea:1:2}
+                							codigo_idiomas+=("$linea_filtrada")
+            							done < <(sed -n "$LINEA_INICIO_IDIOMAS,\$p" "${BASH_SOURCE}")
+            							#Ahora tenemos que agregar estos mismos comentarios a los demás ficheros de idiomas
+            							for cod in ${codigo_idiomas[@]}; do
+    									if [[ "${cod,,}" != "${cod_idioma_script,,}" ]]; then
+        									fichero_otro_idioma="$directorio/${cod^^}_${nombre_fichero}.txt"
+        									#Verificamos si la referencia no está ya en el archivo
+        									if ! grep -qF "#${cod^^}-$referencia-" "$fichero_otro_idioma"; then
+        										echo "#${cod^^}-$referencia-" >> $fichero_otro_idioma
+       	 									fi
+    									fi
+								done
                             				fi
                         			else
                             				echo "La línea no contiene la referencia esperada: $linea_original"
@@ -572,11 +671,17 @@ function cambiarIdiomaEnElScript {
                 		# Escribimos el contenido actualizado de nuevo en el archivo original
                 		printf "%s\n" "${lineas_referencias[@]}" > "$script" # Risky shit i guess but it works :)
             		else
-            			mostrarMensajeYAgregarloAlLogGeneral "No se encontraron los ficheros de traducción para el codigo de idioma ${cod_idioma^^}, puede que no estén generados" $FUNCNAME $LOG_ERROR
+            			mostrarMensajeYAgregarloAlLogGeneral "No se encontraron los ficheros de traducción para el codigo de idioma ${cod_idioma^^}, puede que no estén generados"\
+            			                                     $FUNCNAME $LOG_ERROR
                 		volverAlMenuOSalir
             		fi
         	done
         	mostrarMensajeYAgregarloAlLogGeneral "Se ha cambiado el idioma del script a ${cod_idioma^^}" $FUNCNAME $LOG_SUCCESS
+        	#Mostrar las referencias restantes por traducir del nuevo idioma al que se ha cambiado el script
+        	if [[ $num_traducciones_restantes -gt 0 ]]; then
+        		mostrarMensajeYAgregarloAlLogGeneral "Faltan $num_traducciones_restantes referencias por traducir para el código de idioma : ${cod_idioma^^}"\
+        						      $FUNCNAME $LOG_WARNING
+        	fi
         	volverAlMenuOSalir 
     	else
         	echo -e "${ROJO}Alguno de los códigos de idiomas no existe${RESET}"
@@ -773,7 +878,8 @@ function mostrarAyuda {
 
 #Quitar las referencias (XX-YY-) de todos los scripts y los deja como estaban antes de referenciarlos 
 function borrarReferencias {
-    echo -e "${ROJO}Seguro que quieres borrar las referencias de cada script ? [s|n] ${RESET}"
+    echo -e "${AMARILLO_OSCURO}IMPORTANTE :${RESET} ASEGURATE DE LOS SCRIPTS SE ENCUENTRAN EN UN IDIOMA CON TODOS LOS COMENTARIOS!"
+    echo -e "${ROJO}Seguro que quieres borrar las referencias (#XX-YY-) de cada script ? [s|n] ${RESET}\n"
     echo -e -n "${AMARILLO}Opcion:${RESET}"
     read opcion
     case $opcion in
@@ -858,5 +964,3 @@ mostrarMenuPrincipal
 #SP-Español
 #EN-Ingles
 #FR-Frances
-#WH-Baby dont hurt me
-#OP-Opp

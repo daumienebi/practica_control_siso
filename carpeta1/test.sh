@@ -1,13 +1,13 @@
 #!\bin\bash
 veras tu al coña
-#Joder mamasita
-#Joder
+#SP-10-Hola comentario1
+#SP-20-Bonjour
+#SP-30-
+#SP-40-Body
+#SP-50-Halo
+#SP-60-Dominos
 for i in {1..10} do
-	echo $i #Imprimimos el número por pantalla
-	#pilla esto bobi
+	echo $i #SP-70-Hola comentario2
+	#SP-80-Hola comentario3
 done
-#Mas te vale funcionar
-#Comentario 1
-#Comentario 2
-#Comentario 4
-#Comentario 5
+#SP-90-Hola comentario4
