@@ -460,23 +460,6 @@ function extraerComentariosDelScriptNuevoIdioma {
   	done < "$script"
 } #Fin extraerComentariosDelScriptNuevoIdioma()
 
-#Mostrar cuantas referencias quedan por traducir de cada idioma aproximadamente
-function  mostrarReferenciasRestantesPorTraducir {
-	#Antes de nada,comprobamos si los scripts ya están referenciados
-	comprobarSiLosScriptsEstanReferenciados
-	comprobacion=$? #Obtenemos el resultado de la última ejecución
-	if [[ $comprobacion -eq 0 ]];
-	then
-		#Salimos directamente y agregamos el error al log
-		mostrarMensajeYAgregarloAlLogGeneral "Primero los scripts tienen que estar referenciados,puedes referenciarlos desde el menú principal" $FUNCNAME $LOG_ERROR
-		volverAlMenuOSalir
-	fi
-	for script in $(find */ -name "$FILTRO_FICHEROS" -type f);
- 	do
- 		echo $script
- 	done
-}
-
 function mostrarPresentacion {	
     clear
     echo -e "${CIAN}---------------------------------------${RESET}"
@@ -490,8 +473,7 @@ function mostrarPresentacion {
     echo -e "${CIAN}---------------------------------------${RESET}\n"
 } #Fin mostrarPresentacion()
 
-#cambioIdiomaScript: SIDE NOTE : Make a function to delete the scripts and leave it like that
-#Search for just the number so that it can go to the language files instead of the full reference #XX-YY-
+#Opcion para cambiar el idioma del script siempre que los scripts estén referenciados
 function cambiarIdiomaEnElScript {
 	#Antes de nada,comprobamos si los scripts ya están referenciados, para evitar una doble referencia
 	comprobarSiLosScriptsEstanReferenciados
@@ -907,4 +889,3 @@ mostrarMenuPrincipal
 #SP-Español
 #EN-Ingles
 #FR-Frances
-#IO-This is
