@@ -1,11 +1,14 @@
 # Práctica de Control
-Práctica de control de la asignatura `Sistemas Operativos` (1er año del grado en Ingeniería Informática,Universidad de Burgos)
-Se trata de un script escrito en el lenguaje bash para gestionar la documentación de otros scripts.
+Segunda parte de la práctica de control de la asignatura `Sistemas Operativos` (1er año del grado en Ingeniería Informática,Universidad de Burgos).
+Se trata de un script escrito en el lenguaje bash para gestionar la internacionalización/documentación de otros scripts.
 
 ## Como ejecutarlo
+Coloca el script en un directorio que contenga otros directorios con los scripts a internacionalizar y ejecuta :
+
 `bash traductor.sh`
 
-## Features
+
+## Funcionalidades
 - [x] Crear referencias nuevas
 - [x] Regenerar referencias
 - [x] Borrar referencias de los scripts
@@ -14,7 +17,9 @@ Se trata de un script escrito en el lenguaje bash para gestionar la documentaci�
 - [x] Visualizar ficheros de log
 - [x] Mostrar ayuda
 
-![image](https://github.com/daumienebi/practica_control_siso/assets/90214727/8e3c2cf5-b054-4123-b1fe-c5a4770e6361)
+![image](https://github.com/daumienebi/practica_control_siso/assets/90214727/aff3fc01-34f5-47bd-a841-4d6a0c7a7f7c)
 
-## Modificación
-wth do i add here
+
+## Todo
+* Completar la documentación aqui
+* README in english too
