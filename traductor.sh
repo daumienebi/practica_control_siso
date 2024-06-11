@@ -72,7 +72,8 @@ OPCIONES_MENU_COD_IDIOMA_NUEVO=(
 
 #Muestra las opciones del menu principal al usuario
 function mostrarMenuPrincipal {
-	echo -e "${CIAN}Selecciona una opción : ( Mueve con las flechas [arriba,abajo] )${RESET}"
+	echo -e "${AMARILLO}Selecciona una opción : ${RESET}"
+	echo -e "${AMARILLO}(Mueve con las flechas [arriba,abajo])${RESET}\n"
 	seleccionarOpcion "${OPCIONES_MENU_PRINCIPAL[@]}"
 	opcion_seleccionada=$?
 	case $opcion_seleccionada in
@@ -462,15 +463,15 @@ function extraerComentariosDelScriptNuevoIdioma {
 
 function mostrarPresentacion {	
     clear
-    echo -e "${CIAN}---------------------------------------${RESET}"
+    echo -e "${CIAN}------------------------------------------------${RESET}"
     echo "         PRÁCTICA DE CONTROL       "
     echo " INTERNACIONALIZACIÓN DE DOCUMENTACIÓN"
-    echo -e "${CIAN}---------------------------------------${RESET}"
+    echo -e "${CIAN}------------------------------------------------${RESET}"
     echo -e "Autor        : Derick Daumienebi Sakpa"
     echo -e "Tutor        : José Manuel Saiz Diez"
     echo -e "Asignatura   : Sistemas Operativos"
     echo -e "Grado        : Ingeniería Informática"
-    echo -e "${CIAN}---------------------------------------${RESET}\n"
+    echo -e "${CIAN}------------------------------------------------${RESET}\n"
 } #Fin mostrarPresentacion()
 
 #Opcion para cambiar el idioma del script siempre que los scripts estén referenciados
