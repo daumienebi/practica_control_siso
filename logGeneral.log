@@ -328,3 +328,6 @@ dom 02 jun 2024 06:03:39 CEST : Se ha cambiado el idioma del script a SP [Nombre
 [1;32mSUCCESS:[0m mié 12 jun 2024 21:36:22 CEST -> Referencias regeneradas correctamente tanto en EN como en los demás idiomas [Nombre función: regenerarReferencias]
 [1;32mSUCCESS:[0m mié 12 jun 2024 21:44:17 CEST -> Referencias eliminadas y convertidas en comentarios en el script: test_folder/3-GestionDeProcesosYMemoria-Paginacion-VirtualYNoVirtual.sh [Nombre función: borrarReferencias]
 [1;32mSUCCESS:[0m mié 12 jun 2024 21:44:17 CEST -> Referencias eliminadas y convertidas en comentarios en el script: test_folder/test.sh [Nombre función: borrarReferencias]
+[1;31mERROR:[0m dom 16 jun 2024 05:52:39 CEST -> No existe el código de idioma JJL [Nombre función: regenerarReferencias]
+[1;31mERROR:[0m dom 16 jun 2024 05:52:42 CEST -> Antes de crear un nuevo fichero de almacenamiento, los scripts tienen que estar referenciados [Nombre función: crearNuevoFicheroDeAlmacenamiento]
+[1;31mERROR:[0m dom 16 jun 2024 05:53:28 CEST -> Para poder cambiar de idioma, los scripts tienen que estar referenciados [Nombre función: cambiarIdiomaEnElScript]

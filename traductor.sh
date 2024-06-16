@@ -766,18 +766,19 @@ function visualizarFicherosLog {
 
 #Función que muestra una pequeña ayuda al usuario
 function mostrarAyuda {
-	echo -e "${VERDE}\t\t\t----------------------------------------${RESET}"
-	echo -e "\t\t\t\t${VERDE}FUNCIONAMIENTO DEL PROGRAMA${RESET}"
-	echo -e "${VERDE}\t\t\t----------------------------------------${RESET}"
-	echo -e "${AMARILLO_OSCURO}*IMPORTANTE* :${RESET} Antes de empezar con los demás opciones, es recomendable referenciar los scripts."
-	echo -e "${AMARILLO_OSCURO}*IMPORTANTE* :${RESET} Cuando se agrega una referencia manualmente en un script, tiene que estar entre el número de la referencia anterior y el siguiente y no ser multiplo de $INCR_LINEAS(Las referencias generadas automaticamente utilizan el intervalo de $INCR_LINEAS en $INCR_LINEAS). Si se introduce una referencia existente manualmente, se traduce automaticamente con la traducción adecuada si se realiza un cambio de idioma y tras eso, se pueden regenerar las referencias."
-	echo -e "${AMARILLO_OSCURO}*IMPORTANTE* :${RESET} Al realzar un cambio en los comentarios de los script, es obligatorio ${VERDE}REGENERAR LAS REFERENCIAS${RESET} antes de cambiar el idioma del script para efectuar los cambios de traducción para no perderlos. Otra forma de modificar un comentario si no deseas regenerar los comentarios es a traves de los ficheros de almacenamiento(.txt) de cada idioma del script"
-    	echo -e "${VERDE}Cargar un nuevo juego de referencias:${RESET}\nEsta opción te permite cargar un nuevo conjunto de referencias para tu juego.\n"
-    	echo -e "${VERDE}Regenerar referencias:${RESET}\nEsta opción te permite volver a regenerar las referencias de todos los scripts para cuadra los números en caso de haber agregado referencias nuevas a los scripts originales\n"
-    	echo -e "${VERDE}Crear un nuevo fichero de almacenamiento:${RESET}\nCon esta opción puedes crear un nuevo fichero de que se corresponde a un idioma nuevo no se puede crear un nuevo fichero de almacenamiento de un idioma que ya existe.\n"
-    	echo -e "${VERDE}Eliminar ficheros de almacenamiento:${RESET}\nUtiliza esta opción para eliminar los ficheros de almacenamiento y borrar todas las referencias de los scripts originales.\n"
-    	echo -e "${VERDE}Visualizar los ficheros de log:${RESET}\nCon esta opción puedes ver los ficheros de registro (Tanto el general como el de cada script).\n"
-    	echo -e "${VERDE}Cambiar idioma de los scripts:${RESET}\nUtiliza esta opción para cambiar el idioma de los scripts, puedes intercambiar entre un idioma u otro, siempre que exista el fichero de almacenamiento. Al cambiar de idioma, el script se queda con los valores actualizados de los ficheros de almacenamiento."
+	clear
+	echo -e "${CIAN}\t\t\t------------------------------------------${RESET}"
+	echo -e "\t\t\t\t${CIAN}FUNCIONAMIENTO DEL PROGRAMA${RESET}"
+	echo -e "${CIAN}\t\t\t------------------------------------------${RESET}"
+	echo -e "${AMARILLO_OSCURO}*IMPORTANTE* (1):${RESET} Antes de empezar con los demás opciones, es recomendable referenciar los scripts.\n"
+	echo -e "${AMARILLO_OSCURO}*IMPORTANTE* (2):${RESET} Cuando se agrega una referencia manualmente en un script, tiene que estar entre el número de la referencia anterior y el siguiente y no ser multiplo de $INCR_LINEAS(Las referencias generadas automaticamente utilizan el intervalo de $INCR_LINEAS en $INCR_LINEAS). Si se introduce una referencia existente manualmente, se traduce automaticamente con la traducción adecuada si se realiza un cambio de idioma y tras eso, se pueden regenerar las referencias.\n"
+	echo -e "${AMARILLO_OSCURO}*IMPORTANTE* (3):${RESET} Al realzar un cambio en los comentarios de los script, es obligatorio ${VERDE}REGENERAR LAS REFERENCIAS${RESET} antes de cambiar el idioma del script para efectuar los cambios de traducción para no perderlos. Otra forma de modificar un comentario si no deseas regenerar los comentarios es a traves de los ficheros de almacenamiento(.txt) de cada idioma del script.\n"
+    	echo -e "${CIAN}CARGAR UN NUEVO JUEGO DE REFERENCIAS:${RESET}\nEsta opción te permite cargar un nuevo conjunto de referencias para tu juego.\n"
+    	echo -e "${CIAN}REGENERAR REFERENCIAS:${RESET}\nEsta opción te permite volver a regenerar las referencias de todos los scripts para cuadra los números en caso de haber agregado referencias nuevas a los scripts originales.\n"
+    	echo -e "${CIAN}CREAR UN NUEVO FICHERO DE ALMACENAMIENTO:${RESET}\nCon esta opción puedes crear un nuevo fichero de que se corresponde a un idioma nuevo no se puede crear un nuevo fichero de almacenamiento de un idioma que ya existe.\n"
+    	echo -e "${CIAN}ELIMINAR FICHEROS DE ALMACENAMIENTO:${RESET}\nUtiliza esta opción para eliminar los ficheros de almacenamiento y borrar todas las referencias de los scripts originales.\n"
+    	echo -e "${CIAN}VISUALIZAR LOS FICHEROS DE LOG:${RESET}\nCon esta opción puedes ver los ficheros de registro (Tanto el general como el de cada script).\n"
+    	echo -e "${CIAN}CAMBIAR IDIOMA DE LOS SCRIPTS:${RESET}\nUtiliza esta opción para cambiar el idioma de los scripts, puedes intercambiar entre un idioma u otro, siempre que exista el fichero de almacenamiento. Al cambiar de idioma, el script se queda con los valores actualizados de los ficheros de almacenamiento."
     	while true; do
         echo -e "\n${AMARILLO_OSCURO}Pulsa 0 para salir y 1 para volver al menú principal${RESET}"
         read -r opcion
