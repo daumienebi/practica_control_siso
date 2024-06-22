@@ -349,7 +349,9 @@ function regenerarReferencias {
                     				comentario_script=${parte_antes}#${cod_idioma^^}-${contador_lineas}-${linea_filtrada}
                		 		fi
 		    			lineas_actualizada_script+=("$comentario_script")
-		    			num_referencia=$(echo "$linea" | grep -oP '(?<=-)[0-9]+(?=-)') #utilizamos el número de referencia,de "#XY-10-", extraemos "10"
+		    			#utilizamos el número de referencia,de "#XY-10-", extraemos "10", utilizamos head -n 1 para pillar solo un patron
+                        		num_referencia=$(echo "$linea" | grep -oP '(?<=-)[0-9]+(?=-)' | head -n 1)
+		    			#num_referencia=$(echo "$linea" | grep -oP '(?<=-)[0-9]+(?=-)') #utilizamos el número de referencia,de "#XY-10-", extraemos "10"
 		    			num_referencias_script+=("$num_referencia")
 		    			contador_lineas=$((contador_lineas + $INCR_LINEAS))
   				else
@@ -906,3 +908,4 @@ mostrarMenuPrincipal
 #FR-Frances
 #IT-Italiano
 #MN-Money
+#HH-Hola
