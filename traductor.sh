@@ -906,6 +906,3 @@ mostrarMenuPrincipal
 #SP-Español
 #EN-Ingles
 #FR-Frances
-#IT-Italiano
-#MN-Money
-#HH-Hola
