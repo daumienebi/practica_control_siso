@@ -69,6 +69,11 @@ OPCIONES_MENU_COD_IDIOMA_NUEVO=(
 "-> Introducir otro codigo"
 "-> Salir"
 )
+OPCIONES_MENU_NUEVO_FICHERO_ALMACENAMIENTO=(
+"-> Añadir nuevo idioma (Solo añadirá el idioma sin el txt)"
+"-> Añadir nuevo idioma y el fichero de almacenammiento"
+"-> Salir"
+)
 
 #Muestra las opciones del menu principal al usuario
 function mostrarMenuPrincipal {
@@ -375,6 +380,7 @@ function regenerarReferencias {
                     			if [[ -f "$fichero_otro_idioma" ]]; then
                         			mapfile -t lineas_otro_idioma < "$fichero_otro_idioma"
                     			else
+                    				touch "$fichero_otro_idioma"
                         			lineas_otro_idioma=()
                     			fi
                     			# Generar nuevas referencias manteniendo los comentarios existentes
@@ -694,14 +700,36 @@ function crearNuevoFicheroDeAlmacenamiento {
 	echo "Introduce el nombre del idioma"
 	echo -e -n "${AMARILLO_OSCURO}Nombre Idioma :${RESET}"
 	read nombre_idioma_nuevo
-	#Ahora creamos los nuevos ficheros de referencia generamos los comentarios
-	find */ -type f -name "$FILTRO_FICHEROS" -print0 | while IFS= read -r -d '' script; do
-		echo "Creando el fichero de almacenamiento para $script"
-		extraerComentariosDelScriptNuevoIdioma "$script" ${cod_idioma_nuevo^^}
-	done
-	mostrarMensajeYAgregarloAlLogGeneral "Nuevo fichero de almacenamiento de $nombre_idioma_nuevo creado" $FUNCNAME $LOG_SUCCESS
-	guardarIdiomaNuevo $cod_idioma_nuevo "$nombre_idioma_nuevo"
+	#Preguntamos que quiere hacer el usuario
+	echo -e "${CIAN}¿Que acción deseas realizar?${RESET}"
+	seleccionarOpcion "${OPCIONES_MENU_NUEVO_FICHERO_ALMACENAMIENTO[@]}"
+	opcion_menu=$?
+	case $opcion_menu in
+		0)
+			guardarIdiomaNuevo $cod_idioma_nuevo "$nombre_idioma_nuevo"
+			mostrarMensajeYAgregarloAlLogGeneral "Nuevo idioma $nombre_idioma_nuevo creado" $FUNCNAME $LOG_SUCCESS
+			;;
+		1)
+			#Ahora creamos los nuevos ficheros de referencia generamos los comentarios
+			find */ -type f -name "$FILTRO_FICHEROS" -print0 | while IFS= read -r -d '' script; do
+				echo "Creando el fichero de almacenamiento para $script"
+				extraerComentariosDelScriptNuevoIdioma "$script" ${cod_idioma_nuevo^^}
+			done
+			guardarIdiomaNuevo $cod_idioma_nuevo "$nombre_idioma_nuevo"
+			mostrarMensajeYAgregarloAlLogGeneral "Nuevo fichero de almacenamiento de $nombre_idioma_nuevo creado" $FUNCNAME $LOG_SUCCESS
+			;;
+		2)
+			exit 1 ;;	
+	esac
 	volverAlMenuOSalir
+	#Ahora creamos los nuevos ficheros de referencia generamos los comentarios
+	#find */ -type f -name "$FILTRO_FICHEROS" -print0 | while IFS= read -r -d '' script; do
+	#	echo "Creando el fichero de almacenamiento para $script"
+	#	extraerComentariosDelScriptNuevoIdioma "$script" ${cod_idioma_nuevo^^}
+	#done
+	#mostrarMensajeYAgregarloAlLogGeneral "Nuevo fichero de almacenamiento de $nombre_idioma_nuevo creado" $FUNCNAME $LOG_SUCCESS
+	#guardarIdiomaNuevo $cod_idioma_nuevo "$nombre_idioma_nuevo"
+	#volverAlMenuOSalir
 } #Fin crearFicheroDeAlmacenamiento()
 
 #Funcion que recible el codigo y nombre de un idioma nuevo y lo añade al final de este mismo script.
