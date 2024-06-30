@@ -2,7 +2,7 @@
 ######################################################################################################################
 #						CABECERA
 ######################################################################################################################
-# Nombre: traductor.sh
+# Nombre: ScriptTratamientoDeScripts_Derick_Daumienebi_Sakpa.sh
 # 
 # Autor: Derick Daumienebi Sakpa
 #
@@ -533,7 +533,7 @@ function cambiarIdioma {
             		nombre_fichero=$(basename "${script%.*}")
             		directorio=$(dirname "$script")
             		fichero_idioma_a_traducir="$directorio"/${cod_idioma^^}_${nombre_fichero}.txt
-            		echo -e "${AMARILLO_OSCURO}Cambiando el idioma de "$script" de ${cod_idioma_script^^} a ${cod_idioma^^}${RESET} \n"
+            		echo -e "Cambiando el idioma de "$script" de ${cod_idioma_script^^} a ${cod_idioma^^}"
             		# Con la opción -r, nos aseguramos de que se lee todo tal cual aparece en el fichero y no se interprete de otra forma, por ejemplo el (\n o \t)
             		# Leemos el fichero original y el fichero txt de traducción pero primero miramos si existe el de traducción
             		if [[ -e "$fichero_idioma_a_traducir" ]]; then
@@ -548,7 +548,6 @@ function cambiarIdioma {
                         			#utilizamos el número de referencia,de "#XY-10-", extraemos "10", utilizamos head -n 1 para pillar solo un patron
                         			referencia=$(echo "$linea_original" | grep -oP '(?<=-)[0-9]+(?=-)' | head -n 1)
                         			referencia_a_buscar="#"${cod_idioma^^}"-"$referencia"-"
-                        			echo -e "Traduciendo referencia : ${VERDE}$referencia_a_buscar${RESET}"
                         			#Buscamos los que coinciden con la referencia a buscar(del idioma a la que vamos a cambiar) linea y quitamos la parte de la referencia a buscar
                         			#Con el sed, -E para expresiones y extraemos solo el texto de la traduccion en vez de toda la linea
                         			linea_sin_escapar=$(grep "$referencia_a_buscar" "$fichero_idioma_a_traducir" | sed -E "s/^.*${referencia}//")
