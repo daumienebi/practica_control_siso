@@ -457,6 +457,7 @@ function extraerComentariosDelScriptNuevoIdioma {
 	fi
 	touch "$directorio"/$fichero_idioma_nuevo
   	contador_lineas=$INICIO_NUM_LINEAS #10
+    	comentarios=() # Array para escribir los comentarios de golpe
   	#Ajustamos el Internal field separator(IFS)
   	IFS=$'\n'
   	#Ahora leemos el script sobre el que se crearán las referencias
@@ -466,14 +467,14 @@ function extraerComentariosDelScriptNuevoIdioma {
 		linea_valida=$?
 		if [[ $linea_valida -eq 1 ]]; then
 			comentario="#"$cod_idioma_nuevo"-"$contador_lineas"-"
-    			#Escribimos el contenido en el fichero principal
-    			echo $comentario >> "$directorio"/$fichero_idioma_nuevo # usamos ">>" para adjuntar cada linea a lo que ya hay en el fichero
+    			comentarios+=("$comentario")
     			contador_lineas=$((contador_lineas + $INCR_LINEAS)) #El número de lineas del documento tiene que ir de 10 en 10
 		else
 			comentario=""
     			continue;
 		fi
   	done < "$script"
+  	printf "%s\n" "${comentarios[@]}" >> "$directorio"/$fichero_idioma_nuevo #Escribimos todo de golpe al final
 } #Fin extraerComentariosDelScriptNuevoIdioma()
 
 #Función para mostrar la presentación del programa en la primera ejecución.
