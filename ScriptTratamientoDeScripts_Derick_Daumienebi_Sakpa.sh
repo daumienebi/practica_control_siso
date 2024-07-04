@@ -554,7 +554,6 @@ function cambiarIdiomaDeLosScripts {
 		                    		#Buscamos los que coinciden con la referencia a buscar(del idioma a la que vamos a cambiar) linea y quitamos la parte de la referencia a buscar
 		                		#Con el sed, -E para expresiones y extraemos solo el texto de la traduccion en vez de toda la linea
 		                		linea_sin_escapar=$(grep "$referencia_a_buscar" "$fichero_idioma_a_traducir" | sed -E "s/^.*${referencia}//" | head -n 1)
-		                		echo "linea sin escapar : $linea_sin_escapar"
 		                		linea_traduccion=$(printf '%s\n' "$linea_sin_escapar" | sed 's/[][\\/.^$*]/\\&/g')
 		                		#Eliminar el "-" misterioso que aparece al principio de la linea de traduccion si existe
 		                		linea_traduccion=${linea_traduccion#-} #Importantisimo
@@ -571,11 +570,8 @@ function cambiarIdiomaDeLosScripts {
 			    				comentario_despues=${linea_original#*#}
 			    				traduccion_viejo=$(echo "$comentario_despues" | cut -d'-' -f3-) #Desde field 3
 						fi
-		                		echo "Linea original : $linea_original"
-		                		echo "traduccion_viejo : $traduccion_viejo"
 		                		linea_vieja="$referencia_a_quitar$traduccion_viejo"
                             			linea_nueva=$(echo "$linea_original" | sed "s/$referencia_a_quitar.*/$referencia_a_buscar$linea_traduccion/")
-                            			echo "Linea vieja : $linea_vieja"
                             			referencias_txt+=("$referencia") #keeping track of the order
                         		else
                             			linea_vieja=""
@@ -662,8 +658,6 @@ function actualizarFicherosOtrosIdiomas {
 					fi
 					if [[ $referencia_encontrada -gt 0 ]]; then
 						lineas_nuevas+=("#${cod^^}-${num_referencias_script[$i]}-${comentario}")
-						echo "comentario : $comentario"
-						echo "num ref : ${num_referencias_script[$i]}"
 	    				else
 	    					lineas_nuevas+=("#${cod^^}-${num_referencias_script[$i]}-")
 	    				fi
