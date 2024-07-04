@@ -534,12 +534,10 @@ function cambiarIdiomaDeLosScripts {
                     		esLineaValidaComoComentario "$linea_original"
                     		linea_valida=$?
                     		if [[ $linea_valida -eq 1 ]]; then
-                    			echo "Linea valida :$linea_original"
                         		referencia_a_quitar=$(echo "$linea_original" | grep -o '#[A-Z]\+-[0-9]\+-')
                         		#utilizamos el número de referencia,de "#XY-10-", extraemos "10", utilizamos head -n 1 para pillar solo un patron
                         		referencia=$(echo "$linea_original" | grep -oP '(?<=-)[0-9]+(?=-)' | head -n 1)
                         		referencia_a_buscar="#"${cod_idioma^^}"-"$referencia"-"
-					
                             		if [[ -n "$referencia" ]]; then
 		                    		#Buscamos los que coinciden con la referencia a buscar(del idioma a la que vamos a cambiar) linea y quitamos la parte de la referencia a buscar
 		                		#Con el sed, -E para expresiones y extraemos solo el texto de la traduccion en vez de toda la linea
@@ -551,7 +549,6 @@ function cambiarIdiomaDeLosScripts {
 		                		if [[ -z $linea_traduccion ]]; then
 		                			referencias_sin_traduccion+=("Referencia ${ROJO}$referencia_a_buscar${RESET} sin resolver -> $script\n")
 		                		fi
-		                		
 		                		#idioma viejo
 		                		traduccion_viejo=$(echo "$linea_original" | cut -d'-' -f3-) #Desde field 3
 		                		#Escribir en vieja
@@ -560,7 +557,6 @@ function cambiarIdiomaDeLosScripts {
                             			#referencias_txt+=("#${idioma_viejo^^}-$num_referencia-") #keeping track of the order
                             			referencias_txt+=("$referencia") #keeping track of the order
                         		else
-                            			echo "$linea_original no valida"
                             			linea_nueva="$linea_original"
                         		fi
                 		else		
@@ -580,7 +576,6 @@ function cambiarIdiomaDeLosScripts {
             		referencias_sin_traduccion=() #Reinicio?
                 	# Escribimos los contenidos actualizados
                 	printf "%s\n" "${lineas_referencias[@]}" > "$script" # Risky shit i guess but it works :)
-                	echo "${#txt_idioma_viejo[@]} final"
                 	printf "%s\n" "${txt_idioma_viejo[@]}" > "$fichero_idioma_actual" # Risky af
                 	traduccion_completa=1;
             	else
@@ -652,7 +647,8 @@ function actualizarFicherosOtrosIdiomas {
         			printf "%s\n" "${lineas_nuevas[@]}" > "$fichero_otro_idioma" # Risky af
         			lineas_nuevas=()
             		else
-            			echo "No existe el fichero de idiomas para ${cod^^}"
+            			mostrarMensajeYAgregarloAlLogGeneral "No se ha encontrado el fichero de traducción en ${cod^^} para el script : $script puede que no esté creado"\
+            			                             	      $FUNCNAME $LOG_ERROR
             		fi
     		fi
 	done
