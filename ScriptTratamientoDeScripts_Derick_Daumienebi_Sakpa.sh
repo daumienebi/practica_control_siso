@@ -338,18 +338,30 @@ function regenerarReferencias {
 				else
 					linea_filtrada=${linea#*#} #Cogemos todo lo que venga despues de la primera # de la linea
 				fi
-		    		comentario="#"${cod_idioma^^}"-"$contador_lineas"-"$linea_filtrada
-		    		lineas_idiomas+=("$comentario")
 		    		#Escribimos el contenido en el fichero principal
-		    		if [[ "$linea" =~ ^# ]]; then
-                    			comentario_script="#"${cod_idioma^^}-${contador_lineas}-${linea_filtrada}
-                		else
+		    		#if [[ "$linea" =~ ^# ]]; then
+                    		#	comentario_script="#"${cod_idioma^^}-${contador_lineas}-${linea_filtrada}
+                		#else
                     			# Separamos la línea en la parte antes del primer # y el comentario después del #
-                    			parte_antes=${linea%%#*}
-                    			comentario_despues=$(echo "$linea" | sed 's/^[A-Z]\+-[0-9]\+-//')
+                    		#	parte_antes=${linea%%#*}
+                    		#	comentario_despues=$(echo "$linea" | sed 's/^[A-Z]\+-[0-9]\+-//')
                     			#Makes sense now : Cogemos la parte antes que no tiene  # y luego la linea filtrada
-                    			comentario_script=${parte_antes}#${cod_idioma^^}-${contador_lineas}-${linea_filtrada}
-               		 	fi
+                    		#	comentario_script=${parte_antes}#${cod_idioma^^}-${contador_lineas}-${linea_filtrada}
+               		 	#fi
+               		 	if [[ "$linea" =~ ^# ]]; then
+			    		#el contenido de la linea que haya despues de la #
+			    		comentario_script="#"${cod_idioma^^}-${contador_lineas}-${linea_filtrada}
+			    		comentario="#"${cod_idioma^^}"-"$contador_lineas"-"$linea_filtrada
+			    		#comentario_script=$(echo "$linea" | cut -d'-' -f3-) #Desde field 3
+				else
+			    		#Separamos la línea en la parte antes del primer # y el comentario después del #
+			    		parte_antes=${linea%%#*}
+			    		parte_despues=${linea#*#}
+			    		comentario_despues=$(echo "$parte_despues" | cut -d'-' -f3-) #Desde field 3
+			    		comentario_script=${parte_antes}#${cod_idioma^^}-${contador_lineas}-${comentario_despues}
+			    		comentario="#"${cod_idioma^^}"-"$contador_lineas"-"$comentario_despues
+				fi
+		    		lineas_idiomas+=("$comentario")
 		    		lineas_actualizada_script+=("$comentario_script")
 		    		#utilizamos el número de referencia,de "#XY-10-", extraemos "10", utilizamos head -n 1 para pillar solo un patron
                         	num_referencia=$(echo "$linea" | grep -oP '(?<=-)[0-9]+(?=-)' | head -n 1)
@@ -542,21 +554,31 @@ function cambiarIdiomaDeLosScripts {
 		                    		#Buscamos los que coinciden con la referencia a buscar(del idioma a la que vamos a cambiar) linea y quitamos la parte de la referencia a buscar
 		                		#Con el sed, -E para expresiones y extraemos solo el texto de la traduccion en vez de toda la linea
 		                		linea_sin_escapar=$(grep "$referencia_a_buscar" "$fichero_idioma_a_traducir" | sed -E "s/^.*${referencia}//" | head -n 1)
+		                		echo "linea sin escapar : $linea_sin_escapar"
 		                		linea_traduccion=$(printf '%s\n' "$linea_sin_escapar" | sed 's/[][\\/.^$*]/\\&/g')
 		                		#Eliminar el "-" misterioso que aparece al principio de la linea de traduccion si existe
 		                		linea_traduccion=${linea_traduccion#-} #Importantisimo
-		                		
 		                		if [[ -z $linea_traduccion ]]; then
 		                			referencias_sin_traduccion+=("Referencia ${ROJO}$referencia_a_buscar${RESET} sin resolver -> $script\n")
 		                		fi
 		                		#idioma viejo
-		                		traduccion_viejo=$(echo "$linea_original" | cut -d'-' -f3-) #Desde field 3
-		                		#Escribir en vieja
+		                		if [[ "$linea_original" =~ ^# ]]; then
+			    				#el contenido de la linea que haya despues de la #
+			    				traduccion_viejo=$(echo "$linea_original" | cut -d'-' -f3-) #Desde field 3
+						else
+			    				#Separamos la línea en la parte antes del primer # y el comentario después del #
+			    				parte_antes=${linea_original%%#*}
+			    				comentario_despues=${linea_original#*#}
+			    				traduccion_viejo=$(echo "$comentario_despues" | cut -d'-' -f3-) #Desde field 3
+						fi
+		                		echo "Linea original : $linea_original"
+		                		echo "traduccion_viejo : $traduccion_viejo"
 		                		linea_vieja="$referencia_a_quitar$traduccion_viejo"
                             			linea_nueva=$(echo "$linea_original" | sed "s/$referencia_a_quitar.*/$referencia_a_buscar$linea_traduccion/")
-                            			#referencias_txt+=("#${idioma_viejo^^}-$num_referencia-") #keeping track of the order
+                            			echo "Linea vieja : $linea_vieja"
                             			referencias_txt+=("$referencia") #keeping track of the order
                         		else
+                            			linea_vieja=""
                             			linea_nueva="$linea_original"
                         		fi
                 		else		
@@ -595,7 +617,7 @@ function cambiarIdiomaDeLosScripts {
         						$FUNCNAME $LOG_SUCCESS
         	volverAlMenuOSalir
         fi	 
-} # Fin cambiarIdioma()
+} # Fin cambiarIdiomaDeLosScripts()
 
 #Recibe una array y agrega actualiza los ficheros de los otros idiomas
 #cuando se realiza un cambio de idioma
@@ -629,7 +651,8 @@ function actualizarFicherosOtrosIdiomas {
             			for ((i=0; i<${#num_referencias_script[@]}; i++)); do
 					referencia_encontrada=0
 	    				# Obtener la referencia del otro idioma
-					referencia_otro_idioma=$(echo "${lineas_viejas[$i]}" | grep -o '#[A-Z]\+-[0-9]\+-')
+					#referencia_otro_idioma=$(echo "${lineas_viejas[$i]}" | grep -o '#[A-Z]\+-[0-9]\+-')
+					referencia_otro_idioma=${lineas_viejas[$i]:0:7}
 					# Construir la referencia a buscar basada en el idioma y el número de referencia del script
 					referencia_a_buscar="#"${cod^^}"-"${num_referencias_script[$i]}"-"
 					# Buscar si la referencia está en el fichero del otro idioma
@@ -639,12 +662,13 @@ function actualizarFicherosOtrosIdiomas {
 					fi
 					if [[ $referencia_encontrada -gt 0 ]]; then
 						lineas_nuevas+=("#${cod^^}-${num_referencias_script[$i]}-${comentario}")
-						
+						echo "comentario : $comentario"
+						echo "num ref : ${num_referencias_script[$i]}"
 	    				else
 	    					lineas_nuevas+=("#${cod^^}-${num_referencias_script[$i]}-")
 	    				fi
         			done
-        			printf "%s\n" "${lineas_nuevas[@]}" > "$fichero_otro_idioma" # Risky af
+        			printf "%s\n" "${lineas_nuevas[@]}" > "$fichero_otro_idioma"
         			lineas_nuevas=()
             		else
             			mostrarMensajeYAgregarloAlLogGeneral "No se ha encontrado el fichero de traducción en ${cod^^} para el script : $script puede que no esté creado"\
@@ -652,7 +676,7 @@ function actualizarFicherosOtrosIdiomas {
             		fi
     		fi
 	done
-}
+} # Fin actualizarFicherosOtrosIdiomas()
 
 #Lista los idiomas disponibles para que el usuario seleccione uno
 #Nota : Obtiene este dato solo basandose en los que encuentra al final de este mismo script, no comprueba los ficheros de almacenamiento
