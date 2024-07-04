@@ -89,6 +89,7 @@ function mostrarMenuPrincipal {
 	opcion_seleccionada=$?
 	case $opcion_seleccionada in
 		0)
+			clear
 			cargarNuevasReferencias ;;
 		1)
 			clear
@@ -301,7 +302,8 @@ function esLineaValidaComoComentario {
 #Funcion para regenerar las referencias dependiendo del idioma en el que estén los scripts
 function regenerarReferencias {
 	#Preguntamos al usuario en que idioma quiere regenerar las referencias
-	echo -e "${CIAN}¿En que idioma se encuentran los scripts ?${RESET}"
+	echo "* ctrl + c para salir"
+	echo -e "${CIAN}¿En que idioma se encuentran los scripts ? (Regenear referencias)${RESET}"
 	seleccionarIdioma
    	idioma_seleccionado=$?
    	cod_idioma=${OPCIONES_MENU_IDIOMAS_DISPONIBLES[$idioma_seleccionado]:1:2}
@@ -312,7 +314,9 @@ function regenerarReferencias {
                 codigo_idiomas+=("$linea_filtrada") # Añadimos cada código encontrado al array
         done < <(sed -n "$LINEA_INICIO_IDIOMAS,\$p" "${BASH_SOURCE[0]}")
  	#Obtener los comentarios de cada script pero intentando ordenarlos y comprobar si nos han insertado alguno nuevo en medio
- 	find */ -type f -name "$FILTRO_FICHEROS" -print0 | while IFS= read -r -d '' script; do
+ 	#find */ -type f -name "$FILTRO_FICHEROS" -print0 | while IFS= read -r -d '' script; do
+ 	readarray -d '' scripts < <(find */ -type f -name "$FILTRO_FICHEROS" -print0)
+   	for script in "${scripts[@]}"; do
  		echo "Regenerando las referencias para $script"
  		#Obtenemos el nombre del fichero con 'basename' asi no nos devuelve la ruta relativa del fichero.sh encontrado
 		nombre_fichero=$(basename "${script%.*}") 
