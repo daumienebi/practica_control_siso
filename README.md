@@ -5,7 +5,7 @@ Se trata de un script escrito en el lenguaje bash para gestionar la internaciona
 ![image](https://github.com/user-attachments/assets/8576395d-984e-406e-a2d7-1d9f3c9fbd0c)
 
 ## Como ejecutarlo
-Coloca el script en un directorio que contenga otros directorios con los scripts a internacionalizar y ejecuta :
+Coloca el script en <b>un directorio que contenga otros directorios con los scripts</b> a internacionalizar y ejecuta :
 
 `bash ScriptTratamientoDeScripts_Derick_Daumienebi_Sakpa.sh`
 
@@ -46,6 +46,8 @@ del script [aqui](https://github.com/user-attachments/files/16184536/InformeTrat
 ## Advertencia
 Si por lo que sea, este código resulta útil para alguien, estaría bien optimizar algúnas operaciones para que vayan todavia más rápido sobre todo a la hora de procesar scripts pesados o varios scripts.
 Algunas partes del código fueron agregados/modificados a última hora debido a la necesidad de realizar algúnas modificaciones y por ende deben quedar algúnos trozos de código redundante bailando por ahi.
+
+Tambien pasa una cosita rara que se describe [aqui](https://github.com/users/daumienebi/projects/6?pane=issue&itemId=65696950).
 
 ## Todo
 * README in english too
